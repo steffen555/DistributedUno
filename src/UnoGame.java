@@ -10,27 +10,19 @@ public class UnoGame {
     private CryptoScheme cryptoScheme;
     private boolean isFirstPlayer;
     private PlayerGroup players;
+    private Player playerInTurn;
 
     public UnoGame(Communicator comm) {
         this.comm = comm;
         this.cryptoScheme = new CryptoScheme();
 
-        // TODO: set up the players PlayerGroup;
-        // specifically, we must determine who is the first player.
+//         TODO: set up the players PlayerGroup;
+//         specifically, we must determine who is the first player.
 
-        deck = new DeckShufflingProtocol(comm, cryptoScheme, isFirstPlayer).makeShuffledDeck();
-
+//        deck = new DeckShufflingProtocol(comm, cryptoScheme, isFirstPlayer).makeShuffledDeck();
+        deck = new Deck();
         playerInTurn = computeFirstPlayer();
         distributeInitialCards();
-    }
-
-    private void makeShuffledDeck() {
-        for (CardColor cc : CardColor.values()){
-            for (int i = 0; i < 10; i++){
-                deck.addCard(new RegularCard(cc, i));
-            }
-        }
-        deck.shuffle();
     }
 
     public Player computeFirstPlayer() {

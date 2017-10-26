@@ -1,13 +1,12 @@
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class RegularCard implements Card {
+public class RegularCard extends Card {
 
-    private CardColor cardColor;
+    private Card.Color cardColor;
     private int number;
 
-    public RegularCard(CardColor cardColor, int number) {
-        this.cardColor = cardColor;
-        this.number = number;
+    public RegularCard(int i) {
+        super(i);
     }
 
     @Override
@@ -16,12 +15,12 @@ public class RegularCard implements Card {
     }
 
     @Override
-    public CardColor getColor() {
+    public Card.Color getColor() {
         return cardColor;
     }
 
     @Override
-    public int getNumber() {
+    public int asInt() {
         return number;
     }
 }
