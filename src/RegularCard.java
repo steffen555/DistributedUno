@@ -1,4 +1,7 @@
-import java.io.Serializable;
+import java.math.BigInteger;
 
-public class RegularCard implements Card {
+public class RegularCard extends Card {
+    public RegularCard(BigInteger value) {
+        super(value);
+    }
 }
