@@ -60,13 +60,7 @@ public class HandDistributionProtocol {
         // also send one more key for the initial pile card
         keys.add(pile.getCard(0).getMyKey());
 
-        try {
-            communicator.sendObject(recipient.getPeerInfo(), keys);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        communicator.sendObject(recipient.getPeerInfo(), keys);
     }
 
     private void receiveInitialKeys(Player sender) {

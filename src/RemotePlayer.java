@@ -15,14 +15,7 @@ public class RemotePlayer extends Player {
      */
     @Override
     public Move receiveMove(Communicator communicator) {
-        try {
-            return (Move) communicator.receiveObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return (Move) communicator.receiveObject();
     }
 
     @Override
