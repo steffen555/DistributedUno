@@ -1,8 +1,22 @@
+import java.math.BigInteger;
+
 public class CryptoKey {
-    private int e, d, n;
-    public CryptoKey(int e, int d, int n) {
+    private BigInteger e, d, n;
+    public CryptoKey(BigInteger e, BigInteger d, BigInteger n) {
         this.e = e;
         this.d = d;
         this.n = n;
+    }
+
+    public BigInteger exponent() {
+        return e;
+    }
+
+    public BigInteger modulus() {
+        return n;
+    }
+
+    public BigInteger secret() {
+        return d;
     }
 }

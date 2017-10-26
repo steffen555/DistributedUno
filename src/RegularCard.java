@@ -1,5 +1,7 @@
+import java.math.BigInteger;
+
 public class RegularCard extends Card {
-    public RegularCard(int value) {
+    public RegularCard(BigInteger value) {
         super(value);
     }
 }

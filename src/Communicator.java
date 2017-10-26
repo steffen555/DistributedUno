@@ -16,14 +16,15 @@ public class Communicator {
     }
 
     public Object receiveObject() {
+        // TODO
         return null;
     }
 
-    public void sendObject(Deck deck) {
+    public void sendObject(Object o) {
         // TODO
     }
 
-    public void broadcastObject(Deck deck) {
+    public void broadcastObject(Object o) {
         // TODO
     }
 }

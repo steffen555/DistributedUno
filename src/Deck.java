@@ -1,8 +1,10 @@
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Deck {
 
-    private ArrayList<Card> cards;
+    private List<Card> cards;
 
     public Card getCard(int index){
         return cards.get(index);
@@ -12,13 +14,13 @@ public class Deck {
     public static Deck generatePlainDeck() {
         ArrayList<Card> tmp = new ArrayList<Card>();
         for (int card_value = 0; card_value < Card.NUM_CARDS; card_value++) {
-            Card card = new RegularCard(card_value);
+            Card card = new RegularCard(BigInteger.valueOf(card_value));
             tmp.add(card);
         }
         return new Deck(tmp);
     }
 
-    public Deck(ArrayList<Card> cards) {
+    public Deck(List<Card> cards) {
         this.cards = cards;
     }
 
@@ -41,6 +43,34 @@ public class Deck {
     }
 
     public void decrypt(CryptoKey k_i) {
-        // TODO: decrypt every card with k_i
+        for (Card card : cards) {
+            card.decrypt(k_i);
+        }
+    }
+
+    public static Deck fromIntList(List<BigInteger> intList) {
+        ArrayList<Card> tmp = new ArrayList<Card>();
+        for (int i = 0; i < Card.NUM_CARDS; i++) {
+            BigInteger value = intList.get(i);
+            Card card = new RegularCard(value);
+            tmp.add(card);
+        }
+        return new Deck(tmp);
+    }
+
+    public List<BigInteger> asIntList() {
+        List<BigInteger> result = new ArrayList<BigInteger>();
+        for(Card card : cards) {
+            result.add(card.getValue());
+        }
+        return result;
+    }
+
+    public void updateCards(List<BigInteger> intList) {
+        for (int i = 0; i < Card.NUM_CARDS; i++) {
+            BigInteger value = intList.get(i);
+            Card card = cards.get(i);
+            card.setValue(value);
+        }
     }
 }

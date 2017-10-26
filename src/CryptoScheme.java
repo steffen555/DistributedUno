@@ -1,3 +1,4 @@
+import java.math.BigInteger;
 
 /*
 The main requirement for the encryption scheme for our shuffling protocol
@@ -10,21 +11,37 @@ NOTE: we will use SRA for now, but it's not actually CPA secure.
 
  */
 public class CryptoScheme {
-    public CryptoKey generateKey() {
+    public static CryptoKey generateKey() {
         // TODO: don't hardcode these.
-        int e = 5;
-        int d = 29;
-        int N = 91;
+        BigInteger e = BigInteger.valueOf(5);
+        BigInteger d = BigInteger.valueOf(29);
+        BigInteger N = BigInteger.valueOf(91);
         return new CryptoKey(e, d, N);
     }
 
-    public int encrypt(CryptoKey key, int m) {
-        return 0;
+    public static BigInteger encrypt(CryptoKey key, BigInteger m) {
+        return m.modPow(key.exponent(), key.modulus());
     }
 
-    public int decrypt(CryptoKey key, int c) {
-        return 0;
+    public static BigInteger decrypt(CryptoKey key, BigInteger c) {
+        return c.modPow(key.secret(), key.modulus());
+    }
 
+    public static void main(String[] args) {
 
+        for (int i = 0; i < 50; i++) {
+            CryptoKey key = CryptoScheme.generateKey();
+
+            BigInteger m = BigInteger.valueOf(i);
+            BigInteger c = CryptoScheme.encrypt(key, m);
+            BigInteger decrypted = CryptoScheme.decrypt(key, c);
+
+            if (!decrypted.equals(m)) {
+                System.out.println("Bad decryption: " + i);
+            }
+
+        }
+
+        System.out.println("Done with tests.");
     }
 }
