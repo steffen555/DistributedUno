@@ -9,4 +9,8 @@ public class Pile {
     public Card getCard(int i) {
         return cards.get(i);
     }
+
+    public Card getTopCard() {
+        return cards.get(cards.size() - 1);
+    }
 }

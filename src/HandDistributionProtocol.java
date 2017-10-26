@@ -29,13 +29,16 @@ public class HandDistributionProtocol {
 
         // then distribute the keys so everyone can decrypt their own hand
         for (Player player : players.getPlayers()) {
-            if (player.equals(players.getMe())) {
+            if (player.equals(players.getMe()))
                 receiveInitialKeys(player);
-            }
-            else {
+            else
                 sendInitialKeys(player);
-            }
         }
+
+        // decrypt the pile card, and also decrypt our own hand
+        pile.getCard(0).decryptWithMyKey();
+        for (Card card : players.getMe().getHand().getCards())
+            card.decryptWithMyKey();
     }
 
     // sends num_players*hand_size + 1 keys to 'player'
@@ -46,7 +49,7 @@ public class HandDistributionProtocol {
 
         // send keys for others' hands
         for (Player player : players.getPlayers()) {
-            if (player == players.getMe())
+            if (player.equals(players.getMe()))
                 continue; // do not send the keys for our hand.
 
             for (Card card : player.getHand().getCards())
@@ -68,9 +71,9 @@ public class HandDistributionProtocol {
                 continue; // sender didn't send their own keys
 
             for (Card card : player.getHand().getCards())
-                card.addKey(keys.get(keyIndex++));
+                card.decrypt(keys.get(keyIndex++));
         }
 
-        pile.getCard(0).addKey(keys.get(keyIndex));
+        pile.getCard(0).decrypt(keys.get(keyIndex));
     }
 }

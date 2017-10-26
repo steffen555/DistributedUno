@@ -1,5 +1,6 @@
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class Card {
@@ -8,35 +9,36 @@ public abstract class Card {
         RED, YELLOW, GREEN, BLUE;
     };
 
+    public static List<String> colorsAsString = Arrays.asList(
+            "red", "yellow", "green", "blue"
+    );
+
     public static int NUM_COLORS = 4;
     public static int NUM_CARDS_PER_COLOR = 10;
     public static int NUM_CARDS = NUM_CARDS_PER_COLOR * NUM_COLORS;
 
-    private List<CryptoKey> keysFromOthers;
-    private BigInteger value;
+    private BigInteger value; // only retrieve this through its getter!!
     private CryptoKey myKey;
 
     public Card (BigInteger value) {
         this.value = value;
-        this.keysFromOthers = new ArrayList<CryptoKey>();
     }
 
-    public void addKey(CryptoKey key) {
-        keysFromOthers.add(key);
+    public void encrypt(CryptoKey key) {
+        value = CryptoScheme.encrypt(key, value);
     }
 
-    // only used during deck creation, so we don't add k_i to keysFromOthers.
-    public void encrypt(CryptoKey k_i) {
-        value = CryptoScheme.encrypt(k_i, value);
-    }
-
-    public void decrypt(CryptoKey k_i) {
-        value = CryptoScheme.decrypt(k_i, value);
+    public void decrypt(CryptoKey key) {
+        value = CryptoScheme.decrypt(key, value);
     }
 
     public void encryptWithNewKey() {
         myKey = CryptoScheme.generateKey();
         encrypt(myKey);
+    }
+
+    public void decryptWithMyKey() {
+        decrypt(myKey);
     }
 
     public CryptoKey getMyKey() {
@@ -52,8 +54,13 @@ public abstract class Card {
     }
 
     public Color getColor() {
-        int index = value.intValue() / NUM_CARDS_PER_COLOR;
+        int index = getValue().intValue() / NUM_CARDS_PER_COLOR;
         return Color.values()[index];
+    }
+
+    public String toString() {
+        String color = colorsAsString.get(getColor().ordinal());
+        return color + " " + getValue().toString();
     }
 
 }
