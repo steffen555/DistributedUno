@@ -14,4 +14,16 @@ public class Communicator {
 
     public void broadcastKey(Card card) {
     }
+
+    public Object receiveObject() {
+        return null;
+    }
+
+    public void sendObject(Deck deck) {
+        // TODO
+    }
+
+    public void broadcastObject(Deck deck) {
+        // TODO
+    }
 }
