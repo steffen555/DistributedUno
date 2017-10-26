@@ -3,17 +3,23 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class UnoGame {
 
     private Deck deck;
-    private Player playerInTurn;
     private Player winner;
     private Communicator comm;
     private int numberOfPlayers;
     private int myPlayerNumber;
-    private Player[] players;
+    private CryptoScheme cryptoScheme;
+    private boolean isFirstPlayer;
+    private PlayerGroup players;
 
     public UnoGame(Communicator comm) {
         this.comm = comm;
-        deck = new Deck();
-        makeShuffledDeck();
+        this.cryptoScheme = new CryptoScheme();
+
+        // TODO: set up the players PlayerGroup;
+        // specifically, we must determine who is the first player.
+
+        deck = new DeckShufflingProtocol(comm, cryptoScheme, isFirstPlayer).makeShuffledDeck();
+
         playerInTurn = computeFirstPlayer();
         distributeInitialCards();
     }

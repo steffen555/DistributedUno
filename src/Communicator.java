@@ -58,4 +58,16 @@ public class Communicator {
 
     public void broadcastKey(int card) {
     }
+
+    public Object receiveObject() {
+        return null;
+    }
+
+    public void sendObject(Deck deck) {
+        // TODO
+    }
+
+    public void broadcastObject(Deck deck) {
+        // TODO
+    }
 }
