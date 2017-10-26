@@ -73,4 +73,9 @@ public class Deck {
             card.setValue(value);
         }
     }
+
+    // takes a card out of the deck, removing it.
+    public Card drawCard() {
+        return cards.remove(0);
+    }
 }

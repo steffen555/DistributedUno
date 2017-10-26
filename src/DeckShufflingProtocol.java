@@ -7,11 +7,11 @@ public class DeckShufflingProtocol {
     private CryptoKey k_i;
     private Deck deck;
     private Communicator communicator;
-    private boolean isFirstPlayer;
+    private PlayerGroup players;
 
-    public DeckShufflingProtocol(Communicator communicator, boolean isFirstPlayer) {
+    public DeckShufflingProtocol(Communicator communicator, PlayerGroup players) {
         this.communicator = communicator;
-        this.isFirstPlayer = isFirstPlayer;
+        this.players = players;
     }
 
     // first, run round 1, in which each player chooses a key K_i,
@@ -20,7 +20,7 @@ public class DeckShufflingProtocol {
     private void doRound1() {
         k_i = CryptoScheme.generateKey();
 
-        if (isFirstPlayer) {
+        if (players.isFirstPlayer()) {
             // the first player generates the deck
             deck = Deck.generatePlainDeck();
         }
@@ -44,7 +44,7 @@ public class DeckShufflingProtocol {
         deck.shuffle();
 
         // then they pass it on to the next player.
-//        communicator.sendObject(deck.asIntList());
+        communicator.sendObject(players.playerAfterMe(), deck.asIntList());
     }
 
     private void doRound2() {
@@ -67,7 +67,8 @@ public class DeckShufflingProtocol {
         deck.encryptWithMultipleKeys();
 
         // pass the deck on
-//        communicator.sendObject(deck.asIntList());
+        Player nextPlayer = players.playerAfterMe();
+        communicator.sendObject(nextPlayer, deck.asIntList());
     }
 
     private void doRound3() {
@@ -80,7 +81,7 @@ public class DeckShufflingProtocol {
             e.printStackTrace();
         }
         deck.updateCards(intList);
-        if (isFirstPlayer) {
+        if (players.isFirstPlayer()) {
             communicator.broadcastObject(deck.asIntList());
         }
     }

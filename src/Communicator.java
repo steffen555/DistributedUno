@@ -66,15 +66,16 @@ public class Communicator{
     }
 
     public Move receiveMoveOverNetwork(String ip, int port, Player playerInTurn) {
-        return receiveMoveFromLocalUser(playerInTurn);
+        return receiveMoveFromLocalUser(playerInTurn); // TODO fixme
     }
 
     public Move receiveMoveFromLocalUser(Player playerInTurn) {
         MoveType moveType = getMoveTypeFromUser();
-        if (moveType.equals(MoveType.PLAY)) {
-            int cardIndex = getCardFromUser();
-        }
-        return null;
+        int cardIndex = 0;
+        if (moveType.equals(MoveType.PLAY))
+            cardIndex = getCardFromUser();
+
+        return new Move(moveType, cardIndex);
     }
 
     private static MoveType getMoveTypeFromUser() {
@@ -128,5 +129,9 @@ public class Communicator{
 
     public void broadcastObject(Object o) {
 
+    }
+
+    public List<Player> getPlayers() {
+        return players;
     }
 }

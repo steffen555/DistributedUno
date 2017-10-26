@@ -5,32 +5,22 @@ public class UnoGame {
     private Deck deck;
     private Player winner;
     private Communicator comm;
-    private int numberOfPlayers;
-    private int myPlayerNumber;
-    private CryptoScheme cryptoScheme;
     private PlayerGroup players;
+    private Pile pile;
 
     public UnoGame(Communicator comm) {
         this.comm = comm;
 
-//         TODO: set up the players PlayerGroup;
-//         specifically, we must determine who is the first player.
+        pile = new Pile();
+        players = new PlayerGroup(comm.getPlayers());
 
-        deck = new DeckShufflingProtocol(comm, players.isFirstPlayer()).makeShuffledDeck();
+        DeckShufflingProtocol deckCreator = new DeckShufflingProtocol(comm, players);
+        deck = deckCreator.makeShuffledDeck();
 
-        distributeInitialCards();
-    }
-
-    private void distributeInitialCards() {
-        for (int i = 0; i < numberOfPlayers; i++) {
-            if (i == myPlayerNumber) {
-                receiveInitialKeys();
-            } else {
-                sendInitialKeys(i);
-            }
-        }
-        // TODO: Decrypt the cards of my hand
-        // TODO: Update the deck
+        // now distribute keys and so on to initialize each player's hand,
+        // as well as the pile.
+        HandDistributionProtocol distributer = new HandDistributionProtocol(comm, deck, pile, players);
+        distributer.distributeInitialCards();
     }
 
     public void run() {
@@ -46,11 +36,13 @@ public class UnoGame {
      * Returns whether a player has won the game
      */
     private boolean checkForWinner() {
-        throw new NotImplementedException();
+        return false; // TODO implement me
     }
 
     private void renderState() {
-        throw new NotImplementedException();
+        System.out.println("Here is the game state: ");
+        System.out.println("lol jk");
+        // TODO fix this
     }
 
     /**
@@ -67,7 +59,8 @@ public class UnoGame {
     }
 
     private boolean isLegalMove(Move move) {
-        throw new NotImplementedException();
+        // TODO implement this
+        return true;
     }
 
     /**
@@ -76,6 +69,7 @@ public class UnoGame {
      * If a card is drawn, the user should have the option to play any card.
      */
     private void doMove(Move move) {
+        if (move == null) return; // TODO: remove this line, it's only for the mockup
         if (move.getType() == MoveType.PLAY) {
             doPlayMove(move);
         } else if (move.getType() == MoveType.DRAW) {
@@ -106,27 +100,21 @@ public class UnoGame {
         updateHand();
     }
 
-    private boolean myTurn() {
-        throw new NotImplementedException();
-    }
-
     private void updatePile(Card card) {
-        throw new NotImplementedException();
+        return; // TODO: implement
     }
 
     private void updateHand() {
-        throw new NotImplementedException();
+        return; // TODO: implement
     }
 
     /**
      * Performs the action of drawing a card from the deck.
      */
     private void doDrawMove(Move move) {
-        throw new NotImplementedException();
-    }
-
-    private Player computeNextPlayerInTurn() {
-        throw new NotImplementedException();
+        // TODO: this is a mock-up, implement is with crypto and stuff
+        Player player = players.getPlayerInTurn();
+        player.drawCard(deck);
     }
 
     /**
@@ -140,13 +128,4 @@ public class UnoGame {
         throw new NotImplementedException();
     }
 
-    private void sendInitialKeys(int i) {
-        throw new NotImplementedException();
-        // see pictures
-    }
-
-    private void receiveInitialKeys() {
-        throw new NotImplementedException();
-        // see pictures
-    }
 }
