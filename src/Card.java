@@ -1,5 +1,6 @@
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class Card {
@@ -7,6 +8,10 @@ public abstract class Card {
     public static enum Color {
         RED, YELLOW, GREEN, BLUE;
     };
+
+    public static List<String> colorsAsString = Arrays.asList(
+            "red", "yellow", "green", "blue"
+    );
 
     public static int NUM_COLORS = 4;
     public static int NUM_CARDS_PER_COLOR = 10;
@@ -51,6 +56,11 @@ public abstract class Card {
     public Color getColor() {
         int index = getValue().intValue() / NUM_CARDS_PER_COLOR;
         return Color.values()[index];
+    }
+
+    public String toString() {
+        String color = colorsAsString.get(getColor().ordinal());
+        return color + " " + getValue().toString();
     }
 
 }
