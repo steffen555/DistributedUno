@@ -1,15 +1,22 @@
+import java.util.ArrayList;
+
 public class Deck {
+
+    private ArrayList<Card> cards;
+
     public Card getCard(int index){
-        return null;
+        return cards.get(index);
     }
 
+    // should generate a Deck of unencrypted cards -- one for each number and color.
     public static Deck generatePlainDeck() {
         return null; // TODO
-
     }
 
     public void encryptWithSingleKey(CryptoKey k_i) {
-        // TODO
+        for (Card card : cards) {
+            card.encrypt(k_i);
+        }
     }
 
     public void shuffle() {
@@ -17,8 +24,11 @@ public class Deck {
         // NOTE: this must be cryptographically secure!!!
     }
 
+    // encrypts every card in the deck with its own key
     public void encryptWithMultipleKeys() {
-        // TODO: encrypt every card with its own key.
+        for(Card card : cards) {
+            card.encryptWithNewKey();
+        }
     }
 
     public void decrypt(CryptoKey k_i) {
