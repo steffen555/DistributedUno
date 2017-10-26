@@ -27,13 +27,7 @@ public class DeckShufflingProtocol {
         else {
             // other players receive the deck from a previous player
             List<BigInteger> intList = null;
-            try {
-                intList = (List<BigInteger>) communicator.receiveObject();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+            intList = (List<BigInteger>) communicator.receiveObject();
             deck = Deck.fromIntList(intList);
         }
 
@@ -44,26 +38,13 @@ public class DeckShufflingProtocol {
         deck.shuffle();
 
         // then they pass it on to the next player.
-        try {
-            communicator.sendObject(players.playerAfterMe().getPeerInfo(), deck.asIntList());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        communicator.sendObject(players.playerAfterMe().getPeerInfo(), deck.asIntList());
     }
 
     private void doRound2() {
 
         // receive the deck from the previous player
-        List<BigInteger> intList = null;
-        try {
-            intList = (List<BigInteger>) communicator.receiveObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        List<BigInteger> intList = (List<BigInteger>) communicator.receiveObject();
         deck = Deck.fromIntList(intList);
 
         // decrypt it under our key
@@ -74,24 +55,12 @@ public class DeckShufflingProtocol {
 
         // pass the deck on
         Player nextPlayer = players.playerAfterMe();
-        try {
-            communicator.sendObject(nextPlayer.getPeerInfo(), deck.asIntList());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        communicator.sendObject(nextPlayer.getPeerInfo(), deck.asIntList());
     }
 
     private void doRound3() {
         List<BigInteger> intList = null;
-        try {
-            intList = (List<BigInteger>) communicator.receiveObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        intList = (List<BigInteger>) communicator.receiveObject();
         deck.updateCards(intList);
         if (players.isFirstPlayer()) {
             communicator.broadcastObject(deck.asIntList());
