@@ -6,6 +6,7 @@ public class UnoGame {
     private Communicator comm;
     private int numberOfPlayers;
     private int myPlayerNumber;
+    private Player[] players;
 
     public UnoGame(Communicator comm) {
         this.comm = comm;
@@ -14,113 +15,17 @@ public class UnoGame {
         distributeInitialCards();
     }
 
-    /**
-     * Prints the winner of the game to the user
-     */
-    private void announceWinner() {
-    }
-
-    /**
-     * Returns whether a player has won the game
-     */
-    private boolean checkForWinner() {
-        return false;
-    }
-
-    private Player computeNextPlayerInTurn() {
+    private Deck makeShuffledDeck() {
         return null;
     }
 
-    /**
-     * Mechanics for the turn of any player.
-     * If we are the current player, it prompts the user for an input.
-     * Otherwise, we wait for the action of another player.
-     */
-    private void doTurn() throws Exception {
-        Move move;
-        if (myTurn()) {
-            move = promptPlayerForMove();
-            if (!isLegalMove(move)) {
-                throw new Exception(); //TODO: Better, please
-            }
-            comm.broadcastMove(move);
-            doMove(move);
-        } else {
-            move = comm.receiveMove(playerInTurn);
-            if (!isLegalMove(move)) {
-                throw new Exception(); //TODO: Better, please
-            }
-            doMove(move);
-        }
-    }
-
-    /**
-     * Does the concrete action of performing the move. The move given is checked to be valid.
-     * The move can be either playing a card to the pile or drawing a new card.
-     * If a card is drawn, the user should have the option to play any card.
-     */
-    private void doMove(Move move) {
-        if(move.getType() == MoveType.PLAY){
-            doPlayMove(move);
-        } else if(move.getType() == MoveType.DRAW) {
-            doDrawMove(move);
-        } else{
-            try {
-                throw new Exception();
-            } catch (Exception e) {
-                System.out.println("Something bad happened");
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Performs the action of drawing a card from the deck.
-     */
-    private void doDrawMove(Move move) {
-
-    }
-
-    /**
-     * Performs the action of playing a card to the pile.
-     */
-    private void doPlayMove(Move move) {
-        if(myTurn()){
-            comm.broadcastKey(move.getCard());
-        } else {
-            // receiveKey();
-            // decrypt played card
-            // check if it matches
-            // send OK
-        }
-        updatePile(move.getCard());
-        updateHand();
-    }
-
-    private void updateHand() {
-    }
-
-    private void updatePile(Card card) {
-    }
-
-    private boolean isLegalMove(Move move) {
-        return false;
-    }
-
-    private Move promptPlayerForMove() {
+    public Player computeFirstPlayer() {
         return null;
-    }
-
-    private boolean myTurn() {
-        return false;
-    }
-
-    private void renderState() {
     }
 
     private void distributeInitialCards() {
-        for (int i = 0; i < numberOfPlayers; i++){
-            if(i == myPlayerNumber){
+        for (int i = 0; i < numberOfPlayers; i++) {
+            if (i == myPlayerNumber) {
                 receiveInitialKeys();
             } else {
                 sendInitialKeys(i);
@@ -128,18 +33,6 @@ public class UnoGame {
         }
         // TODO: Decrypt the cards of my hand
         // TODO: Update the deck
-    }
-
-    private void sendInitialKeys(int i) {
-        // see pictures
-    }
-
-    private void receiveInitialKeys() {
-        // see pictures
-    }
-
-    private Deck makeShuffledDeck() {
-        return null;
     }
 
     public void run() {
@@ -155,7 +48,105 @@ public class UnoGame {
         announceWinner();
     }
 
-    public Player computeFirstPlayer() {
+    /**
+     * Returns whether a player has won the game
+     */
+    private boolean checkForWinner() {
+        return false;
+    }
+
+    private void renderState() {
+    }
+
+    /**
+     * Mechanics for the turn of any player.
+     * If we are the current player, it prompts the user for an input.
+     * Otherwise, we wait for the action of another player.
+     */
+    private void doTurn() throws Exception {
+        Move move = comm.receiveMove(playerInTurn);
+        if (!isLegalMove(move)) {
+            throw new Exception(); //TODO: Better, please
+        }
+        doMove(move);
+    }
+
+    private boolean isLegalMove(Move move) {
+        return true;
+    }
+
+    /**
+     * Does the concrete action of performing the move. The move given is checked to be valid.
+     * The move can be either playing a card to the pile or drawing a new card.
+     * If a card is drawn, the user should have the option to play any card.
+     */
+    private void doMove(Move move) {
+        if (move.getType() == MoveType.PLAY) {
+            doPlayMove(move);
+        } else if (move.getType() == MoveType.DRAW) {
+            doDrawMove(move);
+        } else {
+            try {
+                throw new Exception();
+            } catch (Exception e) {
+                System.out.println("Something bad happened");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Performs the action of playing a card to the pile.
+     */
+    private void doPlayMove(Move move) {
+        if (myTurn()) {
+            comm.broadcastKey(move.getCard());
+        } else {
+            // receiveKey();
+            // decrypt played card
+            // check if it matches
+            // send OK
+        }
+        updatePile(move.getCard());
+        updateHand();
+    }
+
+    private boolean myTurn() {
+        return false;
+    }
+
+    private void updatePile(Card card) {
+    }
+
+    private void updateHand() {
+    }
+
+    /**
+     * Performs the action of drawing a card from the deck.
+     */
+    private void doDrawMove(Move move) {
+
+    }
+
+    private Player computeNextPlayerInTurn() {
         return null;
+    }
+
+    /**
+     * Prints the winner of the game to the user
+     */
+    private void announceWinner() {
+    }
+
+    private Move promptPlayerForMove() {
+        return null;
+    }
+
+    private void sendInitialKeys(int i) {
+        // see pictures
+    }
+
+    private void receiveInitialKeys() {
+        // see pictures
     }
 }
