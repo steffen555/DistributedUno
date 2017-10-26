@@ -1,2 +1,3 @@
-public class Player {
+public interface Player {
+    Move receiveMove(Communicator communicator);
 }

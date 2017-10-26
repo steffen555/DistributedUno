@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Communicator {
     public void hostNetwork(int port) {
     }
@@ -8,11 +10,53 @@ public class Communicator {
     public void broadcastMove(Move move) {
     }
 
+    /**
+     * If the Player is LocalPlayer, the player is prompted for a move.
+     * If the pPlayer is RemotePlayer, we wait for a message from that.
+     */
     public Move receiveMove(Player playerInTurn) {
+        return playerInTurn.receiveMove(this);
+    }
+
+    public Move receiveMoveOverNetwork(String ip, int port, Player playerInTurn) {
+        return receiveMoveFromLocalUser(playerInTurn);
+    }
+
+    public Move receiveMoveFromLocalUser(Player playerInTurn) {
+        MoveType moveType = getMoveTypeFromUser();
+        if (moveType.equals(MoveType.PLAY)) {
+            int cardIndex = getCardFromUser();
+        }
         return null;
     }
 
-    public void broadcastKey(Card card) {
+    private static MoveType getMoveTypeFromUser() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Would you like to draw or play a card? (d/p): ");
+        String reply = scanner.next();
+        if (reply.equals("d"))
+            return MoveType.DRAW;
+        else if (reply.equals("p"))
+            return MoveType.PLAY;
+        else {
+            System.out.println("Failed to parse");
+            return getMoveTypeFromUser();
+        }
+    }
+
+    private int getCardFromUser() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Which card from your hand would you like to play?: ");
+        String reply = scanner.next();
+        try {
+            return Integer.parseInt(reply);
+        } catch (NumberFormatException nfe) {
+            System.out.println("Failed to parse");
+            return getCardFromUser();
+        }
+    }
+
+    public void broadcastKey(int card) {
     }
 
     public Object receiveObject() {
