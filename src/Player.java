@@ -16,4 +16,8 @@ public abstract class Player {
         Card card = deck.drawCard();
         addCardToHand(card);
     }
+
+    public Hand getHand() {
+        return hand;
+    }
 }

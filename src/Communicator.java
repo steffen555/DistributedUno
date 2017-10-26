@@ -71,12 +71,13 @@ public class Communicator {
     public void broadcastKey(int card) {
     }
 
+    // TODO: we should really put a 'Player' in here and ensure that only they may send to us for security.
     public Object receiveObject() {
         // TODO
         return null;
     }
 
-    public void sendObject(Object o) {
+    public void sendObject(Player p, Object o) {
         // TODO
     }
 

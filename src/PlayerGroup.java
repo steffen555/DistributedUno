@@ -28,12 +28,17 @@ public class PlayerGroup {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
 
-    public Player getMe() {
-        for(Player player : players) {
+    public int getMeIndex() {
+        for(int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
             if (player instanceof LocalPlayer)
-                return player;
+                return i;
         }
-        return null;
+        return -1; // should not happen.
+    }
+
+    public Player getMe() {
+        return players.get(getMeIndex());
     }
 
     public Player firstPlayer() {
@@ -41,7 +46,7 @@ public class PlayerGroup {
     }
 
     public boolean isFirstPlayer() {
-        return false; // TODO: fixme.
+        return getMe() == firstPlayer();
     }
 
     public List<Player> getPlayers() {
@@ -50,5 +55,14 @@ public class PlayerGroup {
 
     public boolean myTurn() {
         return getPlayerInTurn() == getMe();
+    }
+
+    public Player playerAfterMe() {
+        int index = (getMeIndex() + 1) % players.size();
+        return players.get(index);
+    }
+
+    public Player getPlayer(int i) {
+        return players.get(i);
     }
 }

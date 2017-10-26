@@ -5,41 +5,22 @@ public class UnoGame {
     private Deck deck;
     private Player winner;
     private Communicator comm;
-    private int numberOfPlayers;
-    private int myPlayerNumber;
-    private CryptoScheme cryptoScheme;
     private PlayerGroup players;
+    private Pile pile;
 
     public UnoGame(Communicator comm) {
         this.comm = comm;
 
+        pile = new Pile();
         players = new PlayerGroup(comm.getPlayers());
 
-        // deck = new DeckShufflingProtocol(comm, players.isFirstPlayer()).makeShuffledDeck();
-        deck = Deck.generatePlainDeck();
+        DeckShufflingProtocol deckCreator = new DeckShufflingProtocol(comm, players);
+        deck = deckCreator.makeShuffledDeck();
 
-        distributeInitialCards();
-    }
-
-    private void distributeInitialCards() {
-        /* TODO: do this instead of mock up
-        for (int i = 0; i < numberOfPlayers; i++) {
-            if (i == myPlayerNumber) {
-                receiveInitialKeys();
-            } else {
-                sendInitialKeys(i);
-            }
-        }
-        // TODO: Decrypt the cards of my hand
-        // TODO: Update the deck
-        */
-
-        // TODO: remove this mockup
-        for (Player player : players.getPlayers()) {
-            for (int i = 0; i < 7; i++) {
-                player.drawCard(deck);
-            }
-        }
+        // now distribute keys and so on to initialize each player's hand,
+        // as well as the pile.
+        HandDistributionProtocol distributer = new HandDistributionProtocol(comm, deck, pile, players);
+        distributer.distributeInitialCards();
     }
 
     public void run() {
@@ -147,13 +128,4 @@ public class UnoGame {
         throw new NotImplementedException();
     }
 
-    private void sendInitialKeys(int i) {
-        throw new NotImplementedException();
-        // see pictures
-    }
-
-    private void receiveInitialKeys() {
-        throw new NotImplementedException();
-        // see pictures
-    }
 }

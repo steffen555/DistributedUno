@@ -12,16 +12,21 @@ public abstract class Card {
     public static int NUM_CARDS_PER_COLOR = 10;
     public static int NUM_CARDS = NUM_CARDS_PER_COLOR * NUM_COLORS;
 
-    private List<CryptoKey> keys;
+    private List<CryptoKey> keysFromOthers;
     private BigInteger value;
+    private CryptoKey myKey;
 
     public Card (BigInteger value) {
         this.value = value;
-        this.keys = new ArrayList<CryptoKey>();
+        this.keysFromOthers = new ArrayList<CryptoKey>();
     }
 
+    public void addKey(CryptoKey key) {
+        keysFromOthers.add(key);
+    }
+
+    // only used during deck creation, so we don't add k_i to keysFromOthers.
     public void encrypt(CryptoKey k_i) {
-        keys.add(k_i);
         value = CryptoScheme.encrypt(k_i, value);
     }
 
@@ -30,8 +35,12 @@ public abstract class Card {
     }
 
     public void encryptWithNewKey() {
-        CryptoKey key = CryptoScheme.generateKey();
-        encrypt(key);
+        myKey = CryptoScheme.generateKey();
+        encrypt(myKey);
+    }
+
+    public CryptoKey getMyKey() {
+        return myKey;
     }
 
     public void setValue(BigInteger value) {
