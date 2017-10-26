@@ -1,11 +1,11 @@
+import java.io.IOException;
+
 public class RemotePlayer extends Player {
 
-    private String ip;
-    private int port;
+    private PeerInfo peerInfo;
 
-    public RemotePlayer(String ip, int port){
-        this.ip = ip;
-        this.port = port;
+    public RemotePlayer(PeerInfo peerInfo){
+        this.peerInfo = peerInfo;
     }
 
     /**
@@ -15,6 +15,18 @@ public class RemotePlayer extends Player {
      */
     @Override
     public Move receiveMove(Communicator communicator) {
-        return communicator.receiveMoveOverNetwork(ip, port, this);
+        try {
+            return (Move) communicator.receiveObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public PeerInfo getPeerInfo() {
+        return peerInfo;
     }
 }

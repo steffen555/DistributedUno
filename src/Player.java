@@ -20,4 +20,8 @@ public abstract class Player {
     public Hand getHand() {
         return hand;
     }
+
+    public PeerInfo getPeerInfo() {
+        return null;
+    }
 }
