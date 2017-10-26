@@ -88,7 +88,7 @@ public class UnoGame {
      * Performs the action of playing a card to the pile.
      */
     private void doPlayMove(Move move) {
-        if (myTurn()) {
+        if (players.myTurn()) {
             comm.broadcastObject(move.getCard());
         } else {
             // receiveKey();

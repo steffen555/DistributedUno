@@ -5,8 +5,6 @@ import java.util.Scanner;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.DatagramSocket;
-import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -63,10 +61,6 @@ public class Communicator{
      */
     public Move receiveMove(Player playerInTurn) {
         return playerInTurn.receiveMove(this);
-    }
-
-    public Move receiveMoveOverNetwork(String ip, int port, Player playerInTurn) {
-        return receiveMoveFromLocalUser(playerInTurn); // TODO fixme
     }
 
     public Move receiveMoveFromLocalUser(Player playerInTurn) {
@@ -132,6 +126,14 @@ public class Communicator{
     }
 
     public List<Player> getPlayers() {
+        List<Player> players = new ArrayList<Player>();
+        for (PeerInfo peerInfo: peerInfos) {
+            if (peerInfo.getIp().equals(myIp) && (peerInfo.getPort() == myPort)) {
+                players.add(new LocalPlayer());
+            } else {
+                players.add(new RemotePlayer(peerInfo));
+            }
+        }
         return players;
     }
 }

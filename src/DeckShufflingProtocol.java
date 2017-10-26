@@ -44,7 +44,13 @@ public class DeckShufflingProtocol {
         deck.shuffle();
 
         // then they pass it on to the next player.
-        communicator.sendObject(players.playerAfterMe(), deck.asIntList());
+        try {
+            communicator.sendObject(players.playerAfterMe().getPeerInfo(), deck.asIntList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void doRound2() {
@@ -68,7 +74,13 @@ public class DeckShufflingProtocol {
 
         // pass the deck on
         Player nextPlayer = players.playerAfterMe();
-        communicator.sendObject(nextPlayer, deck.asIntList());
+        try {
+            communicator.sendObject(nextPlayer.getPeerInfo(), deck.asIntList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void doRound3() {
