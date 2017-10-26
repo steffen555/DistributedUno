@@ -11,8 +11,7 @@ import java.net.Socket;
 public class Communicator{
 
     private ServerSocket serverSocket;
-    private String myIp = null;
-    private int myPort = 0;
+    private PeerInfo myInfo;
     private List<PeerInfo> peerInfos;
 
 
@@ -22,13 +21,11 @@ public class Communicator{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        myIp = "localhost";
-        myPort = port;
+        myInfo = new PeerInfo("localhost", port);
         peerInfos = new ArrayList<PeerInfo>();
     }
 
     public void hostNetwork(int numberOfPlayers) throws IOException, ClassNotFoundException {
-        PeerInfo myInfo = new PeerInfo(myIp, myPort);
         peerInfos.add(myInfo);
         int counter = numberOfPlayers - 1;
         while (counter > 0) {
@@ -37,18 +34,13 @@ public class Communicator{
             counter--;
         }
 
-        for (PeerInfo peerInfo: peerInfos) {
-            if (!(peerInfo.equals(myInfo))) {
-                sendObject(peerInfo, peerInfos);
-            }
-        }
+        broadcastObject(peerInfos);
 
         System.out.println("These are my peers" + peerInfos);
     }
 
     public void joinNetwork(String ip, int port) throws IOException, ClassNotFoundException {
         PeerInfo hostInfo = new PeerInfo(ip, port);
-        PeerInfo myInfo = new PeerInfo(myIp, myPort);
         sendObject(hostInfo, myInfo);
 
         peerInfos = (List<PeerInfo>) receiveObject();
@@ -121,14 +113,24 @@ public class Communicator{
         socket.close();
     }
 
-    public void broadcastObject(Object o) {
-
+    public void broadcastObject(Object object) {
+        for (PeerInfo peerInfo: peerInfos) {
+            if (!(peerInfo.equals(myInfo))) {
+                try {
+                    sendObject(peerInfo, object);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public List<Player> getPlayers() {
         List<Player> players = new ArrayList<Player>();
         for (PeerInfo peerInfo: peerInfos) {
-            if (peerInfo.getIp().equals(myIp) && (peerInfo.getPort() == myPort)) {
+            if (peerInfo.equals(myInfo)) {
                 players.add(new LocalPlayer());
             } else {
                 players.add(new RemotePlayer(peerInfo));

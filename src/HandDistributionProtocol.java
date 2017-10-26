@@ -1,5 +1,6 @@
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,11 +60,24 @@ public class HandDistributionProtocol {
         // also send one more key for the initial pile card
         keys.add(pile.getCard(0).getMyKey());
 
-        communicator.sendObject(recipient, keys);
+        try {
+            communicator.sendObject(recipient.getPeerInfo(), keys);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void receiveInitialKeys(Player sender) {
-        List<CryptoKey> keys = (List<CryptoKey>) communicator.receiveObject();
+        List<CryptoKey> keys = null;
+        try {
+            keys = (List<CryptoKey>) communicator.receiveObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         int keyIndex = 0;
 
         for (Player player : players.getPlayers()) {

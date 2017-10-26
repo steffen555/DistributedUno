@@ -146,3 +146,4 @@ $RECYCLE.BIN/
 .nfs*
 
 # End of https://www.gitignore.io/api/linux
+\.idea/misc\.xml
