@@ -95,7 +95,7 @@ public class UnoGame {
      */
     private void doPlayMove(Move move) {
         if (myTurn()) {
-            comm.broadcastKey(move.getCard());
+            comm.broadcastObject(move.getCard());
         } else {
             // receiveKey();
             // decrypt played card

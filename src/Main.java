@@ -11,7 +11,7 @@ public class Main {
             int myPort = Integer.parseInt(args[0]);
             comm = new Communicator(myPort);
             try {
-                comm.hostNetwork();
+                comm.hostNetwork(3);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
