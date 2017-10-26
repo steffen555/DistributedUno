@@ -134,13 +134,7 @@ public class Communicator{
     public void broadcastObject(Object object) {
         for (PeerInfo peerInfo: peerInfos) {
             if (!(peerInfo.equals(myInfo))) {
-                try {
-                    sendObject(peerInfo, object);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+                sendObject(peerInfo, object);
             }
         }
     }

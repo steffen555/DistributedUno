@@ -65,13 +65,7 @@ public class HandDistributionProtocol {
 
     private void receiveInitialKeys(Player sender) {
         List<CryptoKey> keys = null;
-        try {
-            keys = (List<CryptoKey>) communicator.receiveObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        keys = (List<CryptoKey>) communicator.receiveObject();
         int keyIndex = 0;
 
         for (Player player : players.getPlayers()) {
