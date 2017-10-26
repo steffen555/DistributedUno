@@ -15,6 +15,6 @@ public class RemotePlayer implements Player {
      */
     @Override
     public Move receiveMove(Communicator communicator) {
-        return communicator.receiveMoveOverNetwork(ip, port);
+        return communicator.receiveMoveOverNetwork(ip, port, this);
     }
 }

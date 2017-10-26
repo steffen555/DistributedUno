@@ -1,3 +1,5 @@
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 public class UnoGame {
 
     private Deck deck;
@@ -10,17 +12,23 @@ public class UnoGame {
 
     public UnoGame(Communicator comm) {
         this.comm = comm;
-        deck = makeShuffledDeck();
+        deck = new Deck();
+        makeShuffledDeck();
         playerInTurn = computeFirstPlayer();
         distributeInitialCards();
     }
 
-    private Deck makeShuffledDeck() {
-        return null;
+    private void makeShuffledDeck() {
+        for (CardColor cc : CardColor.values()){
+            for (int i = 0; i < 10; i++){
+                deck.addCard(new RegularCard(cc, i));
+            }
+        }
+        deck.shuffle();
     }
 
     public Player computeFirstPlayer() {
-        return null;
+        throw new NotImplementedException();
     }
 
     private void distributeInitialCards() {
@@ -36,15 +44,11 @@ public class UnoGame {
     }
 
     public void run() {
-        while (!checkForWinner()) {
+        do {
             renderState();
-            try {
-                doTurn();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            doTurn();
             playerInTurn = computeNextPlayerInTurn();
-        }
+        } while (!checkForWinner());
         announceWinner();
     }
 
@@ -52,10 +56,11 @@ public class UnoGame {
      * Returns whether a player has won the game
      */
     private boolean checkForWinner() {
-        return false;
+        throw new NotImplementedException();
     }
 
     private void renderState() {
+        throw new NotImplementedException();
     }
 
     /**
@@ -63,16 +68,16 @@ public class UnoGame {
      * If we are the current player, it prompts the user for an input.
      * Otherwise, we wait for the action of another player.
      */
-    private void doTurn() throws Exception {
+    private void doTurn() {
         Move move = comm.receiveMove(playerInTurn);
         if (!isLegalMove(move)) {
-            throw new Exception(); //TODO: Better, please
+            throw new NotImplementedException(); //TODO: Better, please
         }
         doMove(move);
     }
 
     private boolean isLegalMove(Move move) {
-        return true;
+        throw new NotImplementedException();
     }
 
     /**
@@ -107,46 +112,51 @@ public class UnoGame {
             // check if it matches
             // send OK
         }
-        updatePile(move.getCard());
+        updatePile(null); //TODO: get the card corresponding to the ID from the move
         updateHand();
     }
 
     private boolean myTurn() {
-        return false;
+        throw new NotImplementedException();
     }
 
     private void updatePile(Card card) {
+        throw new NotImplementedException();
     }
 
     private void updateHand() {
+        throw new NotImplementedException();
     }
 
     /**
      * Performs the action of drawing a card from the deck.
      */
     private void doDrawMove(Move move) {
-
+        throw new NotImplementedException();
     }
 
     private Player computeNextPlayerInTurn() {
-        return null;
+        throw new NotImplementedException();
     }
 
     /**
      * Prints the winner of the game to the user
      */
     private void announceWinner() {
+        throw new NotImplementedException();
     }
 
     private Move promptPlayerForMove() {
-        return null;
+        throw new NotImplementedException();
     }
 
     private void sendInitialKeys(int i) {
+        throw new NotImplementedException();
         // see pictures
     }
 
     private void receiveInitialKeys() {
+        throw new NotImplementedException();
         // see pictures
     }
 }
