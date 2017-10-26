@@ -98,27 +98,45 @@ public class Communicator{
         }
     }
 
-    public Object receiveObject() throws IOException, ClassNotFoundException {
-        Socket socket = serverSocket.accept();
-        ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+    public Object receiveObject()  {
+        Socket socket = null;
+        try {
+            socket = serverSocket.accept();
+        } catch (IOException e) {
+            return null;
+        }
+        try {
+            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
 
-        Object object = inputStream.readObject();
-        outputStream.writeObject("Object received");
-        System.out.println("This object was received: " + object);
-        socket.close();
-        return object;
+            Object object = null;
+            object = inputStream.readObject();
+            outputStream.writeObject("Object received");
+            System.out.println("This object was received: " + object);
+            socket.close();
+            return object;
+        } catch (IOException e) {
+            return null;
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
     }
 
-    public void sendObject(PeerInfo peerInfo, Object object) throws IOException, ClassNotFoundException {
-        Socket socket = new Socket(peerInfo.getIp(), peerInfo.getPort());
-        ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-        outputStream.writeObject(object);
-        System.out.println("I have sent this object: " + object);
-        ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-        String returnMessage = (String) inputStream.readObject();
-        System.out.println("The return message: " + returnMessage);
-        socket.close();
+    public void sendObject(PeerInfo peerInfo, Object object) {
+        try {
+            Socket socket = new Socket(peerInfo.getIp(), peerInfo.getPort());
+            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+            outputStream.writeObject(object);
+            System.out.println("I have sent this object: " + object);
+            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+            String returnMessage = (String) inputStream.readObject();
+            System.out.println("The return message: " + returnMessage);
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public void broadcastObject(Object o) {

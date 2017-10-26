@@ -59,7 +59,7 @@ public class HandDistributionProtocol {
         // also send one more key for the initial pile card
         keys.add(pile.getCard(0).getMyKey());
 
-        communicator.sendObject(recipient, keys);
+        communicator.sendObject(recipient.getPeerInfo(), keys);
     }
 
     private void receiveInitialKeys(Player sender) {
