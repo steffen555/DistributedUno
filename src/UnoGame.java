@@ -6,17 +6,15 @@ public class UnoGame {
     private int numberOfPlayers;
     private int myPlayerNumber;
     private CryptoScheme cryptoScheme;
-    private boolean isFirstPlayer;
     private PlayerGroup players;
 
     public UnoGame(Communicator comm) {
         this.comm = comm;
-        this.cryptoScheme = new CryptoScheme();
 
         // TODO: set up the players PlayerGroup;
         // specifically, we must determine who is the first player.
 
-        deck = new DeckShufflingProtocol(comm, cryptoScheme, isFirstPlayer).makeShuffledDeck();
+        deck = new DeckShufflingProtocol(comm, players.isFirstPlayer()).makeShuffledDeck();
 
         distributeInitialCards();
     }

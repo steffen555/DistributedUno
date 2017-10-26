@@ -1,43 +1,50 @@
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Card {
+
+    public static enum Color {
+        RED, YELLOW, GREEN, BLUE;
+    };
 
     public static int NUM_COLORS = 4;
     public static int NUM_CARDS_PER_COLOR = 10;
     public static int NUM_CARDS = NUM_CARDS_PER_COLOR * NUM_COLORS;
 
     private List<CryptoKey> keys;
+    private BigInteger value;
+
+    public Card (BigInteger value) {
+        this.value = value;
+        this.keys = new ArrayList<CryptoKey>();
+    }
 
     public void encrypt(CryptoKey k_i) {
         keys.add(k_i);
-        // TODO: actually encrypt the card.
+        value = CryptoScheme.encrypt(k_i, value);
+    }
+
+    public void decrypt(CryptoKey k_i) {
+        value = CryptoScheme.decrypt(k_i, value);
     }
 
     public void encryptWithNewKey() {
-        // TODO: make a new crypto key, put it in keys, encrypt with it.
+        CryptoKey key = CryptoScheme.generateKey();
+        encrypt(key);
     }
 
-    public static enum Color {
-        RED, YELLOW, GREEN, BLUE;
-    };
-
-    private int value;
-
-    public Card (int value) {
+    public void setValue(BigInteger value) {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
-
-    public int asInt() {
+    public BigInteger getValue() {
         return value;
     }
 
     public Color getColor() {
-        return Color.values()[value/NUM_CARDS_PER_COLOR];
+        int index = value.intValue() / NUM_CARDS_PER_COLOR;
+        return Color.values()[index];
     }
-
 
 }

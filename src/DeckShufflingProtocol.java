@@ -1,14 +1,15 @@
+import java.math.BigInteger;
+import java.util.List;
+
 public class DeckShufflingProtocol {
 
     private CryptoKey k_i;
     private Deck deck;
     private Communicator communicator;
-    private CryptoScheme cryptoScheme;
     private boolean isFirstPlayer;
 
-    public DeckShufflingProtocol(Communicator communicator, CryptoScheme cs, boolean isFirstPlayer) {
+    public DeckShufflingProtocol(Communicator communicator, boolean isFirstPlayer) {
         this.communicator = communicator;
-        this.cryptoScheme = cs;
         this.isFirstPlayer = isFirstPlayer;
     }
 
@@ -16,7 +17,7 @@ public class DeckShufflingProtocol {
     // and uses it to encrypt every card in the deck, then passes on
     // the encrypted deck.
     private void doRound1() {
-        k_i = cryptoScheme.generateKey();
+        k_i = CryptoScheme.generateKey();
 
         if (isFirstPlayer) {
             // the first player generates the deck
@@ -24,7 +25,8 @@ public class DeckShufflingProtocol {
         }
         else {
             // other players receive the deck from a previous player
-            deck = (Deck) communicator.receiveObject();
+            List<BigInteger> intList = (List<BigInteger>) communicator.receiveObject();
+            deck = Deck.fromIntList(intList);
         }
 
         // the player encrypts the deck with their key.
@@ -34,14 +36,14 @@ public class DeckShufflingProtocol {
         deck.shuffle();
 
         // then they pass it on to the next player.
-        communicator.sendObject(deck);
-
+        communicator.sendObject(deck.asIntList());
     }
 
     private void doRound2() {
 
         // receive the deck from the previous player
-        deck = (Deck) communicator.receiveObject();
+        List<BigInteger> intList = (List<BigInteger>) communicator.receiveObject();
+        deck = Deck.fromIntList(intList);
 
         // decrypt it under our key
         deck.decrypt(k_i);
@@ -50,13 +52,14 @@ public class DeckShufflingProtocol {
         deck.encryptWithMultipleKeys();
 
         // pass the deck on
-        communicator.sendObject(deck);
+        communicator.sendObject(deck.asIntList());
     }
 
     private void doRound3() {
-        deck = (Deck) communicator.receiveObject();
+        List<BigInteger> intList = (List<BigInteger>) communicator.receiveObject();
+        deck.updateCards(intList);
         if (isFirstPlayer) {
-            communicator.broadcastObject(deck);
+            communicator.broadcastObject(deck.asIntList());
         }
     }
 
