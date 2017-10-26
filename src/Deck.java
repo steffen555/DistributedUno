@@ -10,7 +10,16 @@ public class Deck {
 
     // should generate a Deck of unencrypted cards -- one for each number and color.
     public static Deck generatePlainDeck() {
-        return null; // TODO
+        ArrayList<Card> tmp = new ArrayList<Card>();
+        for (int card_value = 0; card_value < Card.NUM_CARDS; card_value++) {
+            Card card = new RegularCard(card_value);
+            tmp.add(card);
+        }
+        return new Deck(tmp);
+    }
+
+    public Deck(ArrayList<Card> cards) {
+        this.cards = cards;
     }
 
     public void encryptWithSingleKey(CryptoKey k_i) {

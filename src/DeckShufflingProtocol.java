@@ -24,6 +24,7 @@ public class DeckShufflingProtocol {
         }
         else {
             // other players receive the deck from a previous player
+            // TODO: we should not send the whole deck, just integers..
             deck = (Deck) communicator.receiveObject();
         }
 
