@@ -10,7 +10,6 @@ public class UnoGame {
     private CryptoScheme cryptoScheme;
     private boolean isFirstPlayer;
     private PlayerGroup players;
-    private Player playerInTurn;
 
     public UnoGame(Communicator comm) {
         this.comm = comm;
@@ -20,13 +19,8 @@ public class UnoGame {
 //         specifically, we must determine who is the first player.
 
 //        deck = new DeckShufflingProtocol(comm, cryptoScheme, isFirstPlayer).makeShuffledDeck();
-        deck = new Deck();
-        playerInTurn = computeFirstPlayer();
+        deck = Deck.generatePlainDeck();
         distributeInitialCards();
-    }
-
-    public Player computeFirstPlayer() {
-        throw new NotImplementedException();
     }
 
     private void distributeInitialCards() {
@@ -45,7 +39,7 @@ public class UnoGame {
         do {
             renderState();
             doTurn();
-            playerInTurn = computeNextPlayerInTurn();
+            players.signalNextTurn();
         } while (!checkForWinner());
         announceWinner();
     }
@@ -67,7 +61,7 @@ public class UnoGame {
      * Otherwise, we wait for the action of another player.
      */
     private void doTurn() {
-        Move move = comm.receiveMove(playerInTurn);
+        Move move = comm.receiveMove(players.getPlayerInTurn());
         if (!isLegalMove(move)) {
             throw new NotImplementedException(); //TODO: Better, please
         }
