@@ -1,6 +1,17 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Communicator {
+    private List<Player> players;
+
+    public Communicator() {
+        // TODO: this is a mock-up, fix it
+        players = new ArrayList<Player>();
+        players.add(new LocalPlayer());
+        players.add(new RemotePlayer("1.2.3.4", 1337));
+    }
+
     public void hostNetwork(int port) {
     }
 
@@ -19,15 +30,16 @@ public class Communicator {
     }
 
     public Move receiveMoveOverNetwork(String ip, int port, Player playerInTurn) {
-        return receiveMoveFromLocalUser(playerInTurn);
+        return receiveMoveFromLocalUser(playerInTurn); // TODO fixme
     }
 
     public Move receiveMoveFromLocalUser(Player playerInTurn) {
         MoveType moveType = getMoveTypeFromUser();
-        if (moveType.equals(MoveType.PLAY)) {
-            int cardIndex = getCardFromUser();
-        }
-        return null;
+        int cardIndex = 0;
+        if (moveType.equals(MoveType.PLAY))
+            cardIndex = getCardFromUser();
+
+        return new Move(moveType, cardIndex);
     }
 
     private static MoveType getMoveTypeFromUser() {
@@ -70,5 +82,9 @@ public class Communicator {
 
     public void broadcastObject(Object o) {
         // TODO
+    }
+
+    public List<Player> getPlayers() {
+        return players;
     }
 }

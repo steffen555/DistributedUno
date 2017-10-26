@@ -1,7 +1,12 @@
 public class Move {
     private Player player;
-    private MoveType type = MoveType.PLAY;
+    private MoveType type;
     private int cardIndex;
+
+    public Move(MoveType type, int index) {
+        this.type = type;
+        this.cardIndex = index;
+    }
 
     public Player getPlayer() {
         return player;

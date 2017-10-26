@@ -1,4 +1,4 @@
-public class RemotePlayer implements Player {
+public class RemotePlayer extends Player {
 
     private String ip;
     private int port;
