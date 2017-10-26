@@ -9,4 +9,8 @@ public class PlayerGroup {
     public void signalNextTurn() {
         // TODO: this should change playerInTurn to the next player.
     }
+
+    public boolean isFirstPlayer() {
+        return false; // TODO: fixme.
+    }
 }

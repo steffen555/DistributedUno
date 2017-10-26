@@ -6,12 +6,10 @@ public class DeckShufflingProtocol {
     private CryptoKey k_i;
     private Deck deck;
     private Communicator communicator;
-    private CryptoScheme cryptoScheme;
     private boolean isFirstPlayer;
 
-    public DeckShufflingProtocol(Communicator communicator, CryptoScheme cs, boolean isFirstPlayer) {
+    public DeckShufflingProtocol(Communicator communicator, boolean isFirstPlayer) {
         this.communicator = communicator;
-        this.cryptoScheme = cs;
         this.isFirstPlayer = isFirstPlayer;
     }
 
@@ -19,7 +17,7 @@ public class DeckShufflingProtocol {
     // and uses it to encrypt every card in the deck, then passes on
     // the encrypted deck.
     private void doRound1() {
-        k_i = cryptoScheme.generateKey();
+        k_i = CryptoScheme.generateKey();
 
         if (isFirstPlayer) {
             // the first player generates the deck
