@@ -43,8 +43,7 @@ public class UnoGame {
         System.out.println("------------------------");
         System.out.println("The pile has this on top: " + pile.getTopCard());
         System.out.println("Your hand looks like this:");
-        for (Card card : players.getMe().getHand().getCards())
-            System.out.println(card);
+        System.out.println(players.getMe().getHand());
         System.out.println("------------------------");
     }
 

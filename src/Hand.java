@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Hand {
@@ -17,5 +18,16 @@ public class Hand {
 
     public List<Card> getCards() {
         return cards;
+    }
+
+    public String toString() {
+        String result = "";
+
+        List<Card> sorted = new ArrayList<Card>(cards);
+        Collections.sort(sorted);
+
+        for (Card card : sorted)
+            result += card + "\n";
+        return result;
     }
 }
