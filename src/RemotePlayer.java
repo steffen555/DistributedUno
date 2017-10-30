@@ -22,4 +22,8 @@ public class RemotePlayer extends Player {
     public PeerInfo getPeerInfo() {
         return peerInfo;
     }
+
+    public String toString() {
+        return "Remote player: " + peerInfo.toString();
+    }
 }

@@ -35,7 +35,7 @@ public class Deck {
 
     public void shuffle() {
         // NOTE: this must be computed cryptographically securely!!!
-        // Collections.shuffle(cards, new SecureRandom());
+        Collections.shuffle(cards, new SecureRandom());
     }
 
     // encrypts every card in the deck with its own key
