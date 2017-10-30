@@ -3,7 +3,6 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class UnoGame {
 
     private Deck deck;
-    private Player winner;
     private Communicator comm;
     private PlayerGroup players;
     private Pile pile;
@@ -94,14 +93,6 @@ public class UnoGame {
         play.processMoveForCurrentPlayer(move);
     }
 
-    private void updatePile(Card card) {
-        return; // TODO: implement
-    }
-
-    private void updateHand() {
-        return; // TODO: implement
-    }
-
     /**
      * Performs the action of drawing a card from the deck.
      */
@@ -116,11 +107,6 @@ public class UnoGame {
     private void announceWinner() {
         throw new NotImplementedException();
     }
-
-    private Move promptPlayerForMove() {
-        throw new NotImplementedException();
-    }
-
 
     public static void validateMove(Card playedCard, Pile pile) {
         // TODO: handle this better.
