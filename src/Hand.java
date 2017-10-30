@@ -24,12 +24,11 @@ public class Hand {
 
     public String toString() {
         String result = "";
-
-        List<Card> sorted = new ArrayList<Card>(cards);
-        Collections.sort(sorted);
-
-        for (Card card : sorted)
-            result += card + "\n";
+        int i = 0;
+        for (Card card : cards) {
+            result += i + " -> " + card + "\n";
+            i++;
+        }
         return result;
     }
 }

@@ -38,8 +38,11 @@ public class HandDistributionProtocol {
 
         // decrypt the pile card, and also decrypt our own hand
         pile.getCard(0).decryptWithMyKey();
-        for (Card card : players.getMe().getHand().getCards())
-            card.decryptWithMyKey();
+
+        // apply my own key to every card that's been drawn
+        for (Player p : players.getPlayers())
+            for (Card card : p.getHand().getCards())
+                card.decryptWithMyKey();
     }
 
     // sends num_players*hand_size + 1 keys to 'player'

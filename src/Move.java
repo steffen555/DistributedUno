@@ -24,4 +24,8 @@ public class Move implements Serializable {
     public int getCardIndex() {
         return cardIndex;
     }
+
+    public String toString() {
+        return "Move(type=" + type + ", cardIndex=" + cardIndex + ")";
+    }
 }

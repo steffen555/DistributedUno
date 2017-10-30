@@ -14,33 +14,17 @@ public class PlayProtocol {
 
     public void processMoveForCurrentPlayer(Move move) {
         Card playedCard = players.getPlayerInTurn().getHand().getCards().get(move.getCardIndex());
-        boolean cardCanBePlayed;
-        if (players.myTurn()) {
+
+        if (players.myTurn())
             comm.broadcastObject(playedCard.getMyKey());
-            cardCanBePlayed = UnoGame.isLegalMove(playedCard, pile);
-            if(!cardCanBePlayed) {
-                try {
-                    throw new Exception();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-        // Receive the key for the played card from the player in turn;
-            CryptoKey key = (CryptoKey) comm.receiveObject();
-        // decrypt the played card
-            playedCard.decrypt(key);
-        // check if it the move is allowed
-            cardCanBePlayed = UnoGame.isLegalMove(playedCard, pile);
-        // send OK
-            if(!cardCanBePlayed) {
-                try {
-                    throw new Exception();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+        else {
+            playedCard.decrypt((CryptoKey) comm.receiveObject());
+            System.out.println("Playing this card: " + playedCard);
         }
+
+
+        UnoGame.validateMove(playedCard, pile);
+
         //Update the pile
         pile.addCard(playedCard);
         //Update the hand

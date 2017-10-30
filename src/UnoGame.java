@@ -122,4 +122,11 @@ public class UnoGame {
     }
 
 
+    public static void validateMove(Card playedCard, Pile pile) {
+        // TODO: handle this better.
+        if (!isLegalMove(playedCard, pile))
+            System.out.println("SOMEONE IS CHEATING");
+        else
+            System.out.println("Playing " + playedCard + " is a valid move.");
+    }
 }
