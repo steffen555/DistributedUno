@@ -12,9 +12,10 @@ public abstract class Player {
     }
 
 
-    public void drawCard(Deck deck) {
+    public Card drawCard(Deck deck) {
         Card card = deck.drawCard();
         addCardToHand(card);
+        return card;
     }
 
     public Hand getHand() {

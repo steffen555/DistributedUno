@@ -55,9 +55,13 @@ public class UnoGame {
      */
     private void doTurn() {
         Move move = comm.receiveMove(players.getPlayerInTurn());
+        if (players.myTurn())
+            comm.broadcastObject(move);
+
         if (!isLegalMove(move)) {
             throw new NotImplementedException(); //TODO: Better, please
         }
+
         doMove(move);
     }
 
@@ -72,7 +76,6 @@ public class UnoGame {
      * If a card is drawn, the user should have the option to play any card.
      */
     private void doMove(Move move) {
-        if (move == null) return; // TODO: remove this line, it's only for the mockup
         if (move.getType() == MoveType.PLAY) {
             doPlayMove(move);
         } else if (move.getType() == MoveType.DRAW) {
@@ -115,9 +118,10 @@ public class UnoGame {
      * Performs the action of drawing a card from the deck.
      */
     private void doDrawMove(Move move) {
-        // TODO: this is a mock-up, implement is with crypto and stuff
-        Player player = players.getPlayerInTurn();
-        player.drawCard(deck);
+        // since the top card in the deck is going to playerInTurn's hand,
+        // that means that every player except him must share the key
+        // with every other player.
+        // TODO
     }
 
     /**
