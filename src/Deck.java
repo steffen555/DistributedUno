@@ -1,6 +1,9 @@
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class Deck {
 
@@ -31,8 +34,8 @@ public class Deck {
     }
 
     public void shuffle() {
-        // TODO
-        // NOTE: this must be cryptographically secure!!!
+        // NOTE: this must be cryptographically securely!!!
+        Collections.shuffle(cards, new SecureRandom());
     }
 
     // encrypts every card in the deck with its own key
