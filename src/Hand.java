@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Hand {
@@ -15,7 +16,19 @@ public class Hand {
         cards.add(card);
     }
 
+    public void removeCard(int cardIndex) { cards.remove(cardIndex); }
+
     public List<Card> getCards() {
         return cards;
+    }
+
+    public String toString() {
+        String result = "";
+        int i = 0;
+        for (Card card : cards) {
+            result += i + " -> " + card + "\n";
+            i++;
+        }
+        return result;
     }
 }

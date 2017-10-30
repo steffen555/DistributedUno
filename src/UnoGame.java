@@ -3,7 +3,6 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class UnoGame {
 
     private Deck deck;
-    private Player winner;
     private Communicator comm;
     private PlayerGroup players;
     private Pile pile;
@@ -42,8 +41,10 @@ public class UnoGame {
         return getMoveFromPlayer(currentPlayer);
     }
 
-    private boolean isLegal(Move move) {
-        throw new NotImplementedException();
+    public static boolean isLegal(Card playedCard, Pile pile) {
+        Card topCard = pile.getTopCard();
+        return (playedCard.getColor() == topCard.getColor()) ||
+                (playedCard.getNumber() == topCard.getNumber());
     }
 
     /**
@@ -150,5 +151,13 @@ public class UnoGame {
      */
     private void announceWinner() {
         throw new NotImplementedException();
+    }
+
+    public static void validateMove(Card playedCard, Pile pile) {
+        // TODO: handle this better.
+        if (!isLegalMove(playedCard, pile))
+            System.out.println("SOMEONE IS CHEATING");
+        else
+            System.out.println("Playing " + playedCard + " is a valid move.");
     }
 }

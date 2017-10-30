@@ -38,8 +38,11 @@ public class HandDistributionProtocol {
 
         // decrypt the pile card, and also decrypt our own hand
         pile.getCard(0).decryptWithMyKey();
-        for (Card card : players.getMe().getHand().getCards())
-            card.decryptWithMyKey();
+
+        // apply my own key to every card that's been drawn
+        for (Player p : players.getPlayers())
+            for (Card card : p.getHand().getCards())
+                card.decryptWithMyKey();
     }
 
     // sends num_players*hand_size + 1 keys to 'player'
@@ -50,11 +53,12 @@ public class HandDistributionProtocol {
 
         // send keys for others' hands
         for (Player player : players.getPlayers()) {
-            if (player.equals(players.getMe()))
-                continue; // do not send the keys for our hand.
-
-            for (Card card : player.getHand().getCards())
-                keys.add(card.getMyKey());
+            for (Card card : player.getHand().getCards()) {
+                if (player.equals(players.getMe()))
+                    keys.add(null); // don't send our own keys
+                else
+                    keys.add(card.getMyKey());
+            }
         }
 
         // also send one more key for the initial pile card
@@ -65,23 +69,19 @@ public class HandDistributionProtocol {
 
     private void receiveInitialKeys() {
         // receive from each other player in turn.
-        for (Player sender : players.getPlayers()) {
-            if (sender.equals(players.getMe()))
-                continue; // don't receive from ourselves
-
+        for (int i = 0; i < players.getPlayers().size() - 1; i++) {
             List<CryptoKey> keys = (List<CryptoKey>) communicator.receiveObject();
+
             int keyIndex = 0;
-
             for (Player player : players.getPlayers()) {
-                if (player.equals(sender))
-                    continue; // sender didn't send their own keys
-
-                for (Card card : player.getHand().getCards())
-                    card.decrypt(keys.get(keyIndex++));
+                for (Card card : player.getHand().getCards()) {
+                    CryptoKey key = keys.get(keyIndex++);
+                    if (key != null)
+                        card.decrypt(key);
+                }
             }
 
             pile.getCard(0).decrypt(keys.get(keyIndex));
-
         }
     }
 }

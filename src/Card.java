@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class Card {
+public abstract class Card implements Comparable<Card> {
 
     public static enum Color {
         RED, YELLOW, GREEN, BLUE;
@@ -64,8 +64,14 @@ public abstract class Card {
     }
 
     public String toString() {
+        if (getValue().intValue() < 0 || getValue().intValue() >= NUM_CARDS_PER_COLOR * NUM_COLORS)
+            return "<encrypted card>"; // not fully decrypted yet..
         String color = colorsAsString.get(getColor().ordinal());
         return color + " " + getNumber();
     }
 
+    @Override
+    public int compareTo(Card card) {
+        return getValue().compareTo(card.getValue());
+    }
 }

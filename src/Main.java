@@ -23,6 +23,8 @@ public class Main {
             int myPort = Integer.parseInt(args[0]);
             comm = new Communicator(Integer.parseInt(args[0]));
             String otherIp = args[1];
+            if (otherIp.equals("localhost"))
+                otherIp = "127.0.0.1";
             int otherPort = Integer.parseInt(args[2]);
             try {
                 comm.joinNetwork(otherIp, otherPort);
@@ -35,7 +37,6 @@ public class Main {
         } else {
             System.out.println("Wrong number of parameters");
         }
-
 
         UnoGame game = new UnoGame(comm);
         game.run();

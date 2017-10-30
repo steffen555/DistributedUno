@@ -21,7 +21,11 @@ public class Move implements Serializable {
     /**
      * Returns the index of the card in the player's hand to be played
      */
-    public int getCard() {
+    public int getCardIndex() {
         return cardIndex;
+    }
+
+    public String toString() {
+        return "Move(type=" + type + ", cardIndex=" + cardIndex + ")";
     }
 }
