@@ -46,7 +46,7 @@ public class PlayerGroup {
     }
 
     public boolean isFirstPlayer() {
-        return getMe() == firstPlayer();
+        return getMe().equals(firstPlayer());
     }
 
     public List<Player> getPlayers() {
@@ -54,7 +54,7 @@ public class PlayerGroup {
     }
 
     public boolean myTurn() {
-        return getPlayerInTurn() == getMe();
+        return getPlayerInTurn().equals(getMe());
     }
 
     public Player playerAfterMe() {

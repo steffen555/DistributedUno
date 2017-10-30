@@ -116,10 +116,8 @@ public class UnoGame {
      * Performs the action of drawing a card from the deck.
      */
     private void doDrawMove(Move move) {
-        // since the top card in the deck is going to playerInTurn's hand,
-        // that means that every player except him must share the key
-        // with every other player.
-        // TODO
+        DrawProtocol drawProtocol = new DrawProtocol(comm, players, deck);
+        drawProtocol.drawCardForCurrentPlayer();
     }
 
     /**
