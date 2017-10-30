@@ -22,6 +22,10 @@ public class UnoGame {
         return players.getPlayerInTurn();
     }
 
+    private Player getNextPlayer() {
+        throw new NotImplementedException();
+    }
+
     private void shuffleDeck(){
         DeckShufflingProtocol deckCreator = new DeckShufflingProtocol(comm, players);
         deck = deckCreator.makeShuffledDeck();
@@ -32,10 +36,6 @@ public class UnoGame {
         // as well as the pile.
         HandDistributionProtocol distributor = new HandDistributionProtocol(comm, deck, pile, players);
         distributor.distributeInitialCards();
-    }
-
-    private Player getNextPlayer() {
-        throw new NotImplementedException();
     }
 
     private Move getMoveFromCurrentPlayer() {
