@@ -25,10 +25,12 @@ public abstract class Card {
     }
 
     public void encrypt(CryptoKey key) {
+        // System.out.println("Encrypting " + getValue() + " with key: " + key);
         value = CryptoScheme.encrypt(key, value);
     }
 
     public void decrypt(CryptoKey key) {
+        // System.out.println("Decrypting " + getValue() + " with key: " + key);
         value = CryptoScheme.decrypt(key, value);
     }
 

@@ -34,7 +34,7 @@ public class Deck {
     }
 
     public void shuffle() {
-        // NOTE: this must be cryptographically securely!!!
+        // NOTE: this must be computed cryptographically securely!!!
         Collections.shuffle(cards, new SecureRandom());
     }
 

@@ -1,4 +1,5 @@
 import java.math.BigInteger;
+import java.security.SecureRandom;
 
 /*
 The main requirement for the encryption scheme for our shuffling protocol
@@ -9,13 +10,43 @@ of any info that could let an attacker distinguish between plaintexts.
 
 NOTE: we will use SRA for now, but it's not actually CPA secure.
 
+TODO: one problem here is that encrypting 0 is quite obvious...
+
  */
 public class CryptoScheme {
+
+    private static BigInteger getRandomBigInteger(BigInteger max) {
+        BigInteger result;
+        SecureRandom r = new SecureRandom();
+        do {
+            result = new BigInteger(max.bitLength(), r);
+        } while (result.compareTo(max) >= 0);
+        return result;
+    }
+
     public static CryptoKey generateKey() {
-        // TODO: don't hardcode these.
-        BigInteger e = BigInteger.valueOf(5);
-        BigInteger d = BigInteger.valueOf(29);
-        BigInteger N = BigInteger.valueOf(91);
+        // p and q should be two large primes which the players all agree on.
+        // for now we hardcode them. This isn't a security problem in itself.
+        // However for production use, they should be much larger.
+        BigInteger p = BigInteger.valueOf(102079);
+        BigInteger q = BigInteger.valueOf(104383);
+
+        BigInteger totient = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+        BigInteger N = p.multiply(q);
+
+        BigInteger e, d;
+
+        while (true) {
+            e = getRandomBigInteger(N);
+            try {
+                d = e.modInverse(totient);
+                break;
+            }
+            catch (ArithmeticException ex) {
+                // just try again.
+            }
+        }
+
         return new CryptoKey(e, d, N);
     }
 
