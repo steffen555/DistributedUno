@@ -1,16 +1,5 @@
 public class PlayProtocol {
 
-//    if (players.myTurn()) {
-//        comm.broadcastObject(move.getCard());
-//    } else {
-//        // receiveKey();
-//        // decrypt played card
-//        // check if it matches
-//        // send OK
-//    }
-//    updatePile(null); //TODO: get the card corresponding to the ID from the move
-//    updateHand();
-
     private Communicator comm;
     private Deck deck;
     private Pile pile;
@@ -24,13 +13,12 @@ public class PlayProtocol {
     }
 
     public void processMoveForCurrentPlayer(Move move) {
-        Card playedCard = deck.getCard(move.getCard());
+        Card playedCard = players.getPlayerInTurn().getHand().getCards().get(move.getCardIndex());
         boolean cardCanBePlayed;
         if (players.myTurn()) {
             comm.broadcastObject(playedCard.getMyKey());
-            cardCanBePlayed = UnoGame.checkIfCardCanBePlayed(playedCard, pile);
-            boolean isAllowedByOthers = (Boolean) comm.receiveObject();
-            if(!isAllowedByOthers || !cardCanBePlayed) {
+            cardCanBePlayed = UnoGame.isLegalMove(playedCard, pile);
+            if(!cardCanBePlayed) {
                 try {
                     throw new Exception();
                 } catch (Exception e) {
@@ -43,18 +31,20 @@ public class PlayProtocol {
         // decrypt the played card
             playedCard.decrypt(key);
         // check if it the move is allowed
-            cardCanBePlayed = UnoGame.checkIfCardCanBePlayed(playedCard, pile);
+            cardCanBePlayed = UnoGame.isLegalMove(playedCard, pile);
         // send OK
-            if(cardCanBePlayed) {
-                comm.sendObject(players.getPlayerInTurn().getPeerInfo(), true);
-            } else {
-                comm.sendObject(players.getPlayerInTurn().getPeerInfo(), false);
+            if(!cardCanBePlayed) {
+                try {
+                    throw new Exception();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
         //Update the pile
         pile.addCard(playedCard);
         //Update the hand
-        players.getPlayerInTurn().getHand().removeCard(playedCard);
+        players.getPlayerInTurn().getHand().removeCard(move.getCardIndex());
     }
 
 }
