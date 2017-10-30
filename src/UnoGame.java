@@ -58,16 +58,13 @@ public class UnoGame {
         if (players.myTurn())
             comm.broadcastObject(move);
 
-        if (!isLegalMove(move)) {
-            throw new NotImplementedException(); //TODO: Better, please
-        }
-
         doMove(move);
     }
 
-    private boolean isLegalMove(Move move) {
-        // TODO implement this
-        return true;
+    public static boolean isLegalMove(Card playedCard, Pile pile) {
+        Card topCard = pile.getTopCard();
+        return (playedCard.getColor() == topCard.getColor()) ||
+                (playedCard.getNumber() == topCard.getNumber());
     }
 
     /**
@@ -94,16 +91,8 @@ public class UnoGame {
      * Performs the action of playing a card to the pile.
      */
     private void doPlayMove(Move move) {
-        if (players.myTurn()) {
-            comm.broadcastObject(move.getCard());
-        } else {
-            // receiveKey();
-            // decrypt played card
-            // check if it matches
-            // send OK
-        }
-        updatePile(null); //TODO: get the card corresponding to the ID from the move
-        updateHand();
+        PlayProtocol play = new PlayProtocol(comm, deck, pile, players);
+        play.processMoveForCurrentPlayer(move);
     }
 
     private void updatePile(Card card) {
@@ -132,5 +121,6 @@ public class UnoGame {
     private Move promptPlayerForMove() {
         throw new NotImplementedException();
     }
+
 
 }
