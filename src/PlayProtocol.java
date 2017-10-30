@@ -28,7 +28,7 @@ public class PlayProtocol {
         boolean cardCanBePlayed;
         if (players.myTurn()) {
             comm.broadcastObject(playedCard.getMyKey());
-            cardCanBePlayed = UnoGame.checkIfCardCanBePlayed(playedCard);
+            cardCanBePlayed = UnoGame.checkIfCardCanBePlayed(playedCard, pile);
             boolean isAllowedByOthers = (Boolean) comm.receiveObject();
             if(!isAllowedByOthers || !cardCanBePlayed) {
                 try {
@@ -43,7 +43,7 @@ public class PlayProtocol {
         // decrypt the played card
             playedCard.decrypt(key);
         // check if it the move is allowed
-            cardCanBePlayed = UnoGame.checkIfCardCanBePlayed(playedCard);
+            cardCanBePlayed = UnoGame.checkIfCardCanBePlayed(playedCard, pile);
         // send OK
             if(cardCanBePlayed) {
                 comm.sendObject(players.getPlayerInTurn().getPeerInfo(), true);

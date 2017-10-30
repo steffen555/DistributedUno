@@ -98,8 +98,10 @@ public class UnoGame {
         play.processMoveForCurrentPlayer(move);
     }
 
-    public static boolean checkIfCardCanBePlayed(Card playedCard) {
-        return true;
+    public static boolean checkIfCardCanBePlayed(Card playedCard, Pile pile) {
+        Card topCard = pile.getTopCard();
+        return (playedCard.getColor() == topCard.getColor()) ||
+                (playedCard.getNumber() == topCard.getNumber());
     }
 
     private void updatePile(Card card) {
