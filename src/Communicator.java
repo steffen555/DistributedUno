@@ -36,7 +36,7 @@ public class Communicator{
 
         broadcastObject(peerInfos);
 
-        System.out.println("These are my peers" + peerInfos);
+        // System.out.println("These are my peers" + peerInfos);
     }
 
     public void joinNetwork(String ip, int port) throws IOException, ClassNotFoundException {
@@ -44,7 +44,7 @@ public class Communicator{
         sendObject(hostInfo, myInfo);
 
         peerInfos = (List<PeerInfo>) receiveObject();
-        System.out.println("These are my peers: " + peerInfos);
+        // System.out.println("These are my peers: " + peerInfos);
     }
 
     /**
@@ -104,7 +104,7 @@ public class Communicator{
             Object object = null;
             object = inputStream.readObject();
             outputStream.writeObject("Object received");
-            System.out.println("This object was received: " + object);
+            // System.out.println("This object was received: " + object);
             socket.close();
             return object;
         } catch (IOException e) {
@@ -119,10 +119,10 @@ public class Communicator{
             Socket socket = new Socket(peerInfo.getIp(), peerInfo.getPort());
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
             outputStream.writeObject(object);
-            System.out.println("I have sent this object: " + object);
+            // System.out.println("I have sent this object: " + object);
             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
             String returnMessage = (String) inputStream.readObject();
-            System.out.println("The return message: " + returnMessage);
+            // System.out.println("The return message: " + returnMessage);
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();

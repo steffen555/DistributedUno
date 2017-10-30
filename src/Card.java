@@ -57,10 +57,13 @@ public abstract class Card {
         int index = getValue().intValue() / NUM_CARDS_PER_COLOR;
         return Color.values()[index];
     }
+    public int getNumber() {
+        return getValue().intValue() % NUM_CARDS_PER_COLOR;
+    }
 
     public String toString() {
         String color = colorsAsString.get(getColor().ordinal());
-        return color + " " + getValue().toString();
+        return color + " " + getNumber();
     }
 
 }

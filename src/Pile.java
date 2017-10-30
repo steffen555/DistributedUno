@@ -1,7 +1,11 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Pile {
     private List<Card> cards;
+    public Pile () {
+        cards = new ArrayList<Card>();
+    }
     public void addCard(Card card) {
         cards.add(card);
     }

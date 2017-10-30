@@ -59,8 +59,7 @@ public class DeckShufflingProtocol {
     }
 
     private void doRound3() {
-        List<BigInteger> intList = null;
-        intList = (List<BigInteger>) communicator.receiveObject();
+        List<BigInteger> intList = (List<BigInteger>) communicator.receiveObject();
         deck.updateCards(intList);
         if (players.isFirstPlayer()) {
             communicator.broadcastObject(deck.asIntList());

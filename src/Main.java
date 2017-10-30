@@ -10,14 +10,14 @@ public class Main {
             host = true;
             int myPort = Integer.parseInt(args[0]);
             comm = new Communicator(myPort);
+            System.out.println("I am hosting on port " + myPort);
             try {
-                comm.hostNetwork(3);
+                comm.hostNetwork(2);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-            System.out.println("I am hosting on port " + myPort);
         } else if (args.length == 3){
             host = false;
             int myPort = Integer.parseInt(args[0]);
@@ -37,8 +37,8 @@ public class Main {
         }
 
 
-//        UnoGame game = new UnoGame(comm);
-//        game.run();
+        UnoGame game = new UnoGame(comm);
+        game.run();
     }
 
     private static boolean host() {

@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class CryptoKey {
+public class CryptoKey implements Serializable {
     private BigInteger e, d, n;
     public CryptoKey(BigInteger e, BigInteger d, BigInteger n) {
         this.e = e;
@@ -18,5 +19,9 @@ public class CryptoKey {
 
     public BigInteger secret() {
         return d;
+    }
+
+    public String toString() {
+        return "(e, d) = (" + e + ", " + d + ")";
     }
 }

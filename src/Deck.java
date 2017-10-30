@@ -74,6 +74,14 @@ public class Deck {
         }
     }
 
+    public String toString() {
+        String result = "";
+        for (Card c : cards) {
+            result += "Card: " + c.getValue() + ",";
+        }
+        return result;
+    }
+
     // takes a card out of the deck, removing it.
     public Card drawCard() {
         return cards.remove(0);
