@@ -94,16 +94,12 @@ public class UnoGame {
      * Performs the action of playing a card to the pile.
      */
     private void doPlayMove(Move move) {
-        if (players.myTurn()) {
-            comm.broadcastObject(move.getCard());
-        } else {
-            // receiveKey();
-            // decrypt played card
-            // check if it matches
-            // send OK
-        }
-        updatePile(null); //TODO: get the card corresponding to the ID from the move
-        updateHand();
+        PlayProtocol play = new PlayProtocol(comm, deck, pile, players);
+        play.processMoveForCurrentPlayer(move);
+    }
+
+    public static boolean checkIfCardCanBePlayed(Card playedCard) {
+        return true;
     }
 
     private void updatePile(Card card) {
@@ -134,5 +130,6 @@ public class UnoGame {
     private Move promptPlayerForMove() {
         throw new NotImplementedException();
     }
+
 
 }
