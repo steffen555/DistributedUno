@@ -30,5 +30,4 @@ public class PlayProtocol {
         //Update the hand
         players.getPlayerInTurn().getHand().removeCard(move.getCardIndex());
     }
-
 }

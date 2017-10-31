@@ -40,7 +40,8 @@ public class UnoGame {
     }
 
     private boolean isLegal(Move move) {
-        throw new NotImplementedException();
+        System.out.println("Move " + move + " is legal");
+        return true; //TODO
     }
 
     public static boolean isLegal(Card playedCard, Pile pile) {
@@ -122,7 +123,7 @@ public class UnoGame {
 
     private void renderState() {
         System.out.println("------------------------");
-        System.out.println("You are player " + currentPlayerIndex);
+        System.out.println("Awaiting move from player " + currentPlayerIndex);
         System.out.println("The pile has this on top: " + cardStrategy.getTopCardFromPile());
         System.out.println("Your hand looks like this:");
         cardStrategy.printHand(getCurrentPlayer());
@@ -137,7 +138,7 @@ public class UnoGame {
     private void doTurn() {
         Move move;
         while (true) {
-            move = comm.getNextMoveFromPlayer(getCurrentPlayer());
+            move = getMoveFromCurrentPlayer();
             if (isLegal(move))
                 break;
             else

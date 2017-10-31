@@ -3,7 +3,7 @@ public abstract class Player {
 
     private Hand hand;
 
-    public Player () {
+    public Player() {
         hand = new Hand();
     }
 

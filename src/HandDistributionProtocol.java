@@ -46,7 +46,7 @@ public class HandDistributionProtocol {
     // so that we send the keys needed to decrypt every hand but our own,
     // and also the initial card for the Pile
     private void sendInitialKeys(Player recipient) {
-        List<CryptoKey> keys = new ArrayList<>();
+        ArrayList<CryptoKey> keys = new ArrayList<>();
 
         // send keys for others' hands
         for (Player player : players.getPlayers()) {

@@ -60,8 +60,8 @@ public class Deck {
         return new Deck(tmp);
     }
 
-    public List<BigInteger> asIntList() {
-        List<BigInteger> result = new ArrayList<>();
+    public ArrayList<BigInteger> asIntList() {
+        ArrayList<BigInteger> result = new ArrayList<>();
         for(Card card : cards) {
             result.add(card.getValue());
         }

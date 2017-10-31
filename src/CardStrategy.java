@@ -3,8 +3,6 @@ import java.util.List;
 public interface CardStrategy {
     void initializeNewDeck();
 
-    void shuffleCards();
-
     void distributeHands();
 
     void drawCardFromDeckForPlayer(Player player);

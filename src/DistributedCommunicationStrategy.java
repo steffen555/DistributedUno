@@ -2,6 +2,7 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
     private ServerSocket serverSocket;
     private PeerInfo myInfo;
-    private List<PeerInfo> peerInfos;
+    private ArrayList<Player> players;
 
     public DistributedCommunicationStrategy(int port) {
         try {
@@ -21,18 +22,10 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             e.printStackTrace();
         }
         myInfo = new PeerInfo("localhost", port);
-        peerInfos = new ArrayList<>();
+        players = new ArrayList<>();
     }
 
     public List<Player> getPlayers() {
-        List<Player> players = new ArrayList<>();
-        for (PeerInfo peerInfo : peerInfos) {
-            if (peerInfo.equals(myInfo)) {
-                players.add(new LocalPlayer());
-            } else {
-                players.add(new RemotePlayer(peerInfo));
-            }
-        }
         return players;
     }
 
@@ -40,8 +33,13 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         return player.receiveMove(this);
     }
 
-    public void sendObjectToPlayer(Player player, Object object) {
+    public void sendObjectToPlayer(Player player, Serializable object) {
         sendObject(player.getPeerInfo(), object);
+    }
+
+    private Move receiveMove(Player player) {
+        MoveMessage moveMessage = (MoveMessage) receiveObject();
+        return new Move(player, moveMessage.getMoveType(), moveMessage.getIndex());
     }
 
     public Object receiveObject() {
@@ -58,20 +56,30 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             Object object;
             object = inputStream.readObject();
             outputStream.writeObject("Object received");
-            // System.out.println("This object was received: " + object);
+            System.out.println("This object was received: " + object);
             socket.close();
             return object;
         } catch (IOException e) {
+            e.printStackTrace();
             return null;
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
             return null;
         }
     }
 
-    public void broadcastObject(Object object) {
-        for (PeerInfo peerInfo : peerInfos) {
-            if (!(peerInfo.equals(myInfo))) {
-                sendObject(peerInfo, object);
+    public void broadcastObject(Serializable object) {
+        for (Player player : players) {
+            if (player instanceof RemotePlayer) {
+                sendObject(player.getPeerInfo(), object);
+            }
+        }
+    }
+
+    private void broadcastMove(Move move) {
+        for (Player player : players) {
+            if (player instanceof RemotePlayer) {
+                sendMove(player.getPeerInfo(), move);
             }
         }
     }
@@ -96,7 +104,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         }
 
         public Move receiveMove(DistributedCommunicationStrategy communicator) {
-            return (Move) communicator.receiveObject();
+            return communicator.receiveMove(this);
         }
 
         public PeerInfo getPeerInfo() {
@@ -109,14 +117,19 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     public void hostNetwork(int numberOfPlayers) throws IOException, ClassNotFoundException {
-        peerInfos.add(myInfo);
+        players.add(new LocalPlayer());
         int counter = numberOfPlayers - 1;
         while (counter > 0) {
             PeerInfo peerInfo = (PeerInfo) receiveObject();
-            peerInfos.add(peerInfo);
+            players.add(new RemotePlayer(peerInfo));
             counter--;
         }
-
+        ArrayList<PeerInfo> peerInfos = new ArrayList<>();
+        for (Player p : players)
+            if (p instanceof LocalPlayer)
+                peerInfos.add(myInfo);
+            else
+                peerInfos.add(p.getPeerInfo());
         broadcastObject(peerInfos);
 
         // System.out.println("These are my peers" + peerInfos);
@@ -126,7 +139,12 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         PeerInfo hostInfo = new PeerInfo(ip, port);
         sendObject(hostInfo, myInfo);
 
-        peerInfos = (List<PeerInfo>) receiveObject();
+        ArrayList<PeerInfo> peerInfos = (ArrayList<PeerInfo>) receiveObject();
+        for (PeerInfo pi : peerInfos)
+            if (pi.equals(myInfo))
+                players.add(new LocalPlayer());
+            else
+                players.add(new RemotePlayer(pi));
         // System.out.println("These are my peers: " + peerInfos);
     }
 
@@ -136,13 +154,13 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         if (moveType.equals(MoveType.PLAY))
             cardIndex = getCardFromUser();
         Move move = new Move(playerInTurn, moveType, cardIndex);
-        broadcastObject(move);
+        broadcastMove(move);
         return move;
     }
 
     private MoveType getMoveTypeFromUser() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Would you like to draw or play a card? (d/p): ");
+        System.out.print("It's your turn. Would you like to draw or play a card? (d/p): ");
         String reply = scanner.next();
         switch (reply) {
             case "d":
@@ -167,12 +185,17 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         }
     }
 
-    private void sendObject(PeerInfo peerInfo, Object object) {
+    private void sendMove(PeerInfo peerInfo, Move move) {
+        sendObject(peerInfo, new MoveMessage(move.getType(), move.getCardIndex()));
+    }
+
+    private void sendObject(PeerInfo peerInfo, Serializable object) {
         try {
             Socket socket = new Socket(peerInfo.getIp(), peerInfo.getPort());
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+//            System.out.println("Trying to send " + object);
             outputStream.writeObject(object);
-            // System.out.println("I have sent this object: " + object);
+//            System.out.println("I have sent this object: " + object);
             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
             String returnMessage = (String) inputStream.readObject();
             // System.out.println("The return message: " + returnMessage);
@@ -180,5 +203,23 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+}
+
+class MoveMessage implements Serializable {
+    private MoveType moveType;
+    private int index;
+
+    public MoveMessage(MoveType moveType, int index) {
+        this.moveType = moveType;
+        this.index = index;
+    }
+
+    public MoveType getMoveType() {
+        return moveType;
+    }
+
+    public int getIndex() {
+        return index;
     }
 }

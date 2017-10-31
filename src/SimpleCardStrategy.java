@@ -25,13 +25,14 @@ public class SimpleCardStrategy implements CardStrategy {
     }
 
     public void shuffleCards() {
-        Collections.shuffle(deck);
+//        Collections.shuffle(deck);
     }
 
     public void distributeHands() {
         for (Player p : comm.getPlayers()) {
+            System.out.println("Distributing cards to " + p);
             ArrayList<Card> hand = new ArrayList<>();
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 4; i++) {
                 hand.add(takeTopCardFromDeck());
             }
             playerHandMap.put(p, hand);

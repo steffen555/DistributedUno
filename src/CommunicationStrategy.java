@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.List;
 
 public interface CommunicationStrategy {
@@ -8,9 +9,9 @@ public interface CommunicationStrategy {
 
     Move getNextMoveFromPlayer(Player player);
 
-    void sendObjectToPlayer(Player player, Object object);
+    void sendObjectToPlayer(Player player, Serializable object);
 
     Object receiveObject();
 
-    void broadcastObject(Object object);
+    void broadcastObject(Serializable object);
 }

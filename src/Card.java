@@ -19,7 +19,7 @@ public abstract class Card implements Comparable<Card> {
     private BigInteger value; // only retrieve this through its getter!!
     private CryptoKey myKey;
 
-    public Card (BigInteger value) {
+    public Card(BigInteger value) {
         this.value = value;
     }
 
@@ -58,6 +58,7 @@ public abstract class Card implements Comparable<Card> {
         int index = getValue().intValue() / NUM_CARDS_PER_COLOR;
         return Color.values()[index];
     }
+
     public int getNumber() {
         return getValue().intValue() % NUM_CARDS_PER_COLOR;
     }

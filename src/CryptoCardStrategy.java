@@ -12,9 +12,6 @@ public class CryptoCardStrategy implements CardStrategy {
     @Override
     public void initializeNewDeck() {
         // Run deck shuffling/distributing protocol here.
-    }
-
-    public void shuffleCards() {
         //DeckShufflingProtocol deckCreator = new DeckShufflingProtocol(comm, players);
         //deck = deckCreator.makeShuffledDeck();
     }
