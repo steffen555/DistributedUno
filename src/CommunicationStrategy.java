@@ -14,4 +14,8 @@ public interface CommunicationStrategy {
     Object receiveObject();
 
     void broadcastObject(Serializable object);
+
+    void decryptCardWithKeysFromOtherPlayers(Player player, Card card);
+
+    void sendPlayersKeyForCardToOtherPlayers(Player player, Card card);
 }

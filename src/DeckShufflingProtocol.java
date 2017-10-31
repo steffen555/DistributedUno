@@ -6,11 +6,20 @@ public class DeckShufflingProtocol {
     private CryptoKey k_i;
     private Deck deck;
     private CommunicationStrategy communicator;
-    private PlayerGroup players;
+    private List<Player> players;
+    private int firstPlayerAfterLocal;
+    private boolean firstPlayerIsLocal;
 
-    public DeckShufflingProtocol(CommunicationStrategy communicator, PlayerGroup players) {
+    public DeckShufflingProtocol(CommunicationStrategy communicator) {
         this.communicator = communicator;
-        this.players = players;
+        players = communicator.getPlayers();
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(0).getPeerInfo() == null) {
+                firstPlayerAfterLocal = (i + 1) % players.size();
+                break;
+            }
+        }
+        firstPlayerIsLocal = players.get(0).getPeerInfo() == null;
     }
 
     // first, run round 1, in which each player chooses a key K_i,
@@ -19,11 +28,10 @@ public class DeckShufflingProtocol {
     private void doRound1() {
         k_i = CryptoScheme.generateKey();
 
-        if (players.isFirstPlayer()) {
+        if (players.get(0).getPeerInfo() == null) { // If there is no info on where to send, it must be local.
             // the first player generates the deck
             deck = Deck.generatePlainDeck();
-        }
-        else {
+        } else {
             // other players receive the deck from a previous player
             List<BigInteger> intList;
             intList = (List<BigInteger>) communicator.receiveObject();
@@ -37,7 +45,7 @@ public class DeckShufflingProtocol {
         deck.shuffle();
 
         // then they pass it on to the next player.
-        communicator.sendObjectToPlayer(players.playerAfterMe(), deck.asIntList());
+        communicator.sendObjectToPlayer(players.get(firstPlayerAfterLocal), deck.asIntList());
     }
 
     private void doRound2() {
@@ -53,14 +61,14 @@ public class DeckShufflingProtocol {
         deck.encryptWithMultipleKeys();
 
         // pass the deck on
-        Player nextPlayer = players.playerAfterMe();
+        Player nextPlayer = players.get(firstPlayerAfterLocal);
         communicator.sendObjectToPlayer(nextPlayer, deck.asIntList());
     }
 
     private void doRound3() {
         List<BigInteger> intList = (List<BigInteger>) communicator.receiveObject();
         deck.updateCards(intList);
-        if (players.isFirstPlayer()) {
+        if (firstPlayerIsLocal) {
             communicator.broadcastObject(deck.asIntList());
         }
     }
@@ -77,6 +85,8 @@ public class DeckShufflingProtocol {
         // in round 3, the first player receives the final deck,
         // and distributes it to every player
         doRound3();
+
+        deck.decryptAllCardsWithMyKey();
 
         // every player now has the same deck, which we can return
         return deck;

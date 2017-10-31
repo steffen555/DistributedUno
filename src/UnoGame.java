@@ -23,10 +23,6 @@ public class UnoGame {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
 
-    private void shuffleDeck() {
-        cardStrategy.shuffleCards();
-    }
-
     private void distributeHands() {
         cardStrategy.distributeHands();
     }
@@ -110,7 +106,6 @@ public class UnoGame {
     public void run() {
         players = comm.getPlayers();
         cardStrategy.initializeNewDeck();
-        shuffleDeck();
         distributeHands();
         turnTopCardFromDeck();
         do {

@@ -1,7 +1,6 @@
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -65,6 +64,16 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
 
     @Override
     public void broadcastObject(Serializable object) {
+
+    }
+
+    @Override
+    public void decryptCardWithKeysFromOtherPlayers(Player player, Card card) {
+
+    }
+
+    @Override
+    public void sendPlayersKeyForCardToOtherPlayers(Player player, Card card) {
 
     }
 }
