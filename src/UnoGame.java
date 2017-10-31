@@ -1,44 +1,46 @@
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.List;
+
 public class UnoGame {
 
-    private Deck deck;
-    private Communicator comm;
-    private PlayerGroup players;
-    private Pile pile;
-    private Player currentPlayer;
+    private CommunicationStrategy comm;
+    private CardStrategy cardStrategy;
+    private List<Player> players;
+    private int currentPlayerIndex;
+    private Player winner;
 
-    public UnoGame(Communicator comm) {
+    public UnoGame(CommunicationStrategy comm, CardStrategy cardStrategy) {
         this.comm = comm;
-        pile = new Pile();
-        players = new PlayerGroup(comm.getPlayers());
-        currentPlayer = getCurrentPlayer();
-        shuffleDeck();
-        distributeHands();
+        this.cardStrategy = cardStrategy;
     }
 
     private Player getCurrentPlayer() {
-        return players.getPlayerInTurn();
+        return players.get(currentPlayerIndex);
     }
 
-    private Player getNextPlayer() {
-        throw new NotImplementedException();
+    private void nextTurn() {
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
 
-    private void shuffleDeck(){
-        DeckShufflingProtocol deckCreator = new DeckShufflingProtocol(comm, players);
-        deck = deckCreator.makeShuffledDeck();
+    private void shuffleDeck() {
+        cardStrategy.shuffleCards();
     }
 
-    private void distributeHands(){
-        // now distribute keys and so on to initialize each player's hand,
-        // as well as the pile.
-        HandDistributionProtocol distributor = new HandDistributionProtocol(comm, deck, pile, players);
-        distributor.distributeInitialCards();
+    private void distributeHands() {
+        cardStrategy.distributeHands();
+    }
+
+    private void turnTopCardFromDeck() {
+        cardStrategy.turnTopCardFromDeck();
     }
 
     private Move getMoveFromCurrentPlayer() {
-        return getMoveFromPlayer(currentPlayer);
+        return getMoveFromPlayer(getCurrentPlayer());
+    }
+
+    private boolean isLegal(Move move) {
+        throw new NotImplementedException();
     }
 
     public static boolean isLegal(Card playedCard, Pile pile) {
@@ -66,11 +68,7 @@ public class UnoGame {
      * Performs the action of drawing a card from the deck.
      */
     private void doDrawMove(Move move) {
-        // since the top card in the deck is going to playerInTurn's hand,
-        // that means that every player except him must share the key
-        // with every other player.
-        // TODO
-        throw new NotImplementedException();
+        cardStrategy.drawCardFromDeckForPlayer(move.getPlayer());
     }
 
     private boolean currentPlayerHasDrawnThisTurn() {
@@ -82,50 +80,52 @@ public class UnoGame {
     }
 
     private boolean isWinner(Player player) {
-        throw new NotImplementedException();
+        return cardStrategy.getCardsFromPlayer(player).size() == 0;
     }
 
     /**
      * Performs the action of playing a card to the pile.
      */
     private void doPlayMove(Move move) {
-        if (players.myTurn()) {
-            comm.broadcastObject(move.getCard());
-        } else {
-            // receiveKey();
-            // decrypt played card
-            // check if it matches
-            // send OK
-        }
-        throw new NotImplementedException();
+        cardStrategy.movePlayersCardToPile(move.getPlayer(), move.getCardIndex());
     }
 
     private Move getMoveFromPlayer(Player player) {
-        throw new NotImplementedException();
+        return comm.getNextMoveFromPlayer(player);
     }
 
     /**
      * Returns whether a player has won the game
      */
     private boolean checkForWinner() {
-        throw new NotImplementedException();
+        for(Player p : players)
+            if(isWinner(p)) {
+                winner = p;
+                return true;
+            }
+        return false;
     }
 
     public void run() {
+        players = comm.getPlayers();
+        cardStrategy.initializeNewDeck();
+        shuffleDeck();
+        distributeHands();
+        turnTopCardFromDeck();
         do {
             renderState();
             doTurn();
-            players.signalNextTurn();
+            nextTurn();
         } while (!checkForWinner());
         announceWinner();
     }
 
     private void renderState() {
         System.out.println("------------------------");
-        System.out.println("The pile has this on top: " + pile.getTopCard());
+        System.out.println("You are player " + currentPlayerIndex);
+        System.out.println("The pile has this on top: " + cardStrategy.getTopCardFromPile());
         System.out.println("Your hand looks like this:");
-        for (Card card : players.getMe().getHand().getCards())
-            System.out.println(card);
+        cardStrategy.printHand(getCurrentPlayer());
         System.out.println("------------------------");
     }
 
@@ -135,27 +135,27 @@ public class UnoGame {
      * Otherwise, we wait for the action of another player.
      */
     private void doTurn() {
-        Move move = comm.receiveMove(players.getPlayerInTurn());
-        if (players.myTurn())
-            comm.broadcastObject(move);
-
-        if (!isLegal(move)) {
-            throw new NotImplementedException();
+        Move move;
+        while (true) {
+            move = comm.getNextMoveFromPlayer(getCurrentPlayer());
+            if (isLegal(move))
+                break;
+            else
+                System.out.println(getCurrentPlayer() + " tried an illegal move. Asking again.");
         }
-
         doMove(move);
     }
 
     /**
-     * Prints the winner of the game to the user
+     * Prints the winner of the game to the user.
      */
     private void announceWinner() {
-        throw new NotImplementedException();
+        System.out.println("Player " + winner + " is the winner! But did he say Uno?");
     }
 
     public static void validateMove(Card playedCard, Pile pile) {
         // TODO: handle this better.
-        if (!isLegalMove(playedCard, pile))
+        if (!isLegal(playedCard, pile))
             System.out.println("SOMEONE IS CHEATING");
         else
             System.out.println("Playing " + playedCard + " is a valid move.");

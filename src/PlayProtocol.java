@@ -1,11 +1,11 @@
 public class PlayProtocol {
 
-    private Communicator comm;
+    private CommunicationStrategy comm;
     private Deck deck;
     private Pile pile;
     private PlayerGroup players;
 
-    public PlayProtocol(Communicator comm, Deck deck, Pile pile, PlayerGroup players) {
+    public PlayProtocol(CommunicationStrategy comm, Deck deck, Pile pile, PlayerGroup players) {
         this.comm = comm;
         this.deck = deck;
         this.pile = pile;

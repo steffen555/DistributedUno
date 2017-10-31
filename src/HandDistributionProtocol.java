@@ -1,16 +1,13 @@
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HandDistributionProtocol {
-    private Communicator communicator;
+    private CommunicationStrategy communicator;
     private PlayerGroup players;
     private Deck deck;
     private Pile pile;
 
-    public HandDistributionProtocol(Communicator comm, Deck d, Pile pile, PlayerGroup players) {
+    public HandDistributionProtocol(CommunicationStrategy comm, Deck d, Pile pile, PlayerGroup players) {
         this.deck = d;
         this.communicator = comm;
         this.players = players;
@@ -49,7 +46,7 @@ public class HandDistributionProtocol {
     // so that we send the keys needed to decrypt every hand but our own,
     // and also the initial card for the Pile
     private void sendInitialKeys(Player recipient) {
-        List<CryptoKey> keys = new ArrayList<CryptoKey>();
+        List<CryptoKey> keys = new ArrayList<>();
 
         // send keys for others' hands
         for (Player player : players.getPlayers()) {
@@ -64,7 +61,7 @@ public class HandDistributionProtocol {
         // also send one more key for the initial pile card
         keys.add(pile.getCard(0).getMyKey());
 
-        communicator.sendObject(recipient.getPeerInfo(), keys);
+        communicator.sendObjectToPlayer(recipient, keys);
     }
 
     private void receiveInitialKeys() {

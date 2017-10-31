@@ -31,7 +31,7 @@ public class PlayerGroup {
     public int getMeIndex() {
         for(int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
-            if (player instanceof LocalPlayer)
+            if (player.getPeerInfo() == null)
                 return i;
         }
         return -1; // should not happen.

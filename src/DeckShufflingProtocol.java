@@ -1,4 +1,3 @@
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -6,10 +5,10 @@ public class DeckShufflingProtocol {
 
     private CryptoKey k_i;
     private Deck deck;
-    private Communicator communicator;
+    private CommunicationStrategy communicator;
     private PlayerGroup players;
 
-    public DeckShufflingProtocol(Communicator communicator, PlayerGroup players) {
+    public DeckShufflingProtocol(CommunicationStrategy communicator, PlayerGroup players) {
         this.communicator = communicator;
         this.players = players;
     }
@@ -26,7 +25,7 @@ public class DeckShufflingProtocol {
         }
         else {
             // other players receive the deck from a previous player
-            List<BigInteger> intList = null;
+            List<BigInteger> intList;
             intList = (List<BigInteger>) communicator.receiveObject();
             deck = Deck.fromIntList(intList);
         }
@@ -38,7 +37,7 @@ public class DeckShufflingProtocol {
         deck.shuffle();
 
         // then they pass it on to the next player.
-        communicator.sendObject(players.playerAfterMe().getPeerInfo(), deck.asIntList());
+        communicator.sendObjectToPlayer(players.playerAfterMe(), deck.asIntList());
     }
 
     private void doRound2() {
@@ -55,7 +54,7 @@ public class DeckShufflingProtocol {
 
         // pass the deck on
         Player nextPlayer = players.playerAfterMe();
-        communicator.sendObject(nextPlayer.getPeerInfo(), deck.asIntList());
+        communicator.sendObjectToPlayer(nextPlayer, deck.asIntList());
     }
 
     private void doRound3() {

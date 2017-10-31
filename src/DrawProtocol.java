@@ -1,11 +1,11 @@
 public class DrawProtocol {
 
-    Communicator comm;
+    CommunicationStrategy comm;
     PlayerGroup players;
     Deck deck;
     Card drawnCard;
 
-    public DrawProtocol(Communicator comm, PlayerGroup players, Deck deck) {
+    public DrawProtocol(CommunicationStrategy comm, PlayerGroup players, Deck deck) {
         this.comm = comm;
         this.players = players;
         this.deck = deck;
@@ -37,7 +37,7 @@ public class DrawProtocol {
 
     // send my key for the drawn card to player p.
     private void sendKey(Player p) {
-        comm.sendObject(p.getPeerInfo(), drawnCard.getMyKey());
+        comm.sendObjectToPlayer(p, drawnCard.getMyKey());
     }
 
     // receive keys from every player except for the player in turn and ourselves.

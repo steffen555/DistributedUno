@@ -1,13 +1,12 @@
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class Card implements Comparable<Card> {
 
-    public static enum Color {
-        RED, YELLOW, GREEN, BLUE;
-    };
+    public enum Color {
+        RED, YELLOW, GREEN, BLUE
+    }
 
     public static List<String> colorsAsString = Arrays.asList(
             "red", "yellow", "green", "blue"
