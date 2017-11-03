@@ -55,11 +55,9 @@ public class CryptoCardStrategy implements CardStrategy {
 
     @Override
     public void movePlayersCardToPile(Player player, int cardIndex) {
-        Card card = playerHandMap.get(player).get(cardIndex);
+        Card card = playerHandMap.get(player).remove(cardIndex);
         comm.sendPlayersKeyForCardToOtherPlayers(player, card);
         pile.addCard(card);
-//        PlayProtocol play = new PlayProtocol(comm, deck, pile, players);
-//        play.processMoveForCurrentPlayer(move);
     }
 
     @Override

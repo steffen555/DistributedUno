@@ -30,7 +30,8 @@ public abstract class Card implements Comparable<Card> {
 
     public void decrypt(CryptoKey key) {
         // System.out.println("Decrypting " + getValue() + " with key: " + key);
-        value = CryptoScheme.decrypt(key, value);
+        if (isEncrypted())
+            value = CryptoScheme.decrypt(key, value);
     }
 
     public void encryptWithNewKey() {
@@ -63,7 +64,7 @@ public abstract class Card implements Comparable<Card> {
         return getValue().intValue() % NUM_CARDS_PER_COLOR;
     }
 
-    public boolean isEncrypted(){
+    private boolean isEncrypted() {
         return getValue().intValue() < 0 || getValue().intValue() >= NUM_CARDS_PER_COLOR * NUM_COLORS;
     }
 
