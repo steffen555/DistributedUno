@@ -69,8 +69,9 @@ public class HandDistributionProtocol {
                         card.decrypt(key);
                 }
             }
-
-            pile.getCard(0).decrypt(keys.get(keyIndex));
+            System.out.println(pile.getTopCard());
+            pile.getTopCard().decrypt(keys.get(keyIndex));
+            System.out.println(pile.getTopCard());
         }
     }
 }

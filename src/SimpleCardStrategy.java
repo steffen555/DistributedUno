@@ -45,6 +45,11 @@ public class SimpleCardStrategy implements CardStrategy {
     }
 
     @Override
+    public Card getCardFromPlayer(Player player, int cardIndex) {
+        return playerHandMap.get(player).get(cardIndex);
+    }
+
+    @Override
     public List<Card> getCardsFromPlayer(Player player) {
         return playerHandMap.get(player);
     }

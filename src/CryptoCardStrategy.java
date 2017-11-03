@@ -40,9 +40,18 @@ public class CryptoCardStrategy implements CardStrategy {
     }
 
     @Override
+    public Card getCardFromPlayer(Player player, int cardIndex) {
+        Card card = playerHandMap.get(player).get(cardIndex);
+        comm.sendPlayersKeyForCardToOtherPlayers(player, card);
+        return card;
+    }
+
+    @Override
     public List<Card> getCardsFromPlayer(Player player) {
         return playerHandMap.get(player);
     }
+
+
 
     @Override
     public void movePlayersCardToPile(Player player, int cardIndex) {

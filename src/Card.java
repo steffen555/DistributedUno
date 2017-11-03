@@ -63,8 +63,12 @@ public abstract class Card implements Comparable<Card> {
         return getValue().intValue() % NUM_CARDS_PER_COLOR;
     }
 
+    public boolean isEncrypted(){
+        return getValue().intValue() < 0 || getValue().intValue() >= NUM_CARDS_PER_COLOR * NUM_COLORS;
+    }
+
     public String toString() {
-        if (getValue().intValue() < 0 || getValue().intValue() >= NUM_CARDS_PER_COLOR * NUM_COLORS)
+        if (isEncrypted())
             return "<encrypted card>"; // not fully decrypted yet..
         String color = colorsAsString.get(getColor().ordinal());
         return color + " " + getNumber();

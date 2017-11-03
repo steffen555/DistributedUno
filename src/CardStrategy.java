@@ -7,6 +7,8 @@ public interface CardStrategy {
 
     void drawCardFromDeckForPlayer(Player player);
 
+    Card getCardFromPlayer(Player player, int cardIndex);
+
     List<Card> getCardsFromPlayer(Player player);
 
     void movePlayersCardToPile(Player player, int cardIndex);

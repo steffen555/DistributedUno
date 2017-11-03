@@ -9,6 +9,7 @@ public class UnoGame {
     private List<Player> players;
     private int currentPlayerIndex;
     private Player winner;
+    private boolean currentPlayerHasDrawnThisTurn;
 
     public UnoGame(CommunicationStrategy comm, CardStrategy cardStrategy) {
         this.comm = comm;
@@ -21,6 +22,7 @@ public class UnoGame {
 
     private void nextTurn() {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        currentPlayerHasDrawnThisTurn = false;
     }
 
     private void distributeHands() {
@@ -36,14 +38,15 @@ public class UnoGame {
     }
 
     private boolean isLegal(Move move) {
-        System.out.println("Move " + move + " is legal");
-        return true; //TODO
-    }
-
-    public static boolean isLegal(Card playedCard, Pile pile) {
-        Card topCard = pile.getTopCard();
-        return (playedCard.getColor() == topCard.getColor()) ||
-                (playedCard.getNumber() == topCard.getNumber());
+        if (move.getType() == MoveType.PLAY) {
+            Card playedCard = cardStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
+            Card topCard = cardStrategy.getTopCardFromPile();
+            return (playedCard.getColor() == topCard.getColor()) ||
+                    (playedCard.getNumber() == topCard.getNumber());
+        } else if (move.getType() == MoveType.DRAW){
+            return !currentPlayerHasDrawnThisTurn;
+        } else
+            return false;
     }
 
     /**
@@ -66,10 +69,7 @@ public class UnoGame {
      */
     private void doDrawMove(Move move) {
         cardStrategy.drawCardFromDeckForPlayer(move.getPlayer());
-    }
-
-    private boolean currentPlayerHasDrawnThisTurn() {
-        throw new NotImplementedException();
+        currentPlayerHasDrawnThisTurn = true;
     }
 
     private boolean gameOver() {
@@ -107,7 +107,6 @@ public class UnoGame {
         players = comm.getPlayers();
         cardStrategy.initializeNewDeck();
         distributeHands();
-        turnTopCardFromDeck();
         do {
             renderState();
             doTurn();
@@ -147,13 +146,5 @@ public class UnoGame {
      */
     private void announceWinner() {
         System.out.println("Player " + winner + " is the winner! But did he say Uno?");
-    }
-
-    public static void validateMove(Card playedCard, Pile pile) {
-        // TODO: handle this better.
-        if (!isLegal(playedCard, pile))
-            System.out.println("SOMEONE IS CHEATING");
-        else
-            System.out.println("Playing " + playedCard + " is a valid move.");
     }
 }

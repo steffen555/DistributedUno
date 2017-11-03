@@ -1,11 +1,9 @@
-import java.util.Scanner;
-
 import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
         DistributedCommunicationStrategy comm = null;
-        if(args.length == 1) {
+        if (args.length == 1) {
             int myPort = Integer.parseInt(args[0]);
             comm = new DistributedCommunicationStrategy(myPort);
             System.out.println("I am hosting on port " + myPort);
@@ -16,7 +14,7 @@ public class Main {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-        } else if (args.length == 3){
+        } else if (args.length == 3) {
             int myPort = Integer.parseInt(args[0]);
             comm = new DistributedCommunicationStrategy(Integer.parseInt(args[0]));
             String otherIp = args[1];

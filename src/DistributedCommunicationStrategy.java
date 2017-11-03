@@ -206,36 +206,38 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     public void decryptCardWithKeysFromOtherPlayers(Player player, Card card) {
-        for (Player p : players) {
-            if (p == player) {
-                continue;
-            } else if (p instanceof LocalPlayer) {
-                for (Player p1 : players) {
-                    if (p != p1) {
-                        sendObjectToPlayer(p1, card.getMyKey());
-                    }
-                }
-            } else if (p instanceof RemotePlayer) {
-                CryptoKey ck = (CryptoKey) receiveObject();
-                card.decrypt(ck);
-            }
-        }
-    }
-
-    public void sendPlayersKeyForCardToOtherPlayers(Player player, Card card) {
-        for (Player p : players) {
-            if (p == player) {
-                if (p instanceof LocalPlayer) {
+        if (card.isEncrypted())
+            for (Player p : players) {
+                if (p == player) {
+                    continue;
+                } else if (p instanceof LocalPlayer) {
                     for (Player p1 : players) {
-                        if (p1 != p)
+                        if (p != p1) {
                             sendObjectToPlayer(p1, card.getMyKey());
+                        }
                     }
                 } else if (p instanceof RemotePlayer) {
                     CryptoKey ck = (CryptoKey) receiveObject();
                     card.decrypt(ck);
                 }
             }
-        }
+    }
+
+    public void sendPlayersKeyForCardToOtherPlayers(Player player, Card card) {
+        if (card.isEncrypted())
+            for (Player p : players) {
+                if (p == player) {
+                    if (p instanceof LocalPlayer) {
+                        for (Player p1 : players) {
+                            if (p1 != p)
+                                sendObjectToPlayer(p1, card.getMyKey());
+                        }
+                    } else if (p instanceof RemotePlayer) {
+                        CryptoKey ck = (CryptoKey) receiveObject();
+                        card.decrypt(ck);
+                    }
+                }
+            }
     }
 }
 
