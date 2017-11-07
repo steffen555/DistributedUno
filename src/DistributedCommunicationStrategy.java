@@ -25,7 +25,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             return null;
         }
 
-        while(e.hasMoreElements()) {
+        while (e.hasMoreElements()) {
             NetworkInterface n = (NetworkInterface) e.nextElement();
             Enumeration ee = n.getInetAddresses();
             while (ee.hasMoreElements()) {
@@ -182,6 +182,8 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     private Move receiveMoveFromLocalUser(Player playerInTurn) {
+        if (!moveValidator.legalMoveExists())
+            return new Move(playerInTurn, MoveType.END_TURN, 0);
         MoveType moveType = getMoveTypeFromUser();
         int cardIndex = 0;
         if (moveType.equals(MoveType.PLAY))

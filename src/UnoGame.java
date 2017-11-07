@@ -59,6 +59,24 @@ public class UnoGame implements MoveValidator {
             return false;
     }
 
+    /**
+     * Caller must ensure that the UnoGame class can access all of the current player's cards,
+     * i.e. check that the player is local.
+     */
+    public boolean legalMoveExists() {
+        return isLegal(new Move(players.get(currentPlayerIndex), MoveType.DRAW, 0)) || legalPlayMoveExists();
+    }
+
+    private boolean legalPlayMoveExists() {
+        int i = 0;
+        for (Card c : cardHandlingStrategy.getCardsFromPlayer(players.get(currentPlayerIndex))) {
+            if (isLegal(new Move(players.get(currentPlayerIndex), MoveType.PLAY, i++))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Does the concrete action of performing the move. The move given is checked to be valid.
