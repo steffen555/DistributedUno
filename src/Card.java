@@ -64,7 +64,7 @@ public abstract class Card implements Comparable<Card> {
         return getValue().intValue() % NUM_CARDS_PER_COLOR;
     }
 
-    private boolean isEncrypted() {
+    public boolean isEncrypted() {
         return getValue().intValue() < 0 || getValue().intValue() >= NUM_CARDS_PER_COLOR * NUM_COLORS;
     }
 

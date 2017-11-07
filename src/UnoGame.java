@@ -131,9 +131,10 @@ public class UnoGame implements MoveValidator {
     private void renderState() {
         System.out.println("------------------------");
         System.out.println("Awaiting move from player " + currentPlayerIndex);
-        System.out.println("The pile has this on top: " + cardHandlingStrategy.getTopCardFromPile());
-        System.out.println("Your hand looks like this:");
-        cardHandlingStrategy.printHand(getCurrentPlayer());
+        System.out.println("Pile:");
+        CardPrinter.printCard(cardHandlingStrategy.getTopCardFromPile());
+        System.out.println("Player hand:");
+        CardPrinter.printCards(cardHandlingStrategy.getCardsFromPlayer(getCurrentPlayer()));
         System.out.println("------------------------");
     }
 

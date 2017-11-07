@@ -63,12 +63,6 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
     }
 
     @Override
-    public void printHand(Player player) {
-        for (Card card : playerHandMap.get(player))
-            System.out.println(card);
-    }
-
-    @Override
     public Card getTopCardFromPile() {
         return pile.getTopCard();
     }

@@ -13,8 +13,6 @@ public interface CardHandlingStrategy {
 
     void movePlayersCardToPile(Player player, int cardIndex);
 
-    void printHand(Player player);
-
     Card getTopCardFromPile();
 
     void turnTopCardFromDeck();

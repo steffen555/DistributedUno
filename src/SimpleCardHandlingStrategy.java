@@ -60,11 +60,6 @@ public class SimpleCardHandlingStrategy implements CardHandlingStrategy {
     }
 
     @Override
-    public void printHand(Player player) {
-        playerHandMap.get(player).forEach(System.out::println);
-    }
-
-    @Override
     public Card getTopCardFromPile() {
         return pile.get(0);
     }
