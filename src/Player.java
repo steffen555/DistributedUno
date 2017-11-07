@@ -25,4 +25,14 @@ public abstract class Player {
     public PeerInfo getPeerInfo() {
         return null;
     }
+
+    public boolean equals(Player p) {
+        if (this instanceof LocalPlayer && p instanceof LocalPlayer)
+            return true;
+        if (!(this instanceof RemotePlayer && p instanceof RemotePlayer))
+            return false;
+
+        return getPeerInfo().equals(p.getPeerInfo());
+    }
+
 }

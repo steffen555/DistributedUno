@@ -14,7 +14,6 @@ public class Communicator{
     private PeerInfo myInfo;
     private List<PeerInfo> peerInfos;
 
-
     public Communicator(int port) {
         try {
             serverSocket = new ServerSocket(port);
