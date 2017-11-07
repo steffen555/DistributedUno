@@ -20,4 +20,6 @@ public interface CommunicationStrategy {
     void sendPlayersKeyForCardToOtherPlayers(Player player, Card card);
 
     void setMoveValidator(MoveValidator v);
+
+    Card.Color getColorFromPlayer(Player player);
 }

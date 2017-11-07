@@ -135,6 +135,11 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         this.moveValidator = moveValidator;
     }
 
+    @Override
+    public Card.Color getColorFromPlayer(Player player) {
+        return player.receiveColor();
+    }
+
     private class LocalPlayer extends Player {
         @Override
         public Move receiveMove() {
@@ -144,6 +149,13 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             } while (!moveValidator.isLegal(move));
             broadcastMove(move);
             return move;
+        }
+
+        @Override
+        public Card.Color receiveColor() {
+            Card.Color color = getColorFromLocalUser();
+            broadcastObject(color);
+            return color;
         }
 
         public String toString() {
@@ -165,6 +177,11 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
         public PeerInfo getPeerInfo() {
             return peerInfo;
+        }
+
+        @Override
+        public Card.Color receiveColor() {
+            return (Card.Color) receiveObject(Card.Color.class);
         }
 
         public String toString() {
@@ -212,6 +229,10 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         if (moveType.equals(MoveType.PLAY))
             cardIndex = getCardFromUser();
         return new Move(playerInTurn, moveType, cardIndex);
+    }
+
+    private Card.Color getColorFromLocalUser() {
+        return Card.Color.RED; // TODO fixme
     }
 
     private MoveType getMoveTypeFromUser() {

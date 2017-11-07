@@ -4,6 +4,9 @@ import java.util.List;
 
 public abstract class Card implements Comparable<Card> {
 
+    public Card() {
+    }
+
     public enum Color {
         RED, YELLOW, GREEN, BLUE
     }
