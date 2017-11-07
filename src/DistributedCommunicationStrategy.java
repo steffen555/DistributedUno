@@ -232,7 +232,26 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     private Card.Color getColorFromLocalUser() {
-        return Card.Color.RED; // TODO fixme
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Which color should the card be? (red, green, blue, yellow)");
+        String reply = scanner.next();
+        switch (reply) {
+            case "red":
+            case "r":
+                return Card.Color.RED;
+            case "green":
+            case "g":
+                return Card.Color.GREEN;
+            case "blue":
+            case "b":
+                return Card.Color.BLUE;
+            case "yellow":
+            case "y":
+                return Card.Color.YELLOW;
+            default:
+                System.out.println("Failed to parse");
+                return getColorFromLocalUser();
+        }
     }
 
     private MoveType getMoveTypeFromUser() {
