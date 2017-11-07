@@ -18,4 +18,6 @@ public interface CardHandlingStrategy {
     Card getTopCardFromPile();
 
     void turnTopCardFromDeck();
+
+    void revealCardFromMove(Move move);
 }

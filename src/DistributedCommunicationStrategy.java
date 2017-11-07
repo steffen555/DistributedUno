@@ -14,6 +14,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     private ServerSocket serverSocket;
     private PeerInfo myInfo;
     private ArrayList<Player> players;
+    private MoveValidator moveValidator;
 
     // TODO: handle the case when this fails better, e.g. if we have two IPs
     private String myIP() {
@@ -107,10 +108,19 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         }
     }
 
+    public void setMoveValidator(MoveValidator moveValidator) {
+        this.moveValidator = moveValidator;
+    }
+
     private class LocalPlayer extends Player {
         @Override
         public Move receiveMove(DistributedCommunicationStrategy communicator) {
-            return communicator.receiveMoveFromLocalUser(this);
+            Move move;
+            do {
+                move = communicator.receiveMoveFromLocalUser(this);
+            } while (!moveValidator.isLegal(move));
+            broadcastMove(move);
+            return move;
         }
 
         public String toString() {
@@ -176,9 +186,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         int cardIndex = 0;
         if (moveType.equals(MoveType.PLAY))
             cardIndex = getCardFromUser();
-        Move move = new Move(playerInTurn, moveType, cardIndex);
-        broadcastMove(move);
-        return move;
+        return new Move(playerInTurn, moveType, cardIndex);
     }
 
     private MoveType getMoveTypeFromUser() {
@@ -246,18 +254,14 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     public void sendPlayersKeyForCardToOtherPlayers(Player player, Card card) {
-        for (Player p : players) {
-            if (p == player) {
-                if (p instanceof LocalPlayer) {
-                    for (Player p1 : players) {
-                        if (p1 != p)
-                            sendObjectToPlayer(p1, card.getMyKey());
-                    }
-                } else if (p instanceof RemotePlayer) {
-                    CryptoKey ck = (CryptoKey) receiveObject();
-                    card.decrypt(ck);
-                }
+        if (player instanceof LocalPlayer) {
+            for (Player p1 : players) {
+                if (p1 != player)
+                    sendObjectToPlayer(p1, card.getMyKey());
             }
+        } else if (player instanceof RemotePlayer) {
+            CryptoKey ck = (CryptoKey) receiveObject();
+            card.decrypt(ck);
         }
     }
 }

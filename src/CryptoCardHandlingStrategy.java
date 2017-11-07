@@ -41,8 +41,10 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
 
     @Override
     public Card getCardFromPlayer(Player player, int cardIndex) {
-        Card card = playerHandMap.get(player).get(cardIndex);
-        comm.sendPlayersKeyForCardToOtherPlayers(player, card);
+        List<Card> cards = playerHandMap.get(player);
+        if (cardIndex >= cards.size() || cardIndex < 0)
+            return null;
+        Card card = cards.get(cardIndex);
         return card;
     }
 
@@ -74,5 +76,11 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
     @Override
     public void turnTopCardFromDeck() {
         pile.addCard(deck.drawCard());
+    }
+
+    @Override
+    public void revealCardFromMove(Move move) {
+        Card card = getCardFromPlayer(move.getPlayer(), move.getCardIndex());
+        comm.sendPlayersKeyForCardToOtherPlayers(move.getPlayer(), card);
     }
 }

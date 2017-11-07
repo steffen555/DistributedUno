@@ -74,6 +74,11 @@ public class SimpleCardHandlingStrategy implements CardHandlingStrategy {
         pile.add(0, takeTopCardFromDeck());
     }
 
+    @Override
+    public void revealCardFromMove(Move move) {
+
+    }
+
     private Card takeTopCardFromDeck() {
         return deck.remove(0);
     }

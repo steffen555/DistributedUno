@@ -2,7 +2,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 
-public class UnoGame {
+public class UnoGame implements MoveValidator {
 
     private CommunicationStrategy comm;
     private CardHandlingStrategy cardHandlingStrategy;
@@ -13,6 +13,7 @@ public class UnoGame {
 
     public UnoGame(CommunicationStrategy comm, CardHandlingStrategy cardHandlingStrategy) {
         this.comm = comm;
+        comm.setMoveValidator(this);
         this.cardHandlingStrategy = cardHandlingStrategy;
     }
 
@@ -37,16 +38,22 @@ public class UnoGame {
         return getMoveFromPlayer(getCurrentPlayer());
     }
 
-    private boolean isLegal(Move move) {
+    public boolean isLegal(Move move) {
         if (move.getType() == MoveType.PLAY) {
             Card playedCard = cardHandlingStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
+            if (playedCard == null) {
+                System.out.println("Invalid move!");
+                return false;
+            }
             Card topCard = cardHandlingStrategy.getTopCardFromPile();
             return (playedCard.getColor() == topCard.getColor()) ||
                     (playedCard.getNumber() == topCard.getNumber());
         } else if (move.getType() == MoveType.DRAW){
             return !currentPlayerHasDrawnThisTurn;
-        } else
+        } else {
+            System.out.println("Invalid move!");
             return false;
+        }
     }
 
     /**
@@ -54,11 +61,11 @@ public class UnoGame {
      * The move can be either playing a card to the pile or drawing a new card.
      * If a card is drawn, the user should have the option to play any card.
      */
-    private void doMove(Move move) {
+    private boolean doMove(Move move) {
         if (move.getType() == MoveType.PLAY) {
-            doPlayMove(move);
+            return doPlayMove(move);
         } else if (move.getType() == MoveType.DRAW) {
-            doDrawMove(move);
+            return doDrawMove(move);
         } else {
             throw new IllegalArgumentException();
         }
@@ -67,9 +74,10 @@ public class UnoGame {
     /**
      * Performs the action of drawing a card from the deck.
      */
-    private void doDrawMove(Move move) {
+    private boolean doDrawMove(Move move) {
         cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
         currentPlayerHasDrawnThisTurn = true;
+        return true;
     }
 
     private boolean gameOver() {
@@ -83,8 +91,13 @@ public class UnoGame {
     /**
      * Performs the action of playing a card to the pile.
      */
-    private void doPlayMove(Move move) {
+    private boolean doPlayMove(Move move) {
+        cardHandlingStrategy.revealCardFromMove(move);
+        if (!isLegal(move))
+            return false;
+
         cardHandlingStrategy.movePlayersCardToPile(move.getPlayer(), move.getCardIndex());
+        return true;
     }
 
     private Move getMoveFromPlayer(Player player) {
@@ -133,12 +146,10 @@ public class UnoGame {
         Move move;
         while (true) {
             move = getMoveFromCurrentPlayer();
-            if (isLegal(move))
+            if (doMove(move))
+                // it was valid, so the turn is over
                 break;
-            else
-                System.out.println(getCurrentPlayer() + " tried an illegal move. Asking again.");
         }
-        doMove(move);
     }
 
     /**

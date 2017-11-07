@@ -76,4 +76,9 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
     public void sendPlayersKeyForCardToOtherPlayers(Player player, Card card) {
 
     }
+
+    @Override
+    public void setMoveValidator(MoveValidator v) {
+
+    }
 }

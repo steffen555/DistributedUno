@@ -18,4 +18,6 @@ public interface CommunicationStrategy {
     void decryptCardWithKeysFromOtherPlayers(Player player, Card card);
 
     void sendPlayersKeyForCardToOtherPlayers(Player player, Card card);
+
+    void setMoveValidator(MoveValidator v);
 }
