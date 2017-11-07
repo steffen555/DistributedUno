@@ -15,7 +15,7 @@ public class Deck {
     // should generate a Deck of unencrypted cards -- one for each number and color.
     public static Deck generatePlainDeck() {
         ArrayList<Card> tmp = new ArrayList<>();
-        for (int card_value = 0; card_value < Card.NUM_CARDS; card_value++) {
+        for (int card_value = 2; card_value < Card.NUM_CARDS + 2; card_value++) {
             Card card = new RegularCard(BigInteger.valueOf(card_value));
             tmp.add(card);
         }
