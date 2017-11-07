@@ -2,7 +2,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 
-public class UnoGame implements MoveValidator {
+public class UnoGame implements MoveValidator, ActionCardTarget {
 
     private CommunicationStrategy comm;
     private CardHandlingStrategy cardHandlingStrategy;
@@ -11,6 +11,7 @@ public class UnoGame implements MoveValidator {
     private Player winner;
     private boolean currentPlayerHasMovedThisTurn;
     private boolean currentPlayerHasDrawnThisTurn;
+    private int turnDirection = 1;
 
     public UnoGame(CommunicationStrategy comm, CardHandlingStrategy cardHandlingStrategy) {
         this.comm = comm;
@@ -18,15 +19,24 @@ public class UnoGame implements MoveValidator {
         this.cardHandlingStrategy = cardHandlingStrategy;
     }
 
-    private Player getCurrentPlayer() {
+    public Player getCurrentPlayer() {
         return players.get(currentPlayerIndex);
     }
 
-    private boolean nextTurn() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    public Player getNextPlayer() {
+        int index = currentPlayerIndex + turnDirection;
+        if (index < 0)
+            index += players.size();
+        index %= players.size();
+        return players.get(index);
+    }
+
+    public void advanceTurn() {
+        currentPlayerIndex += turnDirection;
+        if (currentPlayerIndex < 0)
+            currentPlayerIndex += players.size();
+        currentPlayerIndex %= players.size();
         currentPlayerHasDrawnThisTurn = false;
-        currentPlayerHasMovedThisTurn = false;
-        return true;
     }
 
     private void distributeHands() {
@@ -92,7 +102,8 @@ public class UnoGame implements MoveValidator {
         } else if (move.getType() == MoveType.DRAW) {
             return doDrawMove(move);
         } else if (move.getType() == MoveType.END_TURN) {
-            return nextTurn();
+            advanceTurn();
+            return true;
         } else {
             throw new IllegalArgumentException();
         }
@@ -123,8 +134,14 @@ public class UnoGame implements MoveValidator {
         if (!isLegal(move))
             return false;
 
+        Card card = cardHandlingStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
         currentPlayerHasMovedThisTurn = true;
         cardHandlingStrategy.movePlayersCardToPile(move.getPlayer(), move.getCardIndex());
+
+        if (card instanceof ActionCard) {
+            ((ActionCard) card).performAction();
+        }
+
         return true;
     }
 
@@ -185,5 +202,10 @@ public class UnoGame implements MoveValidator {
      */
     private void announceWinner() {
         System.out.println("Player " + winner + " is the winner! But did he say Uno?");
+    }
+
+    @Override
+    public void changeTurnDirection() {
+        turnDirection *= -1;
     }
 }

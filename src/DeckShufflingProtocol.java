@@ -34,7 +34,7 @@ public class DeckShufflingProtocol {
         } else {
             // other players receive the deck from a previous player
             List<BigInteger> intList;
-            intList = (List<BigInteger>) communicator.receiveObject();
+            intList = (List<BigInteger>) communicator.receiveObject(List.class);
             deck = Deck.fromIntList(intList);
         }
 
@@ -51,7 +51,7 @@ public class DeckShufflingProtocol {
     private void doRound2() {
 
         // receive the deck from the previous player
-        List<BigInteger> intList = (List<BigInteger>) communicator.receiveObject();
+        List<BigInteger> intList = (List<BigInteger>) communicator.receiveObject(List.class);
         deck = Deck.fromIntList(intList);
 
         // decrypt it under our key
@@ -66,7 +66,7 @@ public class DeckShufflingProtocol {
     }
 
     private void doRound3() {
-        List<BigInteger> intList = (List<BigInteger>) communicator.receiveObject();
+        List<BigInteger> intList = (List<BigInteger>) communicator.receiveObject(List.class);
         deck.updateCards(intList);
         if (firstPlayerIsLocal) {
             communicator.broadcastObject(deck.asIntList());

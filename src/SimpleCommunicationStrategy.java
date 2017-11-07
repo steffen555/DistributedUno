@@ -14,10 +14,14 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
         for (int i = 0; i < numberOfPlayers; i++) {
             players.add(new Player() {
                 @Override
-                Move receiveMove(DistributedCommunicationStrategy communicator) {
+                Move receiveMove() {
                     throw new NotImplementedException();
                 }
 
+                @Override
+                public Card.Color receiveColor() {
+                    throw new NotImplementedException();
+                }
             });
         }
     }
@@ -58,7 +62,7 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
     }
 
     @Override
-    public Object receiveObject() {
+    public Object receiveObject(Class c) {
         return null;
     }
 
@@ -80,5 +84,10 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
     @Override
     public void setMoveValidator(MoveValidator v) {
 
+    }
+
+    @Override
+    public Card.Color getColorFromPlayer(Player player) {
+        return null;
     }
 }

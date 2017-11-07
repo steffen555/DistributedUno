@@ -59,7 +59,7 @@ public class HandDistributionProtocol {
     private void receiveInitialKeys() {
         // receive from each other player in turn.
         for (int i = 0; i < players.size() - 1; i++) {
-            List<CryptoKey> keys = (List<CryptoKey>) communicator.receiveObject();
+            List<CryptoKey> keys = (List<CryptoKey>) communicator.receiveObject(List.class);
 
             int keyIndex = 0;
             for (Player player : players) {

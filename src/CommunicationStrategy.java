@@ -11,7 +11,7 @@ public interface CommunicationStrategy {
 
     void sendObjectToPlayer(Player player, Serializable object);
 
-    Object receiveObject();
+    Object receiveObject(Class c);
 
     void broadcastObject(Serializable object);
 
@@ -20,4 +20,6 @@ public interface CommunicationStrategy {
     void sendPlayersKeyForCardToOtherPlayers(Player player, Card card);
 
     void setMoveValidator(MoveValidator v);
+
+    Card.Color getColorFromPlayer(Player player);
 }

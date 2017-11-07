@@ -15,6 +15,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     private PeerInfo myInfo;
     private ArrayList<Player> players;
     private MoveValidator moveValidator;
+    private List<Object> receiveQueue;
 
     // TODO: handle the case when this fails better, e.g. if we have two IPs
     private String myIP() {
@@ -47,6 +48,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         }
         myInfo = new PeerInfo(myIP(), port);
         players = new ArrayList<>();
+        receiveQueue = new ArrayList<>();
     }
 
     public List<Player> getPlayers() {
@@ -54,19 +56,19 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     public Move getNextMoveFromPlayer(Player player) {
-        return player.receiveMove(this);
+        return player.receiveMove();
     }
 
     public void sendObjectToPlayer(Player player, Serializable object) {
         sendObject(player.getPeerInfo(), object);
     }
 
-    private Move receiveMove(Player player) {
-        MoveMessage moveMessage = (MoveMessage) receiveObject();
+    private Move doReceiveMove(Player player) {
+        MoveMessage moveMessage = (MoveMessage) receiveObject(MoveMessage.class);
         return new Move(player, moveMessage.getMoveType(), moveMessage.getIndex());
     }
 
-    public Object receiveObject() {
+    private Object doReceiveObject() {
         Socket socket;
         try {
             socket = serverSocket.accept();
@@ -92,6 +94,27 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         }
     }
 
+    public Object receiveObject(Class c) {
+        // first try to find the object in the queue
+        for (Object o : receiveQueue) {
+            if (c.isInstance(o)) {
+                receiveQueue.remove(o);
+                return o;
+            }
+        }
+
+        // if it's not in the queue, keep receiving objects until we find it
+        while (true) {
+            Object o = doReceiveObject();
+            if (c.isInstance(o)) {
+                return o;
+            } else {
+                // put it in the queue for later if it's not a c
+                receiveQueue.add(o);
+            }
+        }
+    }
+
     public void broadcastObject(Serializable object) {
         for (Player player : players) {
             if (player instanceof RemotePlayer) {
@@ -112,15 +135,27 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         this.moveValidator = moveValidator;
     }
 
+    @Override
+    public Card.Color getColorFromPlayer(Player player) {
+        return player.receiveColor();
+    }
+
     private class LocalPlayer extends Player {
         @Override
-        public Move receiveMove(DistributedCommunicationStrategy communicator) {
+        public Move receiveMove() {
             Move move;
             do {
-                move = communicator.receiveMoveFromLocalUser(this);
+                move = receiveMoveFromLocalUser(this);
             } while (!moveValidator.isLegal(move));
             broadcastMove(move);
             return move;
+        }
+
+        @Override
+        public Card.Color receiveColor() {
+            Card.Color color = getColorFromLocalUser();
+            broadcastObject(color);
+            return color;
         }
 
         public String toString() {
@@ -136,12 +171,17 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             this.peerInfo = peerInfo;
         }
 
-        public Move receiveMove(DistributedCommunicationStrategy communicator) {
-            return communicator.receiveMove(this);
+        public Move receiveMove() {
+            return doReceiveMove(this);
         }
 
         public PeerInfo getPeerInfo() {
             return peerInfo;
+        }
+
+        @Override
+        public Card.Color receiveColor() {
+            return (Card.Color) receiveObject(Card.Color.class);
         }
 
         public String toString() {
@@ -153,7 +193,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         players.add(new LocalPlayer());
         int counter = numberOfPlayers - 1;
         while (counter > 0) {
-            PeerInfo peerInfo = (PeerInfo) receiveObject();
+            PeerInfo peerInfo = (PeerInfo) receiveObject(PeerInfo.class);
             players.add(new RemotePlayer(peerInfo));
             counter--;
         }
@@ -172,7 +212,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         PeerInfo hostInfo = new PeerInfo(ip, port);
         sendObject(hostInfo, myInfo);
 
-        ArrayList<PeerInfo> peerInfos = (ArrayList<PeerInfo>) receiveObject();
+        ArrayList<PeerInfo> peerInfos = (ArrayList<PeerInfo>) receiveObject(ArrayList.class);
         for (PeerInfo pi : peerInfos)
             if (pi.equals(myInfo))
                 players.add(new LocalPlayer());
@@ -189,6 +229,29 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         if (moveType.equals(MoveType.PLAY))
             cardIndex = getCardFromUser();
         return new Move(playerInTurn, moveType, cardIndex);
+    }
+
+    private Card.Color getColorFromLocalUser() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Which color should the card be? (red, green, blue, yellow)");
+        String reply = scanner.next();
+        switch (reply) {
+            case "red":
+            case "r":
+                return Card.Color.RED;
+            case "green":
+            case "g":
+                return Card.Color.GREEN;
+            case "blue":
+            case "b":
+                return Card.Color.BLUE;
+            case "yellow":
+            case "y":
+                return Card.Color.YELLOW;
+            default:
+                System.out.println("Failed to parse");
+                return getColorFromLocalUser();
+        }
     }
 
     private MoveType getMoveTypeFromUser() {
@@ -251,7 +314,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
                     }
                 }
             } else if (p instanceof RemotePlayer) {
-                CryptoKey ck = (CryptoKey) receiveObject();
+                CryptoKey ck = (CryptoKey) receiveObject(CryptoKey.class);
                 card.decrypt(ck);
             }
         }
@@ -264,7 +327,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
                     sendObjectToPlayer(p1, card.getMyKey());
             }
         } else if (player instanceof RemotePlayer) {
-            CryptoKey ck = (CryptoKey) receiveObject();
+            CryptoKey ck = (CryptoKey) receiveObject(CryptoKey.class);
             card.decrypt(ck);
         }
     }
