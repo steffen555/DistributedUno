@@ -191,13 +191,15 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
     private MoveType getMoveTypeFromUser() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("It's your turn. Would you like to draw or play a card? (d/p): ");
+        System.out.print("It's your turn. Would you like to draw, play a card or end your turn? (d/p/e): ");
         String reply = scanner.next();
         switch (reply) {
             case "d":
                 return MoveType.DRAW;
             case "p":
                 return MoveType.PLAY;
+            case "e":
+                return MoveType.END_TURN;
             default:
                 System.out.println("Failed to parse");
                 return getMoveTypeFromUser();
