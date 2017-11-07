@@ -1,3 +1,3 @@
 public enum CardColor {
-    RED, GREEN, BLUE, YELLOW
+    RED, YELLOW, GREEN, BLUE, NO_COLOR
 }

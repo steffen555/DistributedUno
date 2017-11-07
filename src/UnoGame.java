@@ -49,8 +49,11 @@ public class UnoGame implements MoveValidator {
                 return false;
             }
             Card topCard = cardHandlingStrategy.getTopCardFromPile();
-            return (playedCard.getNumber() == topCard.getNumber() ||
+            if (playedCard instanceof RegularCard && topCard instanceof RegularCard) {
+            return (((RegularCard) playedCard).getNumber() == ((RegularCard) topCard).getNumber() ||
                     (playedCard.getColor() == topCard.getColor()) && !currentPlayerHasMovedThisTurn);
+            }
+            return false;
         } else if (move.getType() == MoveType.DRAW) {
             return !currentPlayerHasDrawnThisTurn && !currentPlayerHasMovedThisTurn;
         } else if (move.getType() == MoveType.END_TURN) {

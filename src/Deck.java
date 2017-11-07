@@ -15,8 +15,9 @@ public class Deck {
     // should generate a Deck of unencrypted cards -- one for each number and color.
     public static Deck generatePlainDeck() {
         ArrayList<Card> tmp = new ArrayList<>();
+        CardTranslator translator = new CardTranslator();
         for (int card_value = 2; card_value < Card.NUM_CARDS + 2; card_value++) {
-            Card card = new RegularCard(BigInteger.valueOf(card_value));
+            Card card = translator.translateValueToCard(BigInteger.valueOf(card_value));
             tmp.add(card);
         }
         return new Deck(tmp);
@@ -46,15 +47,17 @@ public class Deck {
 
     public void decrypt(CryptoKey k_i) {
         for (Card card : cards) {
-            card.decrypt(k_i);
+            if (card instanceof EncryptedCard)
+                ((EncryptedCard) card).decrypt(k_i);
         }
     }
 
     public static Deck fromIntList(List<BigInteger> intList) {
         ArrayList<Card> tmp = new ArrayList<>();
+        CardTranslator translator = new CardTranslator();
         for (int i = 0; i < Card.NUM_CARDS; i++) {
             BigInteger value = intList.get(i);
-            Card card = new RegularCard(value);
+            Card card = translator.translateValueToCard(value);
             tmp.add(card);
         }
         return new Deck(tmp);
@@ -90,7 +93,9 @@ public class Deck {
     }
 
     public void decryptAllCardsWithMyKey() {
-        for (Card c : cards)
-            c.decryptWithMyKey();
+        for (Card card : cards)
+            if (card instanceof EncryptedCard) {
+                ((EncryptedCard) card).decryptWithMyKey();
+            }
     }
 }

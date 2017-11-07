@@ -4,10 +4,6 @@ import java.util.List;
 
 public abstract class Card implements Comparable<Card> {
 
-    public enum Color {
-        RED, YELLOW, GREEN, BLUE
-    }
-
     public static List<String> colorsAsString = Arrays.asList(
             "red", "yellow", "green", "blue"
     );
@@ -18,9 +14,10 @@ public abstract class Card implements Comparable<Card> {
 
     private BigInteger value; // only retrieve this through its getter!!
     private CryptoKey myKey;
+    private CardColor color;
 
-    public Card(BigInteger value) {
-        this.value = value;
+    public Card(CardColor color) {
+        this.color = color;
     }
 
     public void encrypt(CryptoKey key) {
@@ -28,19 +25,9 @@ public abstract class Card implements Comparable<Card> {
         value = CryptoScheme.encrypt(key, value);
     }
 
-    public void decrypt(CryptoKey key) {
-        // System.out.println("Decrypting " + getValue() + " with key: " + key);
-        if (isEncrypted())
-            value = CryptoScheme.decrypt(key, value);
-    }
-
     public void encryptWithNewKey() {
         myKey = CryptoScheme.generateKey();
         encrypt(myKey);
-    }
-
-    public void decryptWithMyKey() {
-        decrypt(myKey);
     }
 
     public CryptoKey getMyKey() {
@@ -55,24 +42,12 @@ public abstract class Card implements Comparable<Card> {
         return value;
     }
 
-    public Color getColor() {
-        int index = (getValue().intValue() - 2) / NUM_CARDS_PER_COLOR;
-        return Color.values()[index];
-    }
-
-    public int getNumber() {
-        return (getValue().intValue() - 2) % NUM_CARDS_PER_COLOR;
-    }
-
-    public boolean isEncrypted() {
-        return getValue().intValue() < 0 || getValue().intValue() >= NUM_CARDS_PER_COLOR * NUM_COLORS + 2;
+    public CardColor getColor() {
+        return color;
     }
 
     public String toString() {
-        if (isEncrypted())
-            return "<encrypted card>"; // not fully decrypted yet..
-        String color = colorsAsString.get(getColor().ordinal());
-        return color + " " + getNumber();
+        return getValue().toString();
     }
 
     @Override
