@@ -3,9 +3,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
 
@@ -15,13 +15,36 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     private PeerInfo myInfo;
     private ArrayList<Player> players;
 
+    // TODO: handle the case when this fails better, e.g. if we have two IPs
+    private String myIP() {
+        Enumeration e;
+        try {
+            e = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException e1) {
+            return null;
+        }
+
+        while(e.hasMoreElements()) {
+            NetworkInterface n = (NetworkInterface) e.nextElement();
+            Enumeration ee = n.getInetAddresses();
+            while (ee.hasMoreElements()) {
+                InetAddress i = (InetAddress) ee.nextElement();
+                if (i.isSiteLocalAddress())
+                    return i.getHostAddress();
+            }
+        }
+
+        return null;
+    }
+
     public DistributedCommunicationStrategy(int port) {
+        System.out.println("My IP is: " + myIP());
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        myInfo = new PeerInfo("localhost", port);
+        myInfo = new PeerInfo(myIP(), port);
         players = new ArrayList<>();
     }
 
