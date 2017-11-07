@@ -1,14 +1,14 @@
 import java.math.BigInteger;
 import java.util.*;
 
-public class SimpleCardStrategy implements CardStrategy {
+public class SimpleCardHandlingStrategy implements CardHandlingStrategy {
 
     private CommunicationStrategy comm;
     private List<Card> deck;
     private List<Card> pile;
     private Map<Player, List<Card>> playerHandMap;
 
-    public SimpleCardStrategy(CommunicationStrategy comm) {
+    public SimpleCardHandlingStrategy(CommunicationStrategy comm) {
         this.comm = comm;
         deck = new ArrayList<>();
         pile = new ArrayList<>();

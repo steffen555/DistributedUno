@@ -27,7 +27,7 @@ public class HandDistributionProtocol {
 
         // then distribute the keys so everyone can decrypt their own hand
         for (Player player : players) {
-            if (player.getPeerInfo() == null)
+            if (player.getPeerInfo() == null) // If the player is a local player
                 receiveInitialKeys();
             else
                 sendInitialKeys(player);

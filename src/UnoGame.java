@@ -5,15 +5,15 @@ import java.util.List;
 public class UnoGame {
 
     private CommunicationStrategy comm;
-    private CardStrategy cardStrategy;
+    private CardHandlingStrategy cardHandlingStrategy;
     private List<Player> players;
     private int currentPlayerIndex;
     private Player winner;
     private boolean currentPlayerHasDrawnThisTurn;
 
-    public UnoGame(CommunicationStrategy comm, CardStrategy cardStrategy) {
+    public UnoGame(CommunicationStrategy comm, CardHandlingStrategy cardHandlingStrategy) {
         this.comm = comm;
-        this.cardStrategy = cardStrategy;
+        this.cardHandlingStrategy = cardHandlingStrategy;
     }
 
     private Player getCurrentPlayer() {
@@ -26,11 +26,11 @@ public class UnoGame {
     }
 
     private void distributeHands() {
-        cardStrategy.distributeHands();
+        cardHandlingStrategy.distributeHands();
     }
 
     private void turnTopCardFromDeck() {
-        cardStrategy.turnTopCardFromDeck();
+        cardHandlingStrategy.turnTopCardFromDeck();
     }
 
     private Move getMoveFromCurrentPlayer() {
@@ -39,8 +39,8 @@ public class UnoGame {
 
     private boolean isLegal(Move move) {
         if (move.getType() == MoveType.PLAY) {
-            Card playedCard = cardStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
-            Card topCard = cardStrategy.getTopCardFromPile();
+            Card playedCard = cardHandlingStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
+            Card topCard = cardHandlingStrategy.getTopCardFromPile();
             return (playedCard.getColor() == topCard.getColor()) ||
                     (playedCard.getNumber() == topCard.getNumber());
         } else if (move.getType() == MoveType.DRAW){
@@ -68,7 +68,7 @@ public class UnoGame {
      * Performs the action of drawing a card from the deck.
      */
     private void doDrawMove(Move move) {
-        cardStrategy.drawCardFromDeckForPlayer(move.getPlayer());
+        cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
         currentPlayerHasDrawnThisTurn = true;
     }
 
@@ -77,14 +77,14 @@ public class UnoGame {
     }
 
     private boolean isWinner(Player player) {
-        return cardStrategy.getCardsFromPlayer(player).size() == 0;
+        return cardHandlingStrategy.getCardsFromPlayer(player).size() == 0;
     }
 
     /**
      * Performs the action of playing a card to the pile.
      */
     private void doPlayMove(Move move) {
-        cardStrategy.movePlayersCardToPile(move.getPlayer(), move.getCardIndex());
+        cardHandlingStrategy.movePlayersCardToPile(move.getPlayer(), move.getCardIndex());
     }
 
     private Move getMoveFromPlayer(Player player) {
@@ -105,7 +105,7 @@ public class UnoGame {
 
     public void run() {
         players = comm.getPlayers();
-        cardStrategy.initializeNewDeck();
+        cardHandlingStrategy.initializeNewDeck();
         distributeHands();
         do {
             renderState();
@@ -118,9 +118,9 @@ public class UnoGame {
     private void renderState() {
         System.out.println("------------------------");
         System.out.println("Awaiting move from player " + currentPlayerIndex);
-        System.out.println("The pile has this on top: " + cardStrategy.getTopCardFromPile());
+        System.out.println("The pile has this on top: " + cardHandlingStrategy.getTopCardFromPile());
         System.out.println("Your hand looks like this:");
-        cardStrategy.printHand(getCurrentPlayer());
+        cardHandlingStrategy.printHand(getCurrentPlayer());
         System.out.println("------------------------");
     }
 

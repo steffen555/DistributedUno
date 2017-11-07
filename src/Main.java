@@ -34,7 +34,7 @@ public class Main {
         }
 //        CommunicationStrategy comm = new SimpleCommunicationStrategy(4);
 
-        UnoGame game = new UnoGame(comm, new CryptoCardStrategy(comm));
+        UnoGame game = new UnoGame(comm, new CryptoCardHandlingStrategy(comm));
         game.run();
     }
 }

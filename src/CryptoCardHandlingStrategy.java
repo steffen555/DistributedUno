@@ -2,14 +2,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CryptoCardStrategy implements CardStrategy {
+public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
 
     private CommunicationStrategy comm;
     private Pile pile;
     private Deck deck;
     private Map<Player, List<Card>> playerHandMap;
 
-    public CryptoCardStrategy(CommunicationStrategy comm) {
+    public CryptoCardHandlingStrategy(CommunicationStrategy comm) {
         this.comm = comm;
         pile = new Pile();
         playerHandMap = new HashMap<>();

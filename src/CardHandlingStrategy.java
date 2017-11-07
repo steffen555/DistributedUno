@@ -1,6 +1,6 @@
 import java.util.List;
 
-public interface CardStrategy {
+public interface CardHandlingStrategy {
     void initializeNewDeck();
 
     void distributeHands();
