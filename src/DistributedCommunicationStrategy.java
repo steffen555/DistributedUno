@@ -136,7 +136,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     @Override
-    public Card.Color getColorFromPlayer(Player player) {
+    public CardColor getColorFromPlayer(Player player) {
         return player.receiveColor();
     }
 
@@ -152,8 +152,8 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         }
 
         @Override
-        public Card.Color receiveColor() {
-            Card.Color color = getColorFromLocalUser();
+        public CardColor receiveColor() {
+            CardColor color = getColorFromLocalUser();
             broadcastObject(color);
             return color;
         }
@@ -180,8 +180,8 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         }
 
         @Override
-        public Card.Color receiveColor() {
-            return (Card.Color) receiveObject(Card.Color.class);
+        public CardColor receiveColor() {
+            return (CardColor) receiveObject(CardColor.class);
         }
 
         public String toString() {
@@ -231,23 +231,23 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         return new Move(playerInTurn, moveType, cardIndex);
     }
 
-    private Card.Color getColorFromLocalUser() {
+    private CardColor getColorFromLocalUser() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Which color should the card be? (red, green, blue, yellow)");
         String reply = scanner.next();
         switch (reply) {
             case "red":
             case "r":
-                return Card.Color.RED;
+                return CardColor.RED;
             case "green":
             case "g":
-                return Card.Color.GREEN;
+                return CardColor.GREEN;
             case "blue":
             case "b":
-                return Card.Color.BLUE;
+                return CardColor.BLUE;
             case "yellow":
             case "y":
-                return Card.Color.YELLOW;
+                return CardColor.YELLOW;
             default:
                 System.out.println("Failed to parse");
                 return getColorFromLocalUser();
@@ -303,7 +303,8 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         }
     }
 
-    public void decryptCardWithKeysFromOtherPlayers(Player player, Card card) {
+    public Card decryptCardWithKeysFromOtherPlayers(Player player, EncryptedCard card) {
+        Card result = card;
         for (Player p : players) {
             if (p == player) {
                 continue;
@@ -315,21 +316,24 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
                 }
             } else if (p instanceof RemotePlayer) {
                 CryptoKey ck = (CryptoKey) receiveObject(CryptoKey.class);
-                card.decrypt(ck);
+                result = ((EncryptedCard) result).decrypt(ck);
             }
         }
+        return result;
     }
 
-    public void sendPlayersKeyForCardToOtherPlayers(Player player, Card card) {
+    public Card sendPlayersKeyForCardToOtherPlayers(Player player, Card card) {
         if (player instanceof LocalPlayer) {
             for (Player p1 : players) {
                 if (p1 != player)
                     sendObjectToPlayer(p1, card.getMyKey());
             }
+            return card;
         } else if (player instanceof RemotePlayer) {
-            CryptoKey ck = (CryptoKey) receiveObject(CryptoKey.class);
-            card.decrypt(ck);
+            CryptoKey key = (CryptoKey) receiveObject(CryptoKey.class);
+            return ((EncryptedCard) card).decrypt(key);
         }
+        return null;
     }
 }
 

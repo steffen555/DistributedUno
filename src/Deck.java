@@ -14,11 +14,13 @@ public class Deck {
 
     // should generate a Deck of unencrypted cards -- one for each number and color.
     public static Deck generatePlainDeck() {
+        // TODO: add action cards, too
         ArrayList<Card> tmp = new ArrayList<>();
-        CardTranslator translator = new CardTranslator();
-        for (int card_value = 2; card_value < Card.NUM_CARDS + 2; card_value++) {
-            Card card = translator.translateValueToCard(BigInteger.valueOf(card_value));
-            tmp.add(card);
+        for (CardColor color : CardColor.values()) {
+            if (color == CardColor.NO_COLOR)
+                continue;
+            for (int i = 0; i < Card.NUM_CARDS_PER_COLOR; i++)
+                tmp.add(new RegularCard(color, i));
         }
         return new Deck(tmp);
     }
@@ -28,9 +30,8 @@ public class Deck {
     }
 
     public void encryptWithSingleKey(CryptoKey k_i) {
-        for (Card card : cards) {
-            card.encrypt(k_i);
-        }
+        for (int i = 0; i < cards.size(); i++)
+            cards.set(i, cards.get(i).encrypt(k_i));
     }
 
     public void shuffle() {
@@ -40,51 +41,42 @@ public class Deck {
 
     // encrypts every card in the deck with its own key
     public void encryptWithMultipleKeys() {
-        for(Card card : cards) {
-            card.encryptWithNewKey();
-        }
+        for (int i = 0; i < cards.size(); i++)
+            cards.set(i, cards.get(i).encryptWithNewKey());
     }
 
     public void decrypt(CryptoKey k_i) {
-        for (Card card : cards) {
-            if (card instanceof EncryptedCard)
-                ((EncryptedCard) card).decrypt(k_i);
+        for (int i = 0; i < cards.size(); i++) {
+            Card card = cards.get(i);
+            if (card instanceof EncryptedCard) {
+                EncryptedCard ec = (EncryptedCard) card;
+                cards.set(i, ec.decrypt(k_i));
+            }
         }
     }
 
-    public static Deck fromIntList(List<BigInteger> intList) {
+    public static Deck fromRepresentationList(List<CardRepresentation> reprs) {
         ArrayList<Card> tmp = new ArrayList<>();
-        CardTranslator translator = new CardTranslator();
-        for (int i = 0; i < Card.NUM_CARDS; i++) {
-            BigInteger value = intList.get(i);
-            Card card = translator.translateValueToCard(value);
-            tmp.add(card);
-        }
+        for (CardRepresentation repr : reprs)
+            tmp.add(repr.toCard());
         return new Deck(tmp);
     }
 
-    public ArrayList<BigInteger> asIntList() {
-        ArrayList<BigInteger> result = new ArrayList<>();
-        for(Card card : cards) {
-            result.add(card.getValue());
-        }
+    public ArrayList<CardRepresentation> asRepresentationList() {
+        ArrayList<CardRepresentation> result = new ArrayList<>();
+        for(Card card : cards)
+            result.add(card.toRepresentation());
         return result;
     }
 
-    public void updateCards(List<BigInteger> intList) {
-        for (int i = 0; i < Card.NUM_CARDS; i++) {
-            BigInteger value = intList.get(i);
-            Card card = cards.get(i);
-            card.setValue(value);
+    public void updateCards(List<CardRepresentation> reprs) {
+        // our cards should be encrypted at this point.
+        for (int i = 0; i < cards.size(); i++) {
+            EncryptedCard oldCard = (EncryptedCard) cards.get(i);
+            EncryptedCard newCard = (EncryptedCard) reprs.get(i).toCard();
+            newCard.setMyKey(oldCard.getMyKey());
+            cards.set(i, newCard);
         }
-    }
-
-    public String toString() {
-        String result = "";
-        for (Card c : cards) {
-            result += "Card: " + c.getValue() + ",";
-        }
-        return result;
     }
 
     // takes a card out of the deck, removing it.
@@ -93,9 +85,13 @@ public class Deck {
     }
 
     public void decryptAllCardsWithMyKey() {
-        for (Card card : cards)
+        for (int i = 0; i < cards.size(); i++) {
+            Card card = cards.get(i);
             if (card instanceof EncryptedCard) {
-                ((EncryptedCard) card).decryptWithMyKey();
+                EncryptedCard ec = (EncryptedCard) card;
+                cards.set(i, ec.decryptWithMyKey());
             }
+        }
     }
+
 }

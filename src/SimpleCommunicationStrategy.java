@@ -19,7 +19,7 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
                 }
 
                 @Override
-                public Card.Color receiveColor() {
+                public CardColor receiveColor() {
                     throw new NotImplementedException();
                 }
             });
@@ -72,13 +72,14 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
     }
 
     @Override
-    public void decryptCardWithKeysFromOtherPlayers(Player player, Card card) {
-
+    public Card decryptCardWithKeysFromOtherPlayers(Player player, EncryptedCard card) {
+        return null;
     }
 
     @Override
-    public void sendPlayersKeyForCardToOtherPlayers(Player player, Card card) {
+    public Card sendPlayersKeyForCardToOtherPlayers(Player player, Card card) {
 
+        return null;
     }
 
     @Override
@@ -87,7 +88,7 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
     }
 
     @Override
-    public Card.Color getColorFromPlayer(Player player) {
+    public CardColor getColorFromPlayer(Player player) {
         return null;
     }
 }

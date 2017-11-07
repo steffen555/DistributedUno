@@ -34,5 +34,5 @@ public abstract class Player {
 
     }
 
-    public abstract Card.Color receiveColor();
+    public abstract CardColor receiveColor();
 }

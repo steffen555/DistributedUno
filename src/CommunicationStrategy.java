@@ -15,11 +15,11 @@ public interface CommunicationStrategy {
 
     void broadcastObject(Serializable object);
 
-    void decryptCardWithKeysFromOtherPlayers(Player player, Card card);
+    Card decryptCardWithKeysFromOtherPlayers(Player player, EncryptedCard card);
 
-    void sendPlayersKeyForCardToOtherPlayers(Player player, Card card);
+    Card sendPlayersKeyForCardToOtherPlayers(Player player, Card card);
 
     void setMoveValidator(MoveValidator v);
 
-    Card.Color getColorFromPlayer(Player player);
+    CardColor getColorFromPlayer(Player player);
 }

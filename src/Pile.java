@@ -17,4 +17,8 @@ public class Pile {
     public Card getTopCard() {
         return cards.get(cards.size() - 1);
     }
+
+    public void setTopCard(Card c) {
+        cards.set(cards.size() - 1, c);
+    }
 }

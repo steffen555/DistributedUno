@@ -32,4 +32,12 @@ public class Hand {
         }
         return result;
     }
+
+    public Card getCard(int j) {
+        return cards.get(j);
+    }
+
+    public void setCard(int j, Card card) {
+        cards.set(j, card);
+    }
 }

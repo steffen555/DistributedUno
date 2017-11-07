@@ -1,4 +1,3 @@
-import java.math.BigInteger;
 import java.util.*;
 
 public class SimpleCardHandlingStrategy implements CardHandlingStrategy {
@@ -18,10 +17,10 @@ public class SimpleCardHandlingStrategy implements CardHandlingStrategy {
 
     @Override
     public void initializeNewDeck() {
-        for (int card_value = 0; card_value < Card.NUM_CARDS; card_value++) {
-            Card card = new RegularCard(BigInteger.valueOf(card_value));
-            deck.add(card);
-        }
+        ArrayList<Card> tmp = new ArrayList<>();
+        for (CardColor color : CardColor.values())
+            for (int i = 0; i < Card.NUM_CARDS_PER_COLOR; i++)
+                deck.add(new RegularCard(color, i));
     }
 
     public void shuffleCards() {
@@ -71,7 +70,6 @@ public class SimpleCardHandlingStrategy implements CardHandlingStrategy {
 
     @Override
     public void revealCardFromMove(Move move) {
-
     }
 
     private Card takeTopCardFromDeck() {

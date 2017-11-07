@@ -1,33 +1,34 @@
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
 
 public class CardTranslator {
 
-    public CardColor getColor(BigInteger value) {
-        int index = (value.intValue() - 2) / Card.NUM_CARDS_PER_COLOR;
-        return CardColor.values()[index];
-    }
-
-    public int getNumber(BigInteger value) {
-        return (value.intValue() - 2) % Card.NUM_CARDS_PER_COLOR;
-    }
-
-    public boolean isEncrypted(BigInteger value) {
-        return value.intValue() < 0 || value.intValue() >= Card.NUM_CARDS_PER_COLOR * Card.NUM_COLORS + 2;
-    }
-
-    public Card translateValueToCard(BigInteger value) {
-        Card card;
-        if (isEncrypted(value)) {
-            card = new EncryptedCard(value, CardColor.NO_COLOR);
-        } else {
-            card = new RegularCard(getColor(value), getNumber(value));
+    private static int cardToInt(Card card) {
+        if (card instanceof RegularCard) {
+            int result = (((RegularCard) card).getNumber() + card.getColor().ordinal()*10);
+            System.out.println("cardToInt: " + result);
+            System.out.println("The color is: " + card.getColor().ordinal());
+            System.out.println("The number is: " + ((RegularCard) card).getNumber());
+            return result;
         }
-        return card;
+        else
+            // TODO: pick numbers for action cards.
+            throw new NotImplementedException();
+
     }
 
-    public BigInteger translateCardToValue(Card card) {
-        return new BigInteger("0");
+    public static BigInteger cardToValue(Card card) {
+        return BigInteger.valueOf(cardToInt(card));
+    }
+
+    public static Card valueToCard(BigInteger value) {
+        int v = value.intValue();
+        int number = v % Card.NUM_CARDS_PER_COLOR;
+        int index = v / Card.NUM_CARDS_PER_COLOR;
+
+        System.out.println("valueToCard: " + value);
+        CardColor color = CardColor.values()[index];
+        return new RegularCard(color, number);
     }
 }

@@ -1,9 +1,10 @@
 public class ChangeColorCard extends ActionCard {
 
-    Card.Color color;
+    CardColor color;
 
-    public ChangeColorCard(ActionCardTarget actionTarget, CardHandlingStrategy chs, CommunicationStrategy cs) {
-        super(actionTarget, chs, cs);
+    public ChangeColorCard(ActionCardTarget actionTarget, CardHandlingStrategy chs,
+                           CommunicationStrategy cs, CardColor color) {
+        super(actionTarget, chs, cs, color);
     }
 
     @Override
@@ -12,7 +13,7 @@ public class ChangeColorCard extends ActionCard {
         color = communicator.getColorFromPlayer(currentPlayer);
     }
 
-    public Card.Color getColor() {
+    public CardColor getColor() {
         return color;
     }
 }

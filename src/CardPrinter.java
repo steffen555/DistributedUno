@@ -9,14 +9,14 @@ public class CardPrinter {
     final static String BLUE = "\033[0;34m";
     final static String NO_COLOR = "\033[0m";
 
-    private static String stringify(Card.Color c) {
-        if (c == Card.Color.RED)
+    private static String stringify(CardColor c) {
+        if (c == CardColor.RED)
             return RED;
-        if (c == Card.Color.GREEN)
+        if (c == CardColor.GREEN)
             return GREEN;
-        if (c == Card.Color.YELLOW)
+        if (c == CardColor.YELLOW)
             return YELLOW;
-        if (c == Card.Color.BLUE)
+        if (c == CardColor.BLUE)
             return BLUE;
         return "";
 
@@ -25,14 +25,17 @@ public class CardPrinter {
     private static void printCardAsASCII(Card card, List<String> out, int number) {
         String symbol;
         String color;
-        if (card.isEncrypted()) {
+        if (card instanceof EncryptedCard) {
             symbol = "?";
             color = "";
+            System.out.println("Encrypted card: " + card.toRepresentation());
+        } else if (card instanceof RegularCard) {
+            symbol = Integer.toString(((RegularCard) card).getNumber());
+            color = stringify(card.getColor());
         } else {
-            symbol = Integer.toString(card.getNumber());
+            symbol = "TODO";
             color = stringify(card.getColor());
         }
-
 
         out.set(0, out.get(0) + color + " ___ " + NO_COLOR);
         out.set(1, out.get(1) + color + "|   |" + NO_COLOR);

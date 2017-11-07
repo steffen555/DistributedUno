@@ -37,6 +37,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
             currentPlayerIndex += players.size();
         currentPlayerIndex %= players.size();
         currentPlayerHasDrawnThisTurn = false;
+        currentPlayerHasMovedThisTurn = false;
     }
 
     private void distributeHands() {
@@ -55,14 +56,14 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         if (move.getType() == MoveType.PLAY) {
             Card playedCard = cardHandlingStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
             if (playedCard == null) {
-                System.out.println("Invalid move!");
                 return false;
             }
             Card topCard = cardHandlingStrategy.getTopCardFromPile();
             if (playedCard instanceof RegularCard && topCard instanceof RegularCard) {
-            return (((RegularCard) playedCard).getNumber() == ((RegularCard) topCard).getNumber() ||
-                    (playedCard.getColor() == topCard.getColor()) && !currentPlayerHasMovedThisTurn);
+                return (((RegularCard) playedCard).getNumber() == ((RegularCard) topCard).getNumber() ||
+                        (playedCard.getColor() == topCard.getColor()) && !currentPlayerHasMovedThisTurn);
             }
+
             return false;
         } else if (move.getType() == MoveType.DRAW) {
             return !currentPlayerHasDrawnThisTurn && !currentPlayerHasMovedThisTurn;
@@ -130,13 +131,18 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
      * Performs the action of playing a card to the pile.
      */
     private boolean doPlayMove(Move move) {
+        System.out.println("Revealing card number " + move.getCardIndex());
         cardHandlingStrategy.revealCardFromMove(move);
-        if (!isLegal(move))
+        System.out.println("Revealed it.");
+        if (!isLegal(move)) {
+            System.out.println("That was a BAD MOVE");
             return false;
+        }
 
         Card card = cardHandlingStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
         currentPlayerHasMovedThisTurn = true;
         cardHandlingStrategy.movePlayersCardToPile(move.getPlayer(), move.getCardIndex());
+        System.out.println("Moved it to the pile.");
 
         if (card instanceof ActionCard) {
             ((ActionCard) card).performAction();

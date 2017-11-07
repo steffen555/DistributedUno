@@ -33,9 +33,9 @@ public class DeckShufflingProtocol {
             deck = Deck.generatePlainDeck();
         } else {
             // other players receive the deck from a previous player
-            List<BigInteger> intList;
-            intList = (List<BigInteger>) communicator.receiveObject(List.class);
-            deck = Deck.fromIntList(intList);
+            List<CardRepresentation> reprs;
+            reprs = (List<CardRepresentation>) communicator.receiveObject(List.class);
+            deck = Deck.fromRepresentationList(reprs);
         }
 
         // the player encrypts the deck with their key.
@@ -45,14 +45,14 @@ public class DeckShufflingProtocol {
         deck.shuffle();
 
         // then they pass it on to the next player.
-        communicator.sendObjectToPlayer(players.get(firstPlayerAfterLocal), deck.asIntList());
+        communicator.sendObjectToPlayer(players.get(firstPlayerAfterLocal), deck.asRepresentationList());
     }
 
     private void doRound2() {
 
         // receive the deck from the previous player
-        List<BigInteger> intList = (List<BigInteger>) communicator.receiveObject(List.class);
-        deck = Deck.fromIntList(intList);
+        List<CardRepresentation> reprs = (List<CardRepresentation>) communicator.receiveObject(List.class);
+        deck = Deck.fromRepresentationList(reprs);
 
         // decrypt it under our key
         deck.decrypt(k_i);
@@ -62,14 +62,14 @@ public class DeckShufflingProtocol {
 
         // pass the deck on
         Player nextPlayer = players.get(firstPlayerAfterLocal);
-        communicator.sendObjectToPlayer(nextPlayer, deck.asIntList());
+        communicator.sendObjectToPlayer(nextPlayer, deck.asRepresentationList());
     }
 
     private void doRound3() {
-        List<BigInteger> intList = (List<BigInteger>) communicator.receiveObject(List.class);
-        deck.updateCards(intList);
+        List<CardRepresentation> reprs = (List<CardRepresentation>) communicator.receiveObject(List.class);
+        deck.updateCards(reprs);
         if (firstPlayerIsLocal) {
-            communicator.broadcastObject(deck.asIntList());
+            communicator.broadcastObject(deck.asRepresentationList());
         }
     }
 

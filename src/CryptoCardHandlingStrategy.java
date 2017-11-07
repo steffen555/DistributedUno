@@ -1,5 +1,3 @@
-import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +34,9 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
 
     @Override
     public void drawCardFromDeckForPlayer(Player player) {
-        Card card = deck.drawCard();
-        comm.decryptCardWithKeysFromOtherPlayers(player, card);
-        playerHandMap.get(player).add(card);
+        EncryptedCard card = (EncryptedCard) deck.drawCard();
+        Card decrypted = comm.decryptCardWithKeysFromOtherPlayers(player, card);
+        playerHandMap.get(player).add(decrypted);
     }
 
     @Override
@@ -55,12 +53,9 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
         return playerHandMap.get(player);
     }
 
-
-
     @Override
     public void movePlayersCardToPile(Player player, int cardIndex) {
         Card card = playerHandMap.get(player).remove(cardIndex);
-        comm.sendPlayersKeyForCardToOtherPlayers(player, card);
         pile.addCard(card);
     }
 
@@ -76,7 +71,10 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
 
     @Override
     public void revealCardFromMove(Move move) {
-        Card card = getCardFromPlayer(move.getPlayer(), move.getCardIndex());
-        comm.sendPlayersKeyForCardToOtherPlayers(move.getPlayer(), card);
+        int cardIndex = move.getCardIndex();
+        Player player = move.getPlayer();
+        Card card = playerHandMap.get(player).get(cardIndex);
+        Card revealedCard = comm.sendPlayersKeyForCardToOtherPlayers(move.getPlayer(), card);
+        playerHandMap.get(player).set(cardIndex, revealedCard);
     }
 }

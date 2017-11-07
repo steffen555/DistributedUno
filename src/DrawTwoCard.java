@@ -1,7 +1,8 @@
 public class DrawTwoCard extends ActionCard {
 
-    public DrawTwoCard(ActionCardTarget actionTarget, CardHandlingStrategy chs, CommunicationStrategy cs) {
-        super(actionTarget, chs, cs);
+    public DrawTwoCard(ActionCardTarget actionTarget, CardHandlingStrategy chs,
+                       CommunicationStrategy cs, CardColor color) {
+        super(actionTarget, chs, cs, color);
     }
 
     @Override
