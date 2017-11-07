@@ -5,7 +5,8 @@ public class Move implements Serializable {
     private MoveType type;
     private int cardIndex;
 
-    public Move(MoveType type, int index) {
+    public Move(Player player, MoveType type, int index) {
+        this.player = player;
         this.type = type;
         this.cardIndex = index;
     }
@@ -26,6 +27,11 @@ public class Move implements Serializable {
     }
 
     public String toString() {
-        return "Move(type=" + type + ", cardIndex=" + cardIndex + ")";
+        if (type == MoveType.DRAW)
+            return "Draw card from deck";
+        else if (type == MoveType.PLAY)
+            return "Play card no. " + cardIndex;
+        else
+            return "What are you doing?";
     }
 }

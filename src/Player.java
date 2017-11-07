@@ -1,9 +1,9 @@
 public abstract class Player {
-    abstract Move receiveMove(Communicator communicator);
+    abstract Move receiveMove(DistributedCommunicationStrategy communicator);
 
     private Hand hand;
 
-    public Player () {
+    public Player() {
         hand = new Hand();
     }
 
@@ -27,12 +27,11 @@ public abstract class Player {
     }
 
     public boolean equals(Player p) {
-        if (this instanceof LocalPlayer && p instanceof LocalPlayer)
+        if (getPeerInfo() == null && p.getPeerInfo() == null) {
             return true;
-        if (!(this instanceof RemotePlayer && p instanceof RemotePlayer))
-            return false;
+        }
+        return !(getPeerInfo() == null || p.getPeerInfo() == null) && getPeerInfo().equals(p.getPeerInfo());
 
-        return getPeerInfo().equals(p.getPeerInfo());
     }
 
 }

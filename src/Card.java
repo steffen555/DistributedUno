@@ -1,13 +1,12 @@
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class Card implements Comparable<Card> {
 
-    public static enum Color {
-        RED, YELLOW, GREEN, BLUE;
-    };
+    public enum Color {
+        RED, YELLOW, GREEN, BLUE
+    }
 
     public static List<String> colorsAsString = Arrays.asList(
             "red", "yellow", "green", "blue"
@@ -20,7 +19,7 @@ public abstract class Card implements Comparable<Card> {
     private BigInteger value; // only retrieve this through its getter!!
     private CryptoKey myKey;
 
-    public Card (BigInteger value) {
+    public Card(BigInteger value) {
         this.value = value;
     }
 
@@ -31,7 +30,8 @@ public abstract class Card implements Comparable<Card> {
 
     public void decrypt(CryptoKey key) {
         // System.out.println("Decrypting " + getValue() + " with key: " + key);
-        value = CryptoScheme.decrypt(key, value);
+        if (isEncrypted())
+            value = CryptoScheme.decrypt(key, value);
     }
 
     public void encryptWithNewKey() {
@@ -59,12 +59,17 @@ public abstract class Card implements Comparable<Card> {
         int index = getValue().intValue() / NUM_CARDS_PER_COLOR;
         return Color.values()[index];
     }
+
     public int getNumber() {
         return getValue().intValue() % NUM_CARDS_PER_COLOR;
     }
 
+    private boolean isEncrypted() {
+        return getValue().intValue() < 0 || getValue().intValue() >= NUM_CARDS_PER_COLOR * NUM_COLORS;
+    }
+
     public String toString() {
-        if (getValue().intValue() < 0 || getValue().intValue() >= NUM_CARDS_PER_COLOR * NUM_COLORS)
+        if (isEncrypted())
             return "<encrypted card>"; // not fully decrypted yet..
         String color = colorsAsString.get(getColor().ordinal());
         return color + " " + getNumber();

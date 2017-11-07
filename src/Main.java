@@ -1,15 +1,11 @@
-import java.util.Scanner;
-
 import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
-        boolean host = false;
-        Communicator comm = null;
-        if(args.length == 1) {
-            host = true;
+        DistributedCommunicationStrategy comm = null;
+        if (args.length == 1) {
             int myPort = Integer.parseInt(args[0]);
-            comm = new Communicator(myPort);
+            comm = new DistributedCommunicationStrategy(myPort);
             System.out.println("I am hosting on port " + myPort);
             try {
                 comm.hostNetwork(2);
@@ -18,10 +14,9 @@ public class Main {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-        } else if (args.length == 3){
-            host = false;
+        } else if (args.length == 3) {
             int myPort = Integer.parseInt(args[0]);
-            comm = new Communicator(Integer.parseInt(args[0]));
+            comm = new DistributedCommunicationStrategy(Integer.parseInt(args[0]));
             String otherIp = args[1];
             if (otherIp.equals("localhost"))
                 otherIp = "127.0.0.1";
@@ -37,22 +32,9 @@ public class Main {
         } else {
             System.out.println("Wrong number of parameters");
         }
+//        CommunicationStrategy comm = new SimpleCommunicationStrategy(4);
 
-        UnoGame game = new UnoGame(comm);
+        UnoGame game = new UnoGame(comm, new CryptoCardHandlingStrategy(comm));
         game.run();
-    }
-
-    private static boolean host() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Would you like to host? (y/n): ");
-        String reply = scanner.next();
-        if (reply.equals("y"))
-            return true;
-        else if (reply.equals("n"))
-            return false;
-        else {
-            System.out.println("Failed to parse");
-            return host();
-        }
     }
 }
