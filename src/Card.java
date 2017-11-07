@@ -56,16 +56,16 @@ public abstract class Card implements Comparable<Card> {
     }
 
     public Color getColor() {
-        int index = getValue().intValue() / NUM_CARDS_PER_COLOR;
+        int index = (getValue().intValue() - 2) / NUM_CARDS_PER_COLOR;
         return Color.values()[index];
     }
 
     public int getNumber() {
-        return getValue().intValue() % NUM_CARDS_PER_COLOR;
+        return (getValue().intValue() - 2) % NUM_CARDS_PER_COLOR;
     }
 
     private boolean isEncrypted() {
-        return getValue().intValue() < 0 || getValue().intValue() >= NUM_CARDS_PER_COLOR * NUM_COLORS;
+        return getValue().intValue() < 0 || getValue().intValue() >= NUM_CARDS_PER_COLOR * NUM_COLORS + 2;
     }
 
     public String toString() {
