@@ -14,7 +14,7 @@ public class DeckShufflingProtocol {
         this.communicator = communicator;
         players = communicator.getPlayers();
         for (int i = 0; i < players.size(); i++) {
-            if (players.get(0).getPeerInfo() == null) {
+            if (players.get(i).getPeerInfo() == null) {
                 firstPlayerAfterLocal = (i + 1) % players.size();
                 break;
             }
