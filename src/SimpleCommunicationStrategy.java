@@ -14,7 +14,7 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
         for (int i = 0; i < numberOfPlayers; i++) {
             players.add(new Player() {
                 @Override
-                Move receiveMove(DistributedCommunicationStrategy communicator) {
+                Move receiveMove() {
                     throw new NotImplementedException();
                 }
 
@@ -58,7 +58,7 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
     }
 
     @Override
-    public Object receiveObject() {
+    public Object receiveObject(Class c) {
         return null;
     }
 

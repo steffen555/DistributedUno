@@ -11,7 +11,7 @@ public interface CommunicationStrategy {
 
     void sendObjectToPlayer(Player player, Serializable object);
 
-    Object receiveObject();
+    Object receiveObject(Class c);
 
     void broadcastObject(Serializable object);
 

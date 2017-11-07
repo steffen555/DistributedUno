@@ -1,5 +1,5 @@
 public abstract class Player {
-    abstract Move receiveMove(DistributedCommunicationStrategy communicator);
+    abstract Move receiveMove();
 
     private Hand hand;
 
