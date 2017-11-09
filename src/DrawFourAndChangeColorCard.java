@@ -5,8 +5,7 @@ public class DrawFourAndChangeColorCard extends ActionCard {
 
     @Override
     public void performAction() {
-        for (int i = 0; i < 4; i++)
-            getActionTarget().drawCardFromDeckForNextPlayer();
+        getActionTarget().drawCardsFromDeckForNextPlayer(4);
 
         // TODO: remember to switch color!!
 

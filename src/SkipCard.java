@@ -6,6 +6,6 @@ public class SkipCard extends ActionCard {
 
     @Override
     public void performAction() {
-        getActionTarget().advanceTurn();
+        getActionTarget().playedSkipCard();
     }
 }

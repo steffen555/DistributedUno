@@ -1,9 +1,9 @@
 public interface ActionCardTarget {
     void changeTurnDirection();
     Player getCurrentPlayer();
-    void advanceTurn();
+    void playedSkipCard();
 
-    void drawCardFromDeckForNextPlayer();
+    void drawCardsFromDeckForNextPlayer(int numCards);
 
     CardColor getColorFromCurrentPlayer();
 }

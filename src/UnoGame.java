@@ -12,6 +12,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     private boolean currentPlayerHasMovedThisTurn;
     private boolean currentPlayerHasDrawnThisTurn;
     private int turnDirection = 1;
+    private int pendingSkipCards = 0;
 
     public UnoGame(CommunicationStrategy comm, CardHandlingStrategy cardHandlingStrategy) {
         this.comm = comm;
@@ -22,6 +23,11 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
 
     public Player getCurrentPlayer() {
         return players.get(currentPlayerIndex);
+    }
+
+    @Override
+    public void playedSkipCard() {
+        pendingSkipCards++;
     }
 
     public Player getNextPlayer() {
@@ -42,8 +48,9 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     }
 
     @Override
-    public void drawCardFromDeckForNextPlayer() {
-        cardHandlingStrategy.drawCardFromDeckForPlayer(getNextPlayer());
+    public void drawCardsFromDeckForNextPlayer(int numCards) {
+        // TODO implement me.
+        // cardHandlingStrategy.drawCardFromDeckForPlayer(getNextPlayer());
     }
 
     @Override
@@ -63,16 +70,25 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         return getMoveFromPlayer(getCurrentPlayer());
     }
 
+
     public boolean isLegal(Move move) {
         if (move.getType() == MoveType.PLAY) {
             Card playedCard = cardHandlingStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
             if (playedCard == null) {
                 return false;
             }
+
             Card topCard = cardHandlingStrategy.getTopCardFromPile();
 
-            if (playedCard.getNumber() == topCard.getNumber() ||
-                    (playedCard.getColor() == topCard.getColor()) && !currentPlayerHasMovedThisTurn)
+            if (playedCard.getNumber() == topCard.getNumber())
+                return true;
+
+            boolean isColorValid = (
+                   playedCard.getColor() == topCard.getColor() ||
+                   playedCard.getColor() == CardColor.NO_COLOR
+            );
+
+            if (isColorValid && !currentPlayerHasMovedThisTurn)
                 return true;
 
             return false;
@@ -115,10 +131,17 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
             return doDrawMove(move);
         } else if (move.getType() == MoveType.END_TURN) {
             advanceTurn();
+            consumeSkips();
             return true;
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    private void consumeSkips() {
+        for (int i = 0; i < pendingSkipCards; i++)
+            advanceTurn();
+        pendingSkipCards = 0;
     }
 
     /**

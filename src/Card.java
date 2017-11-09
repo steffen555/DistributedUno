@@ -39,6 +39,9 @@ public abstract class Card {
         return color;
     }
 
+    public void setColor(CardColor color) {
+        this.color = color;
+    }
     // we need this method in Card rather than EncryptedCard,
     // because even though a card has been fully decrypted,
     // other players may still need its key.

@@ -27,6 +27,8 @@ public class Deck {
 
             // add special action cards
             cards.add(new ChangeTurnDirectionCard(actionTarget, color));
+            cards.add(new SkipCard(actionTarget, color));
+            cards.add(new ChangeColorCard(actionTarget, CardColor.NO_COLOR));
         }
         return new Deck(cards, actionTarget);
     }

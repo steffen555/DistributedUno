@@ -30,6 +30,7 @@ public class CardPrinter {
             color = stringify(card.getColor());
         }
 
+        // TODO: find better symbols...
         String symbol;
         if (card instanceof EncryptedCard) {
             symbol = "?";
@@ -37,9 +38,14 @@ public class CardPrinter {
             symbol = Integer.toString(((RegularCard) card).getNumber());
         } else if (card instanceof ChangeTurnDirectionCard) {
             symbol = "⇄";
+        } else if (card instanceof SkipCard) {
+            symbol = "⚔";
+        } else if (card instanceof ChangeColorCard) {
+            symbol = "⚛";
+
         } else {
+            System.out.println("weird card: " + card);
             symbol = "TODO";
-            color = stringify(card.getColor());
         }
 
         out.set(0, out.get(0) + color + " ___ " + NO_COLOR);

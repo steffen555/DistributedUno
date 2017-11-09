@@ -6,6 +6,6 @@ public class DrawTwoCard extends ActionCard {
 
     @Override
     public void performAction() {
-        getActionTarget().drawCardFromDeckForNextPlayer();
+        getActionTarget().drawCardsFromDeckForNextPlayer(2);
     }
 }

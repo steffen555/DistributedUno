@@ -11,6 +11,7 @@ Card colors:
     100 -> YELLOW
     200 -> GREEN
     300 -> BLUE
+    400 -> NO_COLOR
 
 Cards:
     0   -> 0
@@ -28,13 +29,8 @@ Cards:
 
 public class CardTranslator {
 
-    private ActionCardTarget act;
-
-    public CardTranslator(ActionCardTarget act) {
-        this.act = act;
-    }
-
     private static int cardToInt(Card card) {
+        System.out.println("Card: " + card.getColor());
         int number = cardToNumber(card);
         int color = card.getColor().ordinal() * 100;
         return color + number;
@@ -72,7 +68,7 @@ public class CardTranslator {
     public static int cardToNumber(Card card) {
         int number = 0;
         if (card instanceof RegularCard)
-            number = ((RegularCard) card).getNumber();
+            number = card.getNumber();
         else if (card instanceof SkipCard)
             number = 10;
         else if (card instanceof ChangeTurnDirectionCard)
