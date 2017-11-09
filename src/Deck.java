@@ -29,6 +29,7 @@ public class Deck {
             cards.add(new ChangeTurnDirectionCard(actionTarget, color));
             cards.add(new SkipCard(actionTarget, color));
             cards.add(new ChangeColorCard(actionTarget, CardColor.NO_COLOR));
+            cards.add(new DrawTwoCard(actionTarget, color));
         }
         return new Deck(cards, actionTarget);
     }

@@ -42,7 +42,8 @@ public class CardPrinter {
             symbol = "⚔";
         } else if (card instanceof ChangeColorCard) {
             symbol = "⚛";
-
+        } else if (card instanceof DrawTwoCard) {
+            symbol = "⛁";
         } else {
             System.out.println("weird card: " + card);
             symbol = "TODO";

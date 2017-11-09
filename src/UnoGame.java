@@ -13,6 +13,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     private boolean currentPlayerHasDrawnThisTurn;
     private int turnDirection = 1;
     private int pendingSkipCards = 0;
+    private int pendingDraws = 0;
 
     public UnoGame(CommunicationStrategy comm, CardHandlingStrategy cardHandlingStrategy) {
         this.comm = comm;
@@ -49,8 +50,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
 
     @Override
     public void drawCardsFromDeckForNextPlayer(int numCards) {
-        // TODO implement me.
-        // cardHandlingStrategy.drawCardFromDeckForPlayer(getNextPlayer());
+        pendingDraws += numCards;
     }
 
     @Override
@@ -76,6 +76,10 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
             Card playedCard = cardHandlingStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
             if (playedCard == null) {
                 return false;
+            }
+
+            if (pendingDraws != 0) {
+                return (playedCard instanceof DrawTwoCard);
             }
 
             Card topCard = cardHandlingStrategy.getTopCardFromPile();
@@ -127,8 +131,12 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     private boolean doMove(Move move) {
         if (move.getType() == MoveType.PLAY) {
             return doPlayMove(move);
+        } else if (move.getType() == MoveType.DRAW && pendingDraws != 0) {
+            doPendingDrawMove(move);
+            advanceTurn();
+            return true;
         } else if (move.getType() == MoveType.DRAW) {
-            return doDrawMove(move);
+            return doSimpleDrawMove(move);
         } else if (move.getType() == MoveType.END_TURN) {
             advanceTurn();
             consumeSkips();
@@ -136,6 +144,12 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    private void doPendingDrawMove(Move move) {
+        for (int i = 0; i < pendingDraws; i++)
+            cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
+        pendingDraws = 0;
     }
 
     private void consumeSkips() {
@@ -147,7 +161,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     /**
      * Performs the action of drawing a card from the deck.
      */
-    private boolean doDrawMove(Move move) {
+    private boolean doSimpleDrawMove(Move move) {
         cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
         currentPlayerHasDrawnThisTurn = true;
         return true;
