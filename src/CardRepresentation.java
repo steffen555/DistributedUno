@@ -15,12 +15,12 @@ public class CardRepresentation implements Serializable {
         this.encryptionCounter = encryptionCounter;
     }
 
-    public Card toCard() {
+    public Card toCard(ActionCardTarget act) {
         if (encryptionCounter == 0) {
-            return CardTranslator.valueToCard(value);
+            return CardTranslator.valueToCard(value, act);
         }
         else {
-            return new EncryptedCard(value, encryptionCounter);
+            return new EncryptedCard(act, value, encryptionCounter);
         }
     }
 

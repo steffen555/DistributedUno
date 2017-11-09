@@ -4,27 +4,25 @@ import java.math.BigInteger;
 
 public abstract class ActionCard extends Card {
 
-    ActionCardTarget actionTarget;
-    CardHandlingStrategy cardHandlingStrategy;
-    CommunicationStrategy communicator;
+    public ActionCard(ActionCardTarget actionTarget, CardColor color) {
+        super(color, actionTarget);
+    }
 
-    public ActionCard(ActionCardTarget actionTarget, CardHandlingStrategy chs, CommunicationStrategy cs, CardColor color) {
-        super(color);
-        this.actionTarget = actionTarget;
-        this.cardHandlingStrategy = chs;
-        this.communicator = cs;
+    public BigInteger getValue() {
+        return CardTranslator.cardToValue(this);
     }
 
     public EncryptedCard encrypt(CryptoKey key) {
-        throw new NotImplementedException();
+        BigInteger encryptedValue = CryptoScheme.encrypt(key, getValue());
+        return new EncryptedCard(getActionTarget(), encryptedValue, 1);
     }
 
     public EncryptedCard encryptWithNewKey() {
-        throw new NotImplementedException();
+        return new EncryptedCard(getActionTarget(), getValue());
     }
 
     public CardRepresentation toRepresentation() {
-        throw new NotImplementedException();
+        return new CardRepresentation(0, getValue());
     }
 
     public abstract void performAction();

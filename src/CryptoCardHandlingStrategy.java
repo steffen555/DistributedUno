@@ -4,6 +4,7 @@ import java.util.Map;
 
 public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
 
+    private ActionCardTarget actionTarget;
     private CommunicationStrategy comm;
     private Pile pile;
     private Deck deck;
@@ -18,7 +19,7 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
     @Override
     public void initializeNewDeck() {
         // Run deck shuffling/distributing protocol here.
-        DeckShufflingProtocol deckCreator = new DeckShufflingProtocol(comm);
+        DeckShufflingProtocol deckCreator = new DeckShufflingProtocol(actionTarget, this, comm);
         deck = deckCreator.makeShuffledDeck();
     }
 
@@ -76,5 +77,9 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
         Card card = playerHandMap.get(player).get(cardIndex);
         Card revealedCard = comm.sendPlayersKeyForCardToOtherPlayers(move.getPlayer(), card);
         playerHandMap.get(player).set(cardIndex, revealedCard);
+    }
+
+    public void setActionCardTarget(ActionCardTarget target) {
+        actionTarget = target;
     }
 }

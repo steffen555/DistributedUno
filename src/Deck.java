@@ -12,21 +12,28 @@ public class Deck {
         return cards.get(index);
     }
 
+    private ActionCardTarget act;
+
     // should generate a Deck of unencrypted cards -- one for each number and color.
-    public static Deck generatePlainDeck() {
-        // TODO: add action cards, too
-        ArrayList<Card> tmp = new ArrayList<>();
+    public static Deck generatePlainDeck(ActionCardTarget actionTarget) {
+        ArrayList<Card> cards = new ArrayList<>();
         for (CardColor color : CardColor.values()) {
             if (color == CardColor.NO_COLOR)
                 continue;
+
+            // add the regular cards
             for (int i = 0; i < Card.NUM_CARDS_PER_COLOR; i++)
-                tmp.add(new RegularCard(color, i));
+                cards.add(new RegularCard(actionTarget, color, i));
+
+            // add special action cards
+            cards.add(new ChangeTurnDirectionCard(actionTarget, color));
         }
-        return new Deck(tmp);
+        return new Deck(cards, actionTarget);
     }
 
-    public Deck(List<Card> cards) {
+    public Deck(List<Card> cards, ActionCardTarget act) {
         this.cards = cards;
+        this.act = act;
     }
 
     public void encryptWithSingleKey(CryptoKey k_i) {
@@ -55,11 +62,12 @@ public class Deck {
         }
     }
 
-    public static Deck fromRepresentationList(List<CardRepresentation> reprs) {
+    public static Deck fromRepresentationList(List<CardRepresentation> reprs,
+                                              ActionCardTarget act) {
         ArrayList<Card> tmp = new ArrayList<>();
         for (CardRepresentation repr : reprs)
-            tmp.add(repr.toCard());
-        return new Deck(tmp);
+            tmp.add(repr.toCard(act));
+        return new Deck(tmp, act);
     }
 
     public ArrayList<CardRepresentation> asRepresentationList() {
@@ -73,7 +81,7 @@ public class Deck {
         // our cards should be encrypted at this point.
         for (int i = 0; i < cards.size(); i++) {
             EncryptedCard oldCard = (EncryptedCard) cards.get(i);
-            EncryptedCard newCard = (EncryptedCard) reprs.get(i).toCard();
+            EncryptedCard newCard = (EncryptedCard) reprs.get(i).toCard(act);
             newCard.setMyKey(oldCard.getMyKey());
             cards.set(i, newCard);
         }

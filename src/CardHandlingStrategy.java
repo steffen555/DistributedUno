@@ -18,4 +18,6 @@ public interface CardHandlingStrategy {
     void turnTopCardFromDeck();
 
     void revealCardFromMove(Move move);
+
+    void setActionCardTarget(ActionCardTarget target);
 }

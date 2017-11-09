@@ -2,15 +2,13 @@ public class ChangeColorCard extends ActionCard {
 
     CardColor color;
 
-    public ChangeColorCard(ActionCardTarget actionTarget, CardHandlingStrategy chs,
-                           CommunicationStrategy cs, CardColor color) {
-        super(actionTarget, chs, cs, color);
+    public ChangeColorCard(ActionCardTarget actionTarget, CardColor color) {
+        super(actionTarget, color);
     }
 
     @Override
     public void performAction() {
-        Player currentPlayer = actionTarget.getCurrentPlayer();
-        color = communicator.getColorFromPlayer(currentPlayer);
+        color = getActionTarget().getColorFromCurrentPlayer();
     }
 
     public CardColor getColor() {

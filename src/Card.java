@@ -4,7 +4,12 @@ import java.util.List;
 
 public abstract class Card {
 
+    private final ActionCardTarget act;
     CryptoKey myKey;
+
+    public ActionCardTarget getActionTarget() {
+        return act;
+    }
 
     public static List<String> colorsAsString = Arrays.asList(
             "red", "yellow", "green", "blue"
@@ -16,8 +21,13 @@ public abstract class Card {
 
     private CardColor color;
 
-    public Card(CardColor color) {
+    public Card(CardColor color, ActionCardTarget act) {
         this.color = color;
+        this.act = act;
+    }
+
+    public int getNumber() {
+        return CardTranslator.cardToNumber(this);
     }
 
     public abstract EncryptedCard encrypt(CryptoKey key);
@@ -39,4 +49,5 @@ public abstract class Card {
     public void setMyKey(CryptoKey key) {
         myKey = key;
     }
+
 }

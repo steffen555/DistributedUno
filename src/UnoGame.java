@@ -17,6 +17,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         this.comm = comm;
         comm.setMoveValidator(this);
         this.cardHandlingStrategy = cardHandlingStrategy;
+        cardHandlingStrategy.setActionCardTarget(this);
     }
 
     public Player getCurrentPlayer() {
@@ -40,6 +41,16 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         currentPlayerHasMovedThisTurn = false;
     }
 
+    @Override
+    public void drawCardFromDeckForNextPlayer() {
+        cardHandlingStrategy.drawCardFromDeckForPlayer(getNextPlayer());
+    }
+
+    @Override
+    public CardColor getColorFromCurrentPlayer() {
+        return comm.getColorFromPlayer(getCurrentPlayer());
+    }
+
     private void distributeHands() {
         cardHandlingStrategy.distributeHands();
     }
@@ -59,10 +70,10 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
                 return false;
             }
             Card topCard = cardHandlingStrategy.getTopCardFromPile();
-            if (playedCard instanceof RegularCard && topCard instanceof RegularCard) {
-                return (((RegularCard) playedCard).getNumber() == ((RegularCard) topCard).getNumber() ||
-                        (playedCard.getColor() == topCard.getColor()) && !currentPlayerHasMovedThisTurn);
-            }
+
+            if (playedCard.getNumber() == topCard.getNumber() ||
+                    (playedCard.getColor() == topCard.getColor()) && !currentPlayerHasMovedThisTurn)
+                return true;
 
             return false;
         } else if (move.getType() == MoveType.DRAW) {

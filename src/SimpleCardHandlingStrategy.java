@@ -20,7 +20,7 @@ public class SimpleCardHandlingStrategy implements CardHandlingStrategy {
         ArrayList<Card> tmp = new ArrayList<>();
         for (CardColor color : CardColor.values())
             for (int i = 0; i < Card.NUM_CARDS_PER_COLOR; i++)
-                deck.add(new RegularCard(color, i));
+                deck.add(new RegularCard(null, color, i));
     }
 
     public void shuffleCards() {
@@ -74,5 +74,9 @@ public class SimpleCardHandlingStrategy implements CardHandlingStrategy {
 
     private Card takeTopCardFromDeck() {
         return deck.remove(0);
+    }
+
+    public void setActionCardTarget(ActionCardTarget t) {
+        // not implemented
     }
 }

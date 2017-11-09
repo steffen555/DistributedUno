@@ -3,6 +3,8 @@ import java.util.List;
 
 public class DeckShufflingProtocol {
 
+    private final ActionCardTarget actionTarget;
+    private final CardHandlingStrategy chs;
     private CryptoKey k_i;
     private Deck deck;
     private CommunicationStrategy communicator;
@@ -10,8 +12,11 @@ public class DeckShufflingProtocol {
     private int firstPlayerAfterLocal;
     private boolean firstPlayerIsLocal;
 
-    public DeckShufflingProtocol(CommunicationStrategy communicator) {
+    public DeckShufflingProtocol(ActionCardTarget actionTarget, CardHandlingStrategy chs,
+                                 CommunicationStrategy communicator) {
         this.communicator = communicator;
+        this.actionTarget = actionTarget;
+        this.chs = chs;
         players = communicator.getPlayers();
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i).getPeerInfo() == null) {
@@ -30,12 +35,12 @@ public class DeckShufflingProtocol {
 
         if (players.get(0).getPeerInfo() == null) { // If there is no info on where to send, it must be local.
             // the first player generates the deck
-            deck = Deck.generatePlainDeck();
+            deck = Deck.generatePlainDeck(actionTarget);
         } else {
             // other players receive the deck from a previous player
             List<CardRepresentation> reprs;
             reprs = (List<CardRepresentation>) communicator.receiveObject(List.class);
-            deck = Deck.fromRepresentationList(reprs);
+            deck = Deck.fromRepresentationList(reprs, actionTarget);
         }
 
         // the player encrypts the deck with their key.
@@ -52,7 +57,7 @@ public class DeckShufflingProtocol {
 
         // receive the deck from the previous player
         List<CardRepresentation> reprs = (List<CardRepresentation>) communicator.receiveObject(List.class);
-        deck = Deck.fromRepresentationList(reprs);
+        deck = Deck.fromRepresentationList(reprs, actionTarget);
 
         // decrypt it under our key
         deck.decrypt(k_i);

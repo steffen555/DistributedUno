@@ -1,12 +1,11 @@
 public class SkipCard extends ActionCard {
 
-    public SkipCard(ActionCardTarget actionTarget, CardHandlingStrategy chs,
-                    CommunicationStrategy cs, CardColor color) {
-        super(actionTarget, chs, cs, color);
+    public SkipCard(ActionCardTarget actionTarget, CardColor color) {
+        super(actionTarget, color);
     }
 
     @Override
     public void performAction() {
-        actionTarget.advanceTurn();
+        getActionTarget().advanceTurn();
     }
 }

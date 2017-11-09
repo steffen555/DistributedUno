@@ -4,8 +4,8 @@ public class RegularCard extends Card {
 
     private int number;
 
-    public RegularCard(CardColor color, int number) {
-        super(color);
+    public RegularCard(ActionCardTarget act, CardColor color, int number) {
+        super(color, act);
         this.number = number;
     }
 
@@ -15,11 +15,11 @@ public class RegularCard extends Card {
 
     public EncryptedCard encrypt(CryptoKey key) {
         BigInteger encryptedValue = CryptoScheme.encrypt(key, getValue());
-        return new EncryptedCard(encryptedValue, 1);
+        return new EncryptedCard(getActionTarget(), encryptedValue, 1);
     }
 
     public EncryptedCard encryptWithNewKey() {
-        return new EncryptedCard(getValue());
+        return new EncryptedCard(getActionTarget(), getValue());
     }
 
     @Override

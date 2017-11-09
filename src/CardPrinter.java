@@ -23,15 +23,20 @@ public class CardPrinter {
     }
 
     private static void printCardAsASCII(Card card, List<String> out, int number) {
-        String symbol;
         String color;
         if (card instanceof EncryptedCard) {
-            symbol = "?";
             color = "";
-            System.out.println("Encrypted card: " + card.toRepresentation());
+        } else {
+            color = stringify(card.getColor());
+        }
+
+        String symbol;
+        if (card instanceof EncryptedCard) {
+            symbol = "?";
         } else if (card instanceof RegularCard) {
             symbol = Integer.toString(((RegularCard) card).getNumber());
-            color = stringify(card.getColor());
+        } else if (card instanceof ChangeTurnDirectionCard) {
+            symbol = "⇄";
         } else {
             symbol = "TODO";
             color = stringify(card.getColor());

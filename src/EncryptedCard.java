@@ -7,17 +7,23 @@ public class EncryptedCard extends Card {
     private BigInteger encryptedValue;
     private int encryptionCounter;
 
-    public EncryptedCard (BigInteger plainValue) {
-        super(CardColor.NO_COLOR);
+
+    public EncryptedCard (ActionCardTarget act, BigInteger plainValue) {
+        super(CardColor.NO_COLOR, act);
         myKey = CryptoScheme.generateKey();
         this.encryptedValue = CryptoScheme.encrypt(myKey, plainValue);
         this.encryptionCounter = 1;
     }
 
-    public EncryptedCard (BigInteger encryptedValue, int encryptionCounter) {
-        super(CardColor.NO_COLOR);
+    public EncryptedCard (ActionCardTarget act, BigInteger encryptedValue, int encryptionCounter) {
+        super(CardColor.NO_COLOR, act);
         this.encryptedValue = encryptedValue;
         this.encryptionCounter = encryptionCounter;
+    }
+
+    @Override
+    public int getNumber() {
+        throw new NotImplementedException();
     }
 
     public EncryptedCard encrypt(CryptoKey key) {
@@ -30,7 +36,7 @@ public class EncryptedCard extends Card {
         // System.out.println("Decrypting " + getValue() + " with key: " + key);
         if (encryptionCounter == 1) {
             BigInteger plainValue = CryptoScheme.decrypt(key, encryptedValue);
-            Card result = new CardRepresentation(0, plainValue).toCard();
+            Card result = CardTranslator.valueToCard(plainValue, getActionTarget());
             result.setMyKey(getMyKey());
             return result;
         }
