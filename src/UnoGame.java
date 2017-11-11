@@ -13,7 +13,9 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     private boolean currentPlayerHasDrawnThisTurn;
     private int turnDirection = 1;
     private int pendingSkipCards = 0;
-    private int pendingDraws = 0;
+    private int pendingTwoDraws = 0;
+    private int pendingFourDraws = 0;
+
 
     public UnoGame(CommunicationStrategy comm, CardHandlingStrategy cardHandlingStrategy) {
         this.comm = comm;
@@ -50,7 +52,11 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
 
     @Override
     public void drawCardsFromDeckForNextPlayer(int numCards) {
-        pendingDraws += numCards;
+        if (numCards == 2)
+            pendingTwoDraws += numCards;
+        if (numCards == 4)
+            pendingFourDraws += numCards;
+        //so far there are only these two options
     }
 
     @Override
@@ -78,8 +84,12 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
                 return false;
             }
 
-            if (pendingDraws != 0) {
+            if (pendingTwoDraws != 0) {
                 return (playedCard instanceof DrawTwoCard);
+            }
+
+            if (pendingFourDraws != 0) {
+                return (playedCard instanceof DrawFourAndChangeColorCard);
             }
 
             Card topCard = cardHandlingStrategy.getTopCardFromPile();
@@ -131,8 +141,12 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     private boolean doMove(Move move) {
         if (move.getType() == MoveType.PLAY) {
             return doPlayMove(move);
-        } else if (move.getType() == MoveType.DRAW && pendingDraws != 0) {
-            doPendingDrawMove(move);
+        } else if (move.getType() == MoveType.DRAW && pendingTwoDraws != 0) {
+            doPendingTwoDrawMove(move);
+            advanceTurn();
+            return true;
+        } else if (move.getType() == MoveType.DRAW && pendingFourDraws != 0) {
+            doPendingFourDrawMove(move);
             advanceTurn();
             return true;
         } else if (move.getType() == MoveType.DRAW) {
@@ -146,10 +160,16 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         }
     }
 
-    private void doPendingDrawMove(Move move) {
-        for (int i = 0; i < pendingDraws; i++)
+    private void doPendingTwoDrawMove(Move move) {
+        for (int i = 0; i < pendingTwoDraws; i++)
             cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
-        pendingDraws = 0;
+        pendingTwoDraws = 0;
+    }
+
+    private void doPendingFourDrawMove(Move move) {
+        for (int i = 0; i < pendingFourDraws; i++)
+            cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
+        pendingFourDraws = 0;
     }
 
     private void consumeSkips() {

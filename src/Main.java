@@ -8,7 +8,7 @@ public class Main {
             comm = new DistributedCommunicationStrategy(myPort);
             System.out.println("I am hosting on port " + myPort);
             try {
-                comm.hostNetwork(3);
+                comm.hostNetwork(2);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
