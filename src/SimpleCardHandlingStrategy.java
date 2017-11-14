@@ -79,4 +79,25 @@ public class SimpleCardHandlingStrategy implements CardHandlingStrategy {
     public void setActionCardTarget(ActionCardTarget t) {
         // not implemented
     }
+
+    @Override
+    public Pile getPile() {
+        return null;
+    }
+
+    @Override
+    public void setPile(List<CardRepresentation> pileCards, ActionCardTarget act) {
+
+    }
+
+    @Override
+    public List<List<Card>> getHands() {
+        return null;
+    }
+
+    @Override
+    public void setHands(List<List<CardRepresentation>> handCards) {
+
+    }
+
 }

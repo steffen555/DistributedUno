@@ -4,6 +4,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -66,21 +67,35 @@ public class MessageReceiver extends Thread {
         }
     }
 
-    private synchronized Object takeFromQueue(Class c) {
+    // take an object which is one of the saught-after classes from the queue
+    private synchronized Object takeFromQueue(List<Class> classes) {
         for (Object o : receiveQueue) {
-            if (c.isInstance(o)) {
-                receiveQueue.remove(o);
-                return o;
+            for (Class c : classes) {
+                if (c.isInstance(o)) {
+                    receiveQueue.remove(o);
+                    return o;
+                }
             }
         }
         return null;
     }
 
+    public Object receiveObject(Class c, boolean mayBlock) {
+        return receiveObject(Arrays.asList(c), mayBlock);
+    }
+
     public Object receiveObject(Class c) {
+        return receiveObject(Arrays.asList(c));
+    }
+
+    public Object receiveObject(List<Class> classes, boolean mayBlock) {
         while (true) {
-            Object o = takeFromQueue(c);
+            Object o = takeFromQueue(classes);
             if (o != null)
                 return o;
+
+            if (!mayBlock)
+                return null;
 
             // we don't have this type of object in the queue yet, so sleep before retrying
             try {
@@ -89,5 +104,40 @@ public class MessageReceiver extends Thread {
                 e.printStackTrace();
             }
         }
+    }
+
+    public Object receiveObject(List<Class> classes) {
+        return receiveObject(classes, true);
+    }
+
+    public JoinRequestMessage receiveJoinRequestMessage(boolean isMyTurn) {
+        Object result;
+        while (true) {
+            // If there is a JoinRequestMessage in the queue, return it.
+            result = receiveObject(JoinRequestMessage.class, false);
+            if (result != null)
+                return (JoinRequestMessage) result;
+
+            // If it's my turn, or
+            // there is a Move in the queue, return null, because then
+            // no joins can occur until next turn.
+            if (isMyTurn || queueContains(MoveMessage.class))
+                return null;
+
+            // Otherwise, wait until one of those happens.
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+
+    private boolean queueContains(Class c) {
+        for (Object o : receiveQueue) {
+            if (c.isInstance(o)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

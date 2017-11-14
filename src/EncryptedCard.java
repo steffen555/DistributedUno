@@ -33,7 +33,6 @@ public class EncryptedCard extends Card {
     }
 
     public Card decrypt(CryptoKey key) {
-        // System.out.println("Decrypting " + getValue() + " with key: " + key);
         if (encryptionCounter == 1) {
             BigInteger plainValue = CryptoScheme.decrypt(key, encryptedValue);
             Card result = CardTranslator.valueToCard(plainValue, getActionTarget());

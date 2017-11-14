@@ -2,11 +2,10 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 
-public class UnoGame implements MoveValidator, ActionCardTarget {
+public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSupplier {
 
     private CommunicationStrategy comm;
     private CardHandlingStrategy cardHandlingStrategy;
-    private List<Player> players;
     private int currentPlayerIndex;
     private Player winner;
     private boolean currentPlayerHasMovedThisTurn;
@@ -23,7 +22,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     }
 
     public Player getCurrentPlayer() {
-        return players.get(currentPlayerIndex);
+        return getPlayers().get(currentPlayerIndex);
     }
 
     @Override
@@ -34,18 +33,38 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     public Player getNextPlayer() {
         int index = currentPlayerIndex + turnDirection;
         if (index < 0)
-            index += players.size();
-        index %= players.size();
-        return players.get(index);
+            index += getPlayers().size();
+        index %= getPlayers().size();
+        return getPlayers().get(index);
     }
 
     public void advanceTurn() {
         currentPlayerIndex += turnDirection;
         if (currentPlayerIndex < 0)
-            currentPlayerIndex += players.size();
-        currentPlayerIndex %= players.size();
+            currentPlayerIndex += getPlayers().size();
+        currentPlayerIndex %= getPlayers().size();
         currentPlayerHasDrawnThisTurn = false;
         currentPlayerHasMovedThisTurn = false;
+    }
+
+    public GameState getState() {
+        return new GameState(currentPlayerIndex, turnDirection, pendingDraws, pendingSkipCards,
+                currentPlayerHasMovedThisTurn, currentPlayerHasDrawnThisTurn,
+                comm.getPlayers(), comm.getLocalPeerInfo(),
+                cardHandlingStrategy.getPile().getCards(),
+                cardHandlingStrategy.getHands());
+    }
+
+    public void setState(GameState state) {
+        currentPlayerIndex = state.getCurrentPlayerIndex();
+        turnDirection = state.getTurnDirection();
+        pendingDraws = state.getPendingDraws();
+        pendingSkipCards = state.getPendingSkipCards();
+        currentPlayerHasMovedThisTurn = state.getCurrentPlayerHasMovedThisTurn();
+        currentPlayerHasDrawnThisTurn = state.getCurrentPlayerHasDrawnThisTurn();
+        comm.setPlayers(state.getPeerInfos());
+        cardHandlingStrategy.setPile(state.getPileCards(), this);
+        cardHandlingStrategy.setHands(state.getHandCards());
     }
 
     @Override
@@ -69,7 +88,6 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     private Move getMoveFromCurrentPlayer() {
         return getMoveFromPlayer(getCurrentPlayer());
     }
-
 
     public boolean isLegal(Move move) {
         if (move.getType() == MoveType.PLAY) {
@@ -111,13 +129,13 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
      * i.e. check that the player is local.
      */
     public boolean legalMoveExists() {
-        return isLegal(new Move(players.get(currentPlayerIndex), MoveType.DRAW, 0)) || legalPlayMoveExists();
+        return isLegal(new Move(getPlayers().get(currentPlayerIndex), MoveType.DRAW, 0)) || legalPlayMoveExists();
     }
 
     private boolean legalPlayMoveExists() {
         int i = 0;
-        for (Card c : cardHandlingStrategy.getCardsFromPlayer(players.get(currentPlayerIndex))) {
-            if (isLegal(new Move(players.get(currentPlayerIndex), MoveType.PLAY, i++))) {
+        for (Card c : cardHandlingStrategy.getCardsFromPlayer(getPlayers().get(currentPlayerIndex))) {
+            if (isLegal(new Move(getPlayers().get(currentPlayerIndex), MoveType.PLAY, i++))) {
                 return true;
             }
         }
@@ -181,18 +199,15 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
      * Performs the action of playing a card to the pile.
      */
     private boolean doPlayMove(Move move) {
-        System.out.println("Revealing card number " + move.getCardIndex());
         cardHandlingStrategy.revealCardFromMove(move);
-        System.out.println("Revealed it.");
         if (!isLegal(move)) {
-            System.out.println("That was a BAD MOVE");
+            System.out.println("Illegal move!");
             return false;
         }
 
         Card card = cardHandlingStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
         currentPlayerHasMovedThisTurn = true;
         cardHandlingStrategy.movePlayersCardToPile(move.getPlayer(), move.getCardIndex());
-        System.out.println("Moved it to the pile.");
 
         if (card instanceof ActionCard) {
             ((ActionCard) card).performAction();
@@ -209,7 +224,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
      * Returns whether a player has won the game
      */
     private boolean checkForWinner() {
-        for (Player p : players)
+        for (Player p : getPlayers())
             if (isWinner(p)) {
                 winner = p;
                 return true;
@@ -217,8 +232,11 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         return false;
     }
 
+    private List<Player> getPlayers() {
+        return comm.getPlayers();
+    }
+
     public void run() {
-        players = comm.getPlayers();
         cardHandlingStrategy.initializeNewDeck();
         distributeHands();
         do {
@@ -244,9 +262,11 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
      * Otherwise, we wait for the action of another player.
      */
     private void doTurn() {
-        Move move;
+        // first, if any players want to join, handle it
+        comm.handleJoiningPlayers(getCurrentPlayer(), this);
+
         while (true) {
-            move = getMoveFromCurrentPlayer();
+            Move move = getMoveFromCurrentPlayer();
             if (doMove(move))
                 // it was valid, so the turn is over
                 break;
@@ -263,5 +283,30 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     @Override
     public void changeTurnDirection() {
         turnDirection *= -1;
+    }
+
+    public void initializeNewDeck() {
+        cardHandlingStrategy.initializeNewDeck();
+    }
+
+    @Override
+    public CardHandlingStrategy getCardHandlingStrategy() {
+        return cardHandlingStrategy;
+    }
+
+    public void join(GameState state) {
+        setState(state);
+        comm.addSelfToPlayersList();
+
+        initializeNewDeck();
+
+        for (int i = 0; i < Hand.CARDS_PER_HAND; i++)
+            cardHandlingStrategy.drawCardFromDeckForPlayer(comm.getLocalPlayer());
+
+        do {
+            renderState();
+            doTurn();
+        } while (!checkForWinner());
+        announceWinner();
     }
 }

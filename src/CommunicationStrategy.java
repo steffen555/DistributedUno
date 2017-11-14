@@ -22,4 +22,14 @@ public interface CommunicationStrategy {
     void setMoveValidator(MoveValidator v);
 
     CardColor getColorFromPlayer(Player player);
+
+    void handleJoiningPlayers(Player currentPlayer, GameStateSupplier game);
+
+    void setPlayers(List<PeerInfo> peerInfos);
+
+    void addSelfToPlayersList();
+
+    PeerInfo getLocalPeerInfo();
+
+    Player getLocalPlayer();
 }

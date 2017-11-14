@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,11 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
     public void drawCardFromDeckForPlayer(Player player) {
         EncryptedCard card = (EncryptedCard) deck.drawCard();
         Card decrypted = comm.decryptCardWithKeysFromOtherPlayers(player, card);
+
+        // if the player is new, his hand may not be initialized yet.
+        if (!playerHandMap.containsKey(player))
+            playerHandMap.put(player, new ArrayList<>());
+
         playerHandMap.get(player).add(decrypted);
     }
 
@@ -81,5 +87,39 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
 
     public void setActionCardTarget(ActionCardTarget target) {
         actionTarget = target;
+    }
+
+    @Override
+    public Pile getPile() {
+        return pile;
+    }
+
+    @Override
+    public void setPile(List<CardRepresentation> pileCards, ActionCardTarget act) {
+        pile = new Pile();
+        for (CardRepresentation c : pileCards)
+            pile.addCard(c.toCard(act));
+    }
+
+    @Override
+    public List<List<Card>> getHands() {
+        List<List<Card>> result = new ArrayList<>();
+        for (Player p : comm.getPlayers()) {
+            result.add(getCardsFromPlayer(p));
+        }
+        return result;
+    }
+
+    @Override
+    public void setHands(List<List<CardRepresentation>> handCards) {
+        int i = 0;
+        for(Player p : comm.getPlayers()) {
+            List<CardRepresentation> reprs = handCards.get(i++);
+            List<Card> cards = new ArrayList<>();
+            for (CardRepresentation repr : reprs)
+                cards.add(repr.toCard(actionTarget));
+
+            playerHandMap.put(p, cards);
+        }
     }
 }

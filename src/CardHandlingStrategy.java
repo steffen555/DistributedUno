@@ -20,4 +20,12 @@ public interface CardHandlingStrategy {
     void revealCardFromMove(Move move);
 
     void setActionCardTarget(ActionCardTarget target);
+
+    Pile getPile();
+
+    void setPile(List<CardRepresentation> pileCards, ActionCardTarget act);
+
+    List<List<Card>> getHands();
+
+    void setHands(List<List<CardRepresentation>> handCards);
 }

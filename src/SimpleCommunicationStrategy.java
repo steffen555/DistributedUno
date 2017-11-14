@@ -91,4 +91,29 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
     public CardColor getColorFromPlayer(Player player) {
         return null;
     }
+
+    @Override
+    public void handleJoiningPlayers(Player currentPlayer, GameStateSupplier game) {
+        // TODO
+    }
+
+    @Override
+    public void setPlayers(List<PeerInfo> peerInfos) {
+        // TODO
+    }
+
+    @Override
+    public void addSelfToPlayersList() {
+        // TODO
+    }
+
+    @Override
+    public PeerInfo getLocalPeerInfo() {
+        return null;
+    }
+
+    @Override
+    public Player getLocalPlayer() {
+        return null;
+    }
 }

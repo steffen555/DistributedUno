@@ -4,10 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
@@ -95,6 +92,75 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         return player.receiveColor();
     }
 
+    // continuously receive a JoinRequestMessage until we see a Move, then return it.
+    @Override
+    public void handleJoiningPlayers(Player currentPlayer, GameStateSupplier game) {
+        boolean isMyTurn = currentPlayer instanceof LocalPlayer;
+
+        JoinRequestMessage m;
+        while (true) {
+            m = messageReceiver.receiveJoinRequestMessage(isMyTurn);
+            if (m == null)
+                break;
+
+            handleJoinRequest(m, game);
+        }
+    }
+
+    @Override
+    public void setPlayers(List<PeerInfo> peerInfos) {
+        for (PeerInfo pi : peerInfos)
+            if (pi.equals(myInfo))
+                players.add(new LocalPlayer());
+            else
+                players.add(new RemotePlayer(pi));
+    }
+
+    @Override
+    public void addSelfToPlayersList() {
+        addToPlayersList(new LocalPlayer());
+    }
+
+    @Override
+    public PeerInfo getLocalPeerInfo() {
+        return myInfo;
+    }
+
+    @Override
+    public Player getLocalPlayer() {
+        return new LocalPlayer();
+    }
+
+    private void handleJoinRequest(JoinRequestMessage m, GameStateSupplier game) {
+        Player newPlayer = new RemotePlayer(m.getPeerInfo());
+        if (!m.isRelayed()) {
+            // the new player joined us directly, so notify everyone else
+            m.setRelayed();
+            broadcastObject(m);
+
+            // tell the player that the game is in progress
+            sendObject(m.getPeerInfo(), new GameInProgressMessage());
+
+            // also send the player the game state
+            sendObject(m.getPeerInfo(), game.getState());
+        }
+
+        // add the player to the players list.
+        addToPlayersList(newPlayer);
+
+        // cooperate with the others to reset the deck
+        game.initializeNewDeck();
+
+        // let the new player draw a hand
+        for (int i = 0; i < Hand.CARDS_PER_HAND; i++) {
+            game.getCardHandlingStrategy().drawCardFromDeckForPlayer(newPlayer);
+        }
+    }
+
+    private void addToPlayersList(Player player) {
+        players.add(player);
+    }
+
     private class LocalPlayer extends Player {
         @Override
         public Move receiveMove() {
@@ -115,6 +181,17 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
         public String toString() {
             return "Local player";
+        }
+
+        public boolean equals(Object o) {
+            if (o instanceof LocalPlayer)
+                return true;
+
+            return false;
+        }
+
+        public int hashCode() {
+            return toString().hashCode();
         }
     }
 
@@ -142,35 +219,80 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         public String toString() {
             return "Remote player: " + peerInfo.toString();
         }
+
+        public boolean equals(Object o) {
+            if (o instanceof RemotePlayer) {
+                return peerInfo.equals(((RemotePlayer) o).getPeerInfo());
+            }
+
+            return false;
+        }
+
+        public int hashCode() {
+            return this.toString().hashCode();
+        }
     }
 
     public void hostNetwork(int numberOfPlayers) throws IOException, ClassNotFoundException {
         players.add(new LocalPlayer());
+
+        // first wait for join requests from each player
         int counter = numberOfPlayers - 1;
         while (counter > 0) {
-            PeerInfo peerInfo = (PeerInfo) receiveObject(PeerInfo.class);
+            // get the join request
+            JoinRequestMessage jrm = (JoinRequestMessage) receiveObject(JoinRequestMessage.class);
+            PeerInfo peerInfo = jrm.getPeerInfo();
+
+            // tell them the game is being created (it's new)
+            sendObject(peerInfo, new GameBeingCreatedMessage());
+
+            // add them to the list of players
             players.add(new RemotePlayer(peerInfo));
             counter--;
         }
+
+        // then broadcast the list of players so everyone agrees on it (and its order!)
         ArrayList<PeerInfo> peerInfos = new ArrayList<>();
-        for (Player p : players)
+        for (Player p : players) {
             if (p instanceof LocalPlayer)
                 peerInfos.add(myInfo);
             else
                 peerInfos.add(p.getPeerInfo());
+        }
         broadcastObject(peerInfos);
     }
 
-    public void joinNetwork(String ip, int port) throws IOException, ClassNotFoundException {
+    public GameState joinNetwork(String ip, int port, UnoGame game) throws IOException, ClassNotFoundException {
         PeerInfo hostInfo = new PeerInfo(ip, port);
-        sendObject(hostInfo, myInfo);
 
+        // tell the host we want to join
+        JoinRequestMessage jrm = new JoinRequestMessage(myInfo);
+        sendObject(hostInfo, jrm);
+
+        // receive a message back which tells us if the game is running or not
+        Object message = messageReceiver.receiveObject(
+                Arrays.asList(GameInProgressMessage.class, GameBeingCreatedMessage.class));
+
+        if (message instanceof GameInProgressMessage)
+            return joinGameInProgress(game);
+        else if (message instanceof GameBeingCreatedMessage)
+            joinGameBeingCreated();
+        else
+            System.out.println("Unhandled message type");
+        return null;
+    }
+
+    private GameState joinGameInProgress(UnoGame game) {
+        System.out.println("The game is in progress! Joining it.");
+
+        // receive the game state from the player we contacted
+        return (GameState) receiveObject(GameState.class);
+    }
+
+    private void joinGameBeingCreated() {
+        // receive a list of all players from the host
         ArrayList<PeerInfo> peerInfos = (ArrayList<PeerInfo>) receiveObject(ArrayList.class);
-        for (PeerInfo pi : peerInfos)
-            if (pi.equals(myInfo))
-                players.add(new LocalPlayer());
-            else
-                players.add(new RemotePlayer(pi));
+        setPlayers(peerInfos);
     }
 
     private Move receiveMoveFromLocalUser(Player playerInTurn) {
@@ -303,3 +425,28 @@ class MoveMessage implements Serializable {
         return index;
     }
 }
+
+class JoinRequestMessage implements Serializable {
+    private final PeerInfo peerInfo;
+    private boolean relayed;
+
+    public JoinRequestMessage(PeerInfo p) {
+        peerInfo = p;
+        relayed = false;
+    }
+
+    public PeerInfo getPeerInfo() {
+        return peerInfo;
+    }
+
+    public boolean isRelayed() {
+        return relayed;
+    }
+
+    public void setRelayed() {
+        relayed = true;
+    }
+}
+
+class GameInProgressMessage implements Serializable { }
+class GameBeingCreatedMessage implements Serializable { }

@@ -2,10 +2,18 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
-        DistributedCommunicationStrategy comm = null;
+        if (args.length != 1 && args.length != 3) {
+            System.out.println("Wrong number of parameters");
+            return;
+        }
+
+        GameState state = null;
+        int myPort = Integer.parseInt(args[0]);
+        DistributedCommunicationStrategy comm = new DistributedCommunicationStrategy(myPort);
+        CardHandlingStrategy chs = new CryptoCardHandlingStrategy(comm);
+        UnoGame game = new UnoGame(comm, chs);
+
         if (args.length == 1) {
-            int myPort = Integer.parseInt(args[0]);
-            comm = new DistributedCommunicationStrategy(myPort);
             System.out.println("I am hosting on port " + myPort);
             try {
                 comm.hostNetwork(2);
@@ -14,27 +22,30 @@ public class Main {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-        } else if (args.length == 3) {
-            int myPort = Integer.parseInt(args[0]);
-            comm = new DistributedCommunicationStrategy(Integer.parseInt(args[0]));
+        } else {
             String otherIp = args[1];
             if (otherIp.equals("localhost"))
                 otherIp = "127.0.0.1";
             int otherPort = Integer.parseInt(args[2]);
+            System.out.println("I am joining " + otherIp + " with port " + otherPort);
+
             try {
-                comm.joinNetwork(otherIp, otherPort);
+                state = comm.joinNetwork(otherIp, otherPort, game);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-            System.out.println("I am joining " + otherIp + " with port " + otherPort);
-        } else {
-            System.out.println("Wrong number of parameters");
-        }
-//        CommunicationStrategy comm = new SimpleCommunicationStrategy(4);
 
-        UnoGame game = new UnoGame(comm, new CryptoCardHandlingStrategy(comm));
-        game.run();
+            System.out.println("The state is: " + state );
+        }
+
+        if (state == null) {
+            // it's a fresh game, so just run it
+            game.run();
+        } else {
+            // we're joining an existing game
+            game.join(state);
+        }
     }
 }

@@ -21,4 +21,8 @@ public class Pile {
     public void setTopCard(Card c) {
         cards.set(cards.size() - 1, c);
     }
+
+    public List<Card> getCards() {
+        return cards;
+    }
 }
