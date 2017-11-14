@@ -1,4 +1,4 @@
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import java.io.IOException;
 
 import java.util.List;
 
@@ -169,10 +169,6 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         return true;
     }
 
-    private boolean gameOver() {
-        throw new NotImplementedException();
-    }
-
     private boolean isWinner(Player player) {
         return cardHandlingStrategy.getCardsFromPlayer(player).size() == 0;
     }
@@ -181,9 +177,9 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
      * Performs the action of playing a card to the pile.
      */
     private boolean doPlayMove(Move move) {
-        System.out.println("Revealing card number " + move.getCardIndex());
+//        System.out.println("Revealing card number " + move.getCardIndex());
         cardHandlingStrategy.revealCardFromMove(move);
-        System.out.println("Revealed it.");
+//        System.out.println("Revealed it.");
         if (!isLegal(move)) {
             System.out.println("That was a BAD MOVE");
             return false;
@@ -192,7 +188,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         Card card = cardHandlingStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
         currentPlayerHasMovedThisTurn = true;
         cardHandlingStrategy.movePlayersCardToPile(move.getPlayer(), move.getCardIndex());
-        System.out.println("Moved it to the pile.");
+//        System.out.println("Moved it to the pile.");
 
         if (card instanceof ActionCard) {
             ((ActionCard) card).performAction();
@@ -234,14 +230,34 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     }
 
     private void renderState() {
+        clearScreen();
         System.out.println("------------------------");
         System.out.println("Awaiting move from player " + currentPlayerIndex);
         System.out.println("Pile:");
         CardPrinter.printCard(cardHandlingStrategy.getTopCardFromPile());
-        System.out.println("Player hand:");
-        CardPrinter.printCards(cardHandlingStrategy.getCardsFromPlayer(getCurrentPlayer()));
+        System.out.println("Player hands:");
+        for (Player player : players) {
+            if (player.equals(getCurrentPlayer()))
+                System.out.println("In turn");
+            CardPrinter.printCards(cardHandlingStrategy.getCardsFromPlayer(player));
+        }
         System.out.println("------------------------");
     }
+
+    /**
+     * Clears the screen
+     */
+    public static void clearScreen(){
+        try {
+            if (System.getProperty("os.name").contains("Windows"))
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            else {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+        } catch (IOException | InterruptedException e) {e.printStackTrace();}
+    }
+
 
     /**
      * Mechanics for the turn of any player.
@@ -267,6 +283,9 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
 
     @Override
     public void changeTurnDirection() {
-        turnDirection *= -1;
+        if (players.size() == 2)
+            pendingSkipCards++;
+        else
+            turnDirection *= -1;
     }
 }

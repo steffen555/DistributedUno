@@ -37,15 +37,15 @@ public class CardPrinter {
         } else if (card instanceof RegularCard) {
             symbol = Integer.toString(((RegularCard) card).getNumber());
         } else if (card instanceof ChangeTurnDirectionCard) {
-            symbol = "⇄";
+            symbol = "d"; //⇄
         } else if (card instanceof SkipCard) {
-            symbol = "☹"; //⊘
+            symbol = "s"; //⊘  ☹
         } else if (card instanceof ChangeColorCard) {
-            symbol = "⚛";
+            symbol = "c"; //⚛
         } else if (card instanceof DrawTwoCard) {
-            symbol = "②";
+            symbol = "t"; //②
         } else if (card instanceof DrawFourAndChangeColorCard) {
-            symbol = "④";
+            symbol = "f"; //④
         } else {
             System.out.println("weird card: " + card);
             symbol = "TODO";
@@ -56,8 +56,18 @@ public class CardPrinter {
         out.set(2, out.get(2) + color + "| " + symbol + " |" + NO_COLOR);
         out.set(3, out.get(3) + color + "|___|" + NO_COLOR);
 
-        if (number != -1)
-            out.set(4, out.get(4) + "  " + Integer.toString(number) + "  ");
+        if (number != -1) {
+            int numberOfDigits = ((Integer) number).toString().length();
+            String spaceBefore = "  ";
+            String spaceAfter = "  ";
+            if (numberOfDigits == 2)
+                spaceAfter = " ";
+            if (numberOfDigits == 3) {
+                spaceBefore = " ";
+                spaceAfter = " ";
+            }
+            out.set(4, out.get(4) + spaceBefore + Integer.toString(number) + spaceAfter);
+        }
     }
 
     public static void doPrintCards(List<Card> cards, boolean printNumbers) {
