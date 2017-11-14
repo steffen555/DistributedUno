@@ -58,10 +58,15 @@ public class CardPrinter {
 
         if (number != -1) {
             int numberOfDigits = ((Integer) number).toString().length();
-            String relativeSpace = "";
-            for (int i = 0; i < 3 - numberOfDigits; i++)
-                relativeSpace += " ";
-            out.set(4, out.get(4) + "  " + Integer.toString(number) + relativeSpace);
+            String spaceBefore = "  ";
+            String spaceAfter = "  ";
+            if (numberOfDigits == 2)
+                spaceAfter = " ";
+            if (numberOfDigits == 3) {
+                spaceBefore = " ";
+                spaceAfter = " ";
+            }
+            out.set(4, out.get(4) + spaceBefore + Integer.toString(number) + spaceAfter);
         }
     }
 
