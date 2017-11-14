@@ -223,6 +223,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         players = comm.getPlayers();
         cardHandlingStrategy.initializeNewDeck();
         distributeHands();
+        //Handling when the initial card on the pile is an ActionCard
         Card topPileCard = cardHandlingStrategy.getTopCardFromPile();
         if (topPileCard instanceof ActionCard) {
             if (topPileCard instanceof DrawFourAndChangeColorCard)
