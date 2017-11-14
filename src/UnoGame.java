@@ -231,8 +231,11 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         System.out.println("Pile:");
         CardPrinter.printCard(cardHandlingStrategy.getTopCardFromPile());
         System.out.println("Player hands:");
-        for (Player player : players)
+        for (Player player : players) {
+            if (player.equals(getCurrentPlayer()))
+                System.out.println("In turn");
             CardPrinter.printCards(cardHandlingStrategy.getCardsFromPlayer(player));
+        }
         System.out.println("------------------------");
     }
 
