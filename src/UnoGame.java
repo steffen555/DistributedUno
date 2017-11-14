@@ -197,6 +197,11 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         if (card instanceof ActionCard) {
             ((ActionCard) card).performAction();
         }
+        if(cardHandlingStrategy.getCardsFromPlayer(move.getPlayer()).size() == 1 && !move.saidUno()){
+            System.out.println("OMG HE DID NOT SAY UNO!!! BURN HIM!!!");
+            cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
+            cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
+        }
 
         return true;
     }

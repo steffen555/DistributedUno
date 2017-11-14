@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
@@ -66,7 +68,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
     private Move doReceiveMove(Player player) {
         MoveMessage moveMessage = (MoveMessage) receiveObject(MoveMessage.class);
-        return new Move(player, moveMessage.getMoveType(), moveMessage.getIndex());
+        return new Move(player, moveMessage.getMoveType(), moveMessage.getIndex(), moveMessage.getUno());
     }
 
 
@@ -176,7 +178,35 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     private Move receiveMoveFromLocalUser(Player playerInTurn) {
         if (!moveValidator.legalMoveExists())
             return new Move(playerInTurn, MoveType.END_TURN, 0);
-        MoveType moveType = getMoveTypeFromUser();
+        MoveType moveType = null;
+        while (moveType == null) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("It's your turn. Would you like to draw, play a card or end your turn? (d/p/e): ");
+            String reply = scanner.next();
+            boolean uno;
+            Matcher matcher = Pattern.compile(".*u", Pattern.CASE_INSENSITIVE).matcher(reply);
+            uno = matcher.matches();
+            if(uno) {
+                reply = reply.substring(0, reply.length() - 1);
+                System.out.println("UNO!!!");
+            }
+            switch (reply) {
+                case "d":
+                    moveType = MoveType.DRAW;
+                    break;
+                case "p":
+                    moveType = MoveType.PLAY;
+                    break;
+                case "e":
+                    moveType = MoveType.END_TURN;
+                    break;
+                default:
+                    Matcher matcher2 = Pattern.compile("p[0-9]*", Pattern.CASE_INSENSITIVE).matcher(reply);
+                    if (matcher2.matches())
+                        return new Move(playerInTurn, MoveType.PLAY, Integer.parseInt(reply.substring(1)), uno);
+                    System.out.println("Failed to parse");
+            }
+        }
         int cardIndex = 0;
         if (moveType.equals(MoveType.PLAY))
             cardIndex = getCardFromUser();
@@ -206,23 +236,6 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         }
     }
 
-    private MoveType getMoveTypeFromUser() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("It's your turn. Would you like to draw, play a card or end your turn? (d/p/e): ");
-        String reply = scanner.next();
-        switch (reply) {
-            case "d":
-                return MoveType.DRAW;
-            case "p":
-                return MoveType.PLAY;
-            case "e":
-                return MoveType.END_TURN;
-            default:
-                System.out.println("Failed to parse");
-                return getMoveTypeFromUser();
-        }
-    }
-
     private int getCardFromUser() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Which card from your hand would you like to play?: ");
@@ -236,7 +249,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     private void sendMove(PeerInfo peerInfo, Move move) {
-        sendObject(peerInfo, new MoveMessage(move.getType(), move.getCardIndex()));
+        sendObject(peerInfo, new MoveMessage(move.getType(), move.getCardIndex(), move.saidUno()));
     }
 
     private void sendObject(PeerInfo peerInfo, Serializable object) {
@@ -289,10 +302,12 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 class MoveMessage implements Serializable {
     private MoveType moveType;
     private int index;
+    private boolean uno;
 
-    public MoveMessage(MoveType moveType, int index) {
+    public MoveMessage(MoveType moveType, int index, boolean uno) {
         this.moveType = moveType;
         this.index = index;
+        this.uno = uno;
     }
 
     public MoveType getMoveType() {
@@ -301,5 +316,9 @@ class MoveMessage implements Serializable {
 
     public int getIndex() {
         return index;
+    }
+
+    public boolean getUno(){
+        return uno;
     }
 }
