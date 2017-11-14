@@ -229,13 +229,20 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     }
 
     private void renderState() {
+        clearScreen();
         System.out.println("------------------------");
         System.out.println("Awaiting move from player " + currentPlayerIndex);
         System.out.println("Pile:");
         CardPrinter.printCard(cardHandlingStrategy.getTopCardFromPile());
-        System.out.println("Player hand:");
-        CardPrinter.printCards(cardHandlingStrategy.getCardsFromPlayer(getCurrentPlayer()));
+        System.out.println("Player hands:");
+        for (Player player : players)
+            CardPrinter.printCards(cardHandlingStrategy.getCardsFromPlayer(player));
         System.out.println("------------------------");
+    }
+
+    public static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 
     /**
