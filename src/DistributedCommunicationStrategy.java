@@ -249,7 +249,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
                     moveType = MoveType.END_TURN;
                     break;
                 default:
-                    Matcher matcher2 = Pattern.compile("p[0-9]", Pattern.CASE_INSENSITIVE).matcher(reply);
+                    Matcher matcher2 = Pattern.compile("p[0-9]*", Pattern.CASE_INSENSITIVE).matcher(reply);
                     if (matcher2.matches())
                         return new Move(playerInTurn, MoveType.PLAY, Integer.parseInt(reply.substring(1)), uno);
                     System.out.println("Failed to parse");
