@@ -1,4 +1,3 @@
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.IOException;
 
 import java.util.List;
@@ -168,10 +167,6 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
         currentPlayerHasDrawnThisTurn = true;
         return true;
-    }
-
-    private boolean gameOver() {
-        throw new NotImplementedException();
     }
 
     private boolean isWinner(Player player) {
