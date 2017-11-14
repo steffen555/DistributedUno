@@ -262,6 +262,9 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
 
     @Override
     public void changeTurnDirection() {
-        turnDirection *= -1;
+        if (players.size() == 2)
+            pendingSkipCards++;
+        else
+            turnDirection *= -1;
     }
 }
