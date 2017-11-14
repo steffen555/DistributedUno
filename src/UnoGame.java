@@ -222,6 +222,12 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         players = comm.getPlayers();
         cardHandlingStrategy.initializeNewDeck();
         distributeHands();
+        Card topPileCard = cardHandlingStrategy.getTopCardFromPile();
+        if (topPileCard instanceof ActionCard) {
+            if (topPileCard instanceof ChangeColorCard || topPileCard instanceof DrawFourAndChangeColorCard)
+                renderState();
+            ((ActionCard) topPileCard).performAction();
+        }
         do {
             renderState();
             doTurn();
