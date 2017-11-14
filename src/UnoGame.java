@@ -182,9 +182,9 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
      * Performs the action of playing a card to the pile.
      */
     private boolean doPlayMove(Move move) {
-        System.out.println("Revealing card number " + move.getCardIndex());
+//        System.out.println("Revealing card number " + move.getCardIndex());
         cardHandlingStrategy.revealCardFromMove(move);
-        System.out.println("Revealed it.");
+//        System.out.println("Revealed it.");
         if (!isLegal(move)) {
             System.out.println("That was a BAD MOVE");
             return false;
@@ -193,7 +193,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         Card card = cardHandlingStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
         currentPlayerHasMovedThisTurn = true;
         cardHandlingStrategy.movePlayersCardToPile(move.getPlayer(), move.getCardIndex());
-        System.out.println("Moved it to the pile.");
+//        System.out.println("Moved it to the pile.");
 
         if (card instanceof ActionCard) {
             ((ActionCard) card).performAction();
@@ -246,6 +246,9 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
 //        System.out.flush();
 //    }
 
+    /**
+     * Clears the console by printing multiple empty lines
+     */
     public final static void clearConsole()
     {
         for (int i = 0; i < 50; ++i) System.out.println();
