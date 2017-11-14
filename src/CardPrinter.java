@@ -39,11 +39,13 @@ public class CardPrinter {
         } else if (card instanceof ChangeTurnDirectionCard) {
             symbol = "⇄";
         } else if (card instanceof SkipCard) {
-            symbol = "⚔";
+            symbol = "☹";
         } else if (card instanceof ChangeColorCard) {
             symbol = "⚛";
         } else if (card instanceof DrawTwoCard) {
-            symbol = "⛁";
+            symbol = "⚁";
+        } else if (card instanceof DrawFourAndChangeColorCard) {
+            symbol = "⚃";
         } else {
             System.out.println("weird card: " + card);
             symbol = "TODO";

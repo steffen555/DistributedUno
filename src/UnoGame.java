@@ -74,15 +74,17 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     public boolean isLegal(Move move) {
         if (move.getType() == MoveType.PLAY) {
             Card playedCard = cardHandlingStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
+            Card topCard = cardHandlingStrategy.getTopCardFromPile();
+
             if (playedCard == null) {
                 return false;
             }
 
+            // if there are draws pending, you may only put a +2 on top of another +2,
+            // and likewise for a +4.
             if (pendingDraws != 0) {
-                return (playedCard instanceof DrawTwoCard);
+                return topCard.getClass().equals(playedCard.getClass());
             }
-
-            Card topCard = cardHandlingStrategy.getTopCardFromPile();
 
             if (playedCard.getNumber() == topCard.getNumber())
                 return true;
@@ -95,13 +97,13 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
             if (isColorValid && !currentPlayerHasMovedThisTurn)
                 return true;
 
-            return false;
         } else if (move.getType() == MoveType.DRAW) {
             return !currentPlayerHasDrawnThisTurn && !currentPlayerHasMovedThisTurn;
         } else if (move.getType() == MoveType.END_TURN) {
             return currentPlayerHasMovedThisTurn || currentPlayerHasDrawnThisTurn;
-        } else
-            return false;
+        }
+
+        return false;
     }
 
     /**
