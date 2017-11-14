@@ -11,11 +11,10 @@ import java.util.Scanner;
 
 public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
-    private ServerSocket serverSocket;
+    private final MessageReceiver messageReceiver;
     private PeerInfo myInfo;
     private ArrayList<Player> players;
     private MoveValidator moveValidator;
-    private List<Object> receiveQueue;
 
     // TODO: handle the case when this fails better, e.g. if we have two IPs
     private String myIP() {
@@ -41,14 +40,11 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
     public DistributedCommunicationStrategy(int port) {
         System.out.println("My IP is: " + myIP());
-        try {
-            serverSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         myInfo = new PeerInfo(myIP(), port);
         players = new ArrayList<>();
-        receiveQueue = new ArrayList<>();
+
+        messageReceiver = new MessageReceiver(port);
+        messageReceiver.start();
     }
 
     public List<Player> getPlayers() {
@@ -63,57 +59,16 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         sendObject(player.getPeerInfo(), object);
     }
 
+    @Override
+    public Object receiveObject(Class c) {
+        return messageReceiver.receiveObject(c);
+    }
+
     private Move doReceiveMove(Player player) {
         MoveMessage moveMessage = (MoveMessage) receiveObject(MoveMessage.class);
         return new Move(player, moveMessage.getMoveType(), moveMessage.getIndex());
     }
 
-    private Object doReceiveObject() {
-        Socket socket;
-        try {
-            socket = serverSocket.accept();
-        } catch (IOException e) {
-            return null;
-        }
-        try {
-            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-
-            Object object;
-            object = inputStream.readObject();
-            outputStream.writeObject("Object received");
-            System.out.println("This object was received: " + object);
-            socket.close();
-            return object;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public Object receiveObject(Class c) {
-        // first try to find the object in the queue
-        for (Object o : receiveQueue) {
-            if (c.isInstance(o)) {
-                receiveQueue.remove(o);
-                return o;
-            }
-        }
-
-        // if it's not in the queue, keep receiving objects until we find it
-        while (true) {
-            Object o = doReceiveObject();
-            if (c.isInstance(o)) {
-                return o;
-            } else {
-                // put it in the queue for later if it's not a c
-                receiveQueue.add(o);
-            }
-        }
-    }
 
     public void broadcastObject(Serializable object) {
         for (Player player : players) {
@@ -204,8 +159,6 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             else
                 peerInfos.add(p.getPeerInfo());
         broadcastObject(peerInfos);
-
-        // System.out.println("These are my peers" + peerInfos);
     }
 
     public void joinNetwork(String ip, int port) throws IOException, ClassNotFoundException {
@@ -218,7 +171,6 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
                 players.add(new LocalPlayer());
             else
                 players.add(new RemotePlayer(pi));
-        // System.out.println("These are my peers: " + peerInfos);
     }
 
     private Move receiveMoveFromLocalUser(Player playerInTurn) {
@@ -291,12 +243,9 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         try {
             Socket socket = new Socket(peerInfo.getIp(), peerInfo.getPort());
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-//            System.out.println("Trying to send " + object);
             outputStream.writeObject(object);
-//            System.out.println("I have sent this object: " + object);
             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
             String returnMessage = (String) inputStream.readObject();
-            // System.out.println("The return message: " + returnMessage);
             socket.close();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

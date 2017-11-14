@@ -30,7 +30,6 @@ Cards:
 public class CardTranslator {
 
     private static int cardToInt(Card card) {
-        System.out.println("Card: " + card.getColor());
         int number = cardToNumber(card);
         int color = card.getColor().ordinal() * 100;
         return color + number;
