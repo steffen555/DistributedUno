@@ -91,7 +91,8 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
 
             boolean isColorValid = (
                    playedCard.getColor() == topCard.getColor() ||
-                   playedCard.getColor() == CardColor.NO_COLOR
+                   playedCard.getColor() == CardColor.NO_COLOR ||
+                   topCard.getColor() == CardColor.NO_COLOR
             );
 
             if (isColorValid && !currentPlayerHasMovedThisTurn)
@@ -222,6 +223,15 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         players = comm.getPlayers();
         cardHandlingStrategy.initializeNewDeck();
         distributeHands();
+        Card topPileCard = cardHandlingStrategy.getTopCardFromPile();
+        if (topPileCard instanceof ActionCard) {
+            if (topPileCard instanceof DrawFourAndChangeColorCard)
+                ((DrawFourAndChangeColorCard) topPileCard).performInitialAction();
+            else if (topPileCard instanceof SkipCard || (players.size() == 2 && topPileCard instanceof ChangeTurnDirectionCard) )
+                advanceTurn();
+            else if (!(topPileCard instanceof ChangeColorCard))
+                ((ActionCard) topPileCard).performAction();
+        }
         do {
             renderState();
             doTurn();

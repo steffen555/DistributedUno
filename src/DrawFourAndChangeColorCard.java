@@ -9,4 +9,8 @@ public class DrawFourAndChangeColorCard extends ActionCard {
         getActionTarget().drawCardsFromDeckForNextPlayer(4);
     }
 
+    public void performInitialAction() {
+        getActionTarget().drawCardsFromDeckForNextPlayer(4);
+    }
+
 }
