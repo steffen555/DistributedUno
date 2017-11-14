@@ -230,7 +230,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     }
 
     private void renderState() {
-        clearConsole();
+        clearScreen();
         System.out.println("------------------------");
         System.out.println("Awaiting move from player " + currentPlayerIndex);
         System.out.println("Pile:");
@@ -246,12 +246,24 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
 //        System.out.flush();
 //    }
 
+//    /**
+//     * Clears the console by printing multiple empty lines
+//     */
+//    public final static void clearConsole()
+//    {
+//        for (int i = 0; i < 50; ++i) System.out.println();
+//    }
+
     /**
-     * Clears the console by printing multiple empty lines
+     * clears the screen
      */
-    public final static void clearConsole()
-    {
-        for (int i = 0; i < 50; ++i) System.out.println();
+    public static void clearScreen(){
+        try {
+            if (System.getProperty("os.name").contains("Windows"))
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            else
+                Runtime.getRuntime().exec("clear");
+        } catch (IOException | InterruptedException e) {e.printStackTrace();}
     }
 
 
