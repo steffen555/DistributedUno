@@ -224,7 +224,32 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     private Move receiveMoveFromLocalUser(Player playerInTurn) {
         if (!moveValidator.legalMoveExists())
             return new Move(playerInTurn, MoveType.END_TURN, 0);
-        MoveType moveType = getMoveTypeFromUser();
+        MoveType moveType = null;
+        while (moveType == null) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("It's your turn. Would you like to draw, play a card or end your turn? (d/p/e): ");
+            String reply = scanner.next();
+            if(uno) {
+                reply = reply.substring(0, reply.length() - 1);
+                System.out.println("UNO!!!");
+            }
+            switch (reply) {
+                case "d":
+                    moveType = MoveType.DRAW;
+                    break;
+                case "p":
+                    moveType = MoveType.PLAY;
+                    break;
+                case "e":
+                    moveType = MoveType.END_TURN;
+                    break;
+                default:
+                    Matcher matcher2 = Pattern.compile("p[0-9]", Pattern.CASE_INSENSITIVE).matcher(reply);
+                    if (matcher2.matches())
+                        return new Move(playerInTurn, MoveType.PLAY, Integer.parseInt(reply.substring(1)), uno);
+                    System.out.println("Failed to parse");
+            }
+        }
         int cardIndex = 0;
         if (moveType.equals(MoveType.PLAY))
             cardIndex = getCardFromUser();
@@ -251,23 +276,6 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             default:
                 System.out.println("Failed to parse");
                 return getColorFromLocalUser();
-        }
-    }
-
-    private MoveType getMoveTypeFromUser() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("It's your turn. Would you like to draw, play a card or end your turn? (d/p/e): ");
-        String reply = scanner.next();
-        switch (reply) {
-            case "d":
-                return MoveType.DRAW;
-            case "p":
-                return MoveType.PLAY;
-            case "e":
-                return MoveType.END_TURN;
-            default:
-                System.out.println("Failed to parse");
-                return getMoveTypeFromUser();
         }
     }
 
