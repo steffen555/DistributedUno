@@ -1,4 +1,5 @@
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import java.io.IOException;
 
 import java.util.List;
 
@@ -229,7 +230,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
     }
 
     private void renderState() {
-        clearScreen();
+        clearConsole();
         System.out.println("------------------------");
         System.out.println("Awaiting move from player " + currentPlayerIndex);
         System.out.println("Pile:");
@@ -240,10 +241,16 @@ public class UnoGame implements MoveValidator, ActionCardTarget {
         System.out.println("------------------------");
     }
 
-    public static void clearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+//    public static void clearScreen() {
+//        System.out.print("\033[H\033[2J");
+//        System.out.flush();
+//    }
+
+    public final static void clearConsole()
+    {
+        for (int i = 0; i < 50; ++i) System.out.println();
     }
+
 
     /**
      * Mechanics for the turn of any player.
