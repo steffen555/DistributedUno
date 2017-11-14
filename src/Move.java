@@ -4,11 +4,17 @@ public class Move implements Serializable {
     private Player player;
     private MoveType type;
     private int cardIndex;
+    private boolean uno;
 
     public Move(Player player, MoveType type, int index) {
+        this(player, type, index, false);
+    }
+
+    public Move(Player player, MoveType type, int index, boolean uno) {
         this.player = player;
         this.type = type;
         this.cardIndex = index;
+        this.uno = uno;
     }
 
     public Player getPlayer() {
@@ -33,5 +39,9 @@ public class Move implements Serializable {
             return "Play card no. " + cardIndex;
         else
             return "What are you doing?";
+    }
+
+    public boolean saidUno(){
+        return uno;
     }
 }
