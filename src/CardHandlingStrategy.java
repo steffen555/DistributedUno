@@ -28,4 +28,6 @@ public interface CardHandlingStrategy {
     List<List<Card>> getHands();
 
     void setHands(List<List<CardRepresentation>> handCards);
+
+    Deck getDeck();
 }

@@ -60,4 +60,8 @@ public class EncryptedCard extends Card {
         return decrypt(myKey);
     }
 
+    public String toString() {
+        return "<encrypted card: " + encryptedValue + ">";
+    }
+
 }

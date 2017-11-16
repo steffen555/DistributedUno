@@ -106,4 +106,13 @@ public class Deck {
         }
     }
 
+    public String toString() {
+        String result = "";
+        for (Card c : cards) {
+            result += c.encrypt(c.getMyKey()) + "\n";
+            ((EncryptedCard) c).decrypt(c.getMyKey());
+        }
+        return result;
+    }
+
 }

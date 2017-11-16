@@ -377,7 +377,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     public Card decryptCardWithKeysFromOtherPlayers(Player player, EncryptedCard card) {
         Card result = card;
         for (Player p : players) {
-            if (p == player) {
+            if (p.equals(player)) {
                 continue;
             } else if (p instanceof LocalPlayer) {
                 for (Player p1 : players) {
