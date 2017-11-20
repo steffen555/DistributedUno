@@ -9,6 +9,7 @@ import java.util.*;
 public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
     private final MessageReceiver messageReceiver;
+    private LocalPlayer localPlayer;
     private PeerInfo myInfo;
     private ArrayList<Player> players;
     private MoveValidator moveValidator;
@@ -39,6 +40,8 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         System.out.println("My IP is: " + myIP());
         myInfo = new PeerInfo(myIP(), port);
         players = new ArrayList<>();
+
+        localPlayer = new LocalPlayer();
 
         messageReceiver = new MessageReceiver(port);
         messageReceiver.start();
@@ -111,14 +114,14 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     public void setPlayers(List<PeerInfo> peerInfos) {
         for (PeerInfo pi : peerInfos)
             if (pi.equals(myInfo))
-                players.add(new LocalPlayer());
+                players.add(getLocalPlayer());
             else
                 players.add(new RemotePlayer(pi));
     }
 
     @Override
     public void addSelfToPlayersList() {
-        addToPlayersList(new LocalPlayer());
+        addToPlayersList(getLocalPlayer());
     }
 
     @Override
@@ -128,7 +131,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
     @Override
     public Player getLocalPlayer() {
-        return new LocalPlayer();
+        return localPlayer;
     }
 
     private void handleJoinRequest(JoinRequestMessage m, GameStateSupplier game) {
@@ -234,7 +237,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     public void hostNetwork(int numberOfPlayers) throws IOException, ClassNotFoundException {
-        players.add(new LocalPlayer());
+        players.add(getLocalPlayer());
 
         // first wait for join requests from each player
         int counter = numberOfPlayers - 1;
