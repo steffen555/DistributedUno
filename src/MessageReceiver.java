@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -26,7 +27,8 @@ public class MessageReceiver extends Thread {
     public void run() {
         while (true) {
             Object o = doReceiveObject();
-            addToQueue(o);
+            if (o != null)
+                addToQueue(o);
         }
     }
 
@@ -58,6 +60,9 @@ public class MessageReceiver extends Thread {
             outputStream.writeObject("Object received"); // otherwise we get an EOFError
             socket.close();
             return object;
+        } catch (StreamCorruptedException e) {
+            e.printStackTrace();
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
