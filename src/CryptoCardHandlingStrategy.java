@@ -25,6 +25,12 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
     }
 
     public void distributeHands() {
+        // First make sure the deck is large enough
+        while (comm.getPlayers().size() * 7 > deck.numberOfCardsInDeck()){
+            DeckShufflingProtocol deckCreator = new DeckShufflingProtocol(actionTarget, this, comm);
+            deck.addAllCardsFromDeck(deckCreator.makeShuffledDeck());
+        }
+
         // now distribute keys and so on to initialize each player's hand,
         // as well as the pile.
         HandDistributionProtocol distributor = new HandDistributionProtocol(comm, deck, pile);

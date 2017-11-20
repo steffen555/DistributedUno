@@ -1,4 +1,3 @@
-import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,7 +7,7 @@ public class Deck {
 
     private List<Card> cards;
 
-    public Card getCard(int index){
+    public Card getCard(int index) {
         return cards.get(index);
     }
 
@@ -76,7 +75,7 @@ public class Deck {
 
     public ArrayList<CardRepresentation> asRepresentationList() {
         ArrayList<CardRepresentation> result = new ArrayList<>();
-        for(Card card : cards)
+        for (Card card : cards)
             result.add(card.toRepresentation());
         return result;
     }
@@ -113,6 +112,22 @@ public class Deck {
             ((EncryptedCard) c).decrypt(c.getMyKey());
         }
         return result;
+    }
+
+    public void addAllCardsFromDeck(Deck deck) {
+        Card c = deck.drawCard();
+        while (true) {
+            cards.add(c);
+            try {
+                c = deck.drawCard();
+            } catch (IndexOutOfBoundsException e) {
+                break;
+            }
+        }
+    }
+
+    public int numberOfCardsInDeck() {
+        return cards.size();
     }
 
 }
