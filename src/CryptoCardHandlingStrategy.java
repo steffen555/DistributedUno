@@ -35,8 +35,14 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
     }
 
     @Override
-    public void drawCardFromDeckForPlayer(Player player) {
-        EncryptedCard card = (EncryptedCard) deck.drawCard();
+    public void drawCardFromDeckForPlayer(Player player) {EncryptedCard card;
+        try {
+            card = (EncryptedCard) deck.drawCard();
+        } catch (IndexOutOfBoundsException e) {
+            initializeNewDeck();
+            drawCardFromDeckForPlayer(player);
+            return;
+        }
         Card decrypted = comm.decryptCardWithKeysFromOtherPlayers(player, card);
 
         // if the player is new, his hand may not be initialized yet.
