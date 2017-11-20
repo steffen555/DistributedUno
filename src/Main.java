@@ -30,7 +30,7 @@ public class Main {
             System.out.println("I am joining " + otherIp + " with port " + otherPort);
 
             try {
-                state = comm.joinNetwork(otherIp, otherPort, game);
+                state = comm.joinNetwork(otherIp, otherPort);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {

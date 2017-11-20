@@ -247,7 +247,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         if (topPileCard instanceof ActionCard) {
             if (topPileCard instanceof DrawFourAndChangeColorCard)
                 ((DrawFourAndChangeColorCard) topPileCard).performInitialAction();
-            else if (topPileCard instanceof SkipCard || (players.size() == 2 && topPileCard instanceof ChangeTurnDirectionCard) )
+            else if (topPileCard instanceof SkipCard || (comm.getPlayers().size() == 2 && topPileCard instanceof ChangeTurnDirectionCard) )
                 advanceTurn();
             else if (!(topPileCard instanceof ChangeColorCard))
                 ((ActionCard) topPileCard).performAction();
@@ -266,7 +266,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         System.out.println("Pile:");
         CardPrinter.printCard(cardHandlingStrategy.getTopCardFromPile());
         System.out.println("Player hands:");
-        for (Player player : players) {
+        for (Player player : comm.getPlayers()) {
             if (player.equals(getCurrentPlayer()))
                 System.out.println("In turn");
             CardPrinter.printCards(cardHandlingStrategy.getCardsFromPlayer(player));
@@ -315,7 +315,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
 
     @Override
     public void changeTurnDirection() {
-        if (players.size() == 2)
+        if (comm.getPlayers().size() == 2)
             pendingSkipCards++;
         else
             turnDirection *= -1;

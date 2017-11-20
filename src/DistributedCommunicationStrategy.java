@@ -271,7 +271,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         broadcastObject(peerInfos);
     }
 
-    public GameState joinNetwork(String ip, int port, UnoGame game) throws IOException, ClassNotFoundException {
+    public GameState joinNetwork(String ip, int port) throws IOException, ClassNotFoundException {
         PeerInfo hostInfo = new PeerInfo(ip, port);
 
         // tell the host we want to join
@@ -283,7 +283,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
                 Arrays.asList(GameInProgressMessage.class, GameBeingCreatedMessage.class));
 
         if (message instanceof GameInProgressMessage)
-            return joinGameInProgress(game);
+            return joinGameInProgress();
         else if (message instanceof GameBeingCreatedMessage)
             joinGameBeingCreated();
         else
@@ -291,7 +291,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         return null;
     }
 
-    private GameState joinGameInProgress(UnoGame game) {
+    private GameState joinGameInProgress() {
         System.out.println("The game is in progress! Joining it.");
 
         // receive the game state from the player we contacted
