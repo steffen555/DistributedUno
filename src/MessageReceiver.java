@@ -113,15 +113,29 @@ public class MessageReceiver extends Thread {
     public JoinRequestMessage receiveJoinRequestMessage(boolean isMyTurn) {
         Object result;
         while (true) {
-            // If there is a JoinRequestMessage in the queue, return it.
-            result = receiveObject(JoinRequestMessage.class, false);
-            if (result != null)
-                return (JoinRequestMessage) result;
 
-            // If it's my turn, or
-            // there is a Move in the queue, return null, because then
+            // if it is my turn, we want to find any new join requests
+            if (isMyTurn) {
+                // if this returns null, that's okay, then we'll do a move ourselves
+                return (JoinRequestMessage) receiveObject(JoinRequestMessage.class, false);
+            }
+
+            // otherwise, if it's someone else's turn, only take out forwarded join requests.
+            else {
+                for (Object o : receiveQueue) {
+                    if (o instanceof JoinRequestMessage) {
+                        JoinRequestMessage m = (JoinRequestMessage) o;
+                        if (m.isRelayed()) {
+                            receiveQueue.remove(o);
+                            return m;
+                        }
+                    }
+                }
+            }
+
+            // if there is a Move in the queue, return null, because then
             // no joins can occur until next turn.
-            if (isMyTurn || queueContains(MoveMessage.class))
+            if (queueContains(MoveMessage.class))
                 return null;
 
             // Otherwise, wait until one of those happens.

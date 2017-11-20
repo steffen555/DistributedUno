@@ -100,4 +100,9 @@ public class SimpleCardHandlingStrategy implements CardHandlingStrategy {
 
     }
 
+    @Override
+    public Deck getDeck() {
+        return null;
+    }
+
 }

@@ -122,4 +122,8 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
             playerHandMap.put(p, cards);
         }
     }
+
+    public Deck getDeck() {
+        return deck;
+    }
 }
