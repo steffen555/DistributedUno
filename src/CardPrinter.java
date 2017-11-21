@@ -1,13 +1,15 @@
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class CardPrinter {
 
-    final static String RED = "\033[0;31m";
-    final static String GREEN = "\033[0;32m";
-    final static String YELLOW = "\033[0;33m";
-    final static String BLUE = "\033[0;34m";
-    final static String NO_COLOR = "\033[0m";
+    final public static String RED = "\033[0;31m";
+    final public static String GREEN = "\033[0;32m";
+    final public static String YELLOW = "\033[0;33m";
+    final public static String BLUE = "\033[0;34m";
+    final public static String NO_COLOR = "\033[0m";
+    final public static String BOLD = "\033[1m";
 
     private static String stringify(CardColor c) {
         if (c == CardColor.RED)
@@ -22,7 +24,7 @@ public class CardPrinter {
 
     }
 
-    private static void printCardAsASCII(Card card, List<String> out, int number) {
+    private static void printCardAsASCII(Card card, MultiLinePrinter printer, int number) {
         String color;
         if (card instanceof EncryptedCard) {
             color = "";
@@ -51,10 +53,10 @@ public class CardPrinter {
             symbol = "TODO";
         }
 
-        out.set(0, out.get(0) + color + " ___ " + NO_COLOR);
-        out.set(1, out.get(1) + color + "|   |" + NO_COLOR);
-        out.set(2, out.get(2) + color + "| " + symbol + " |" + NO_COLOR);
-        out.set(3, out.get(3) + color + "|___|" + NO_COLOR);
+        printer.print(0, color + " ___ " + NO_COLOR);
+        printer.print(1, color + "|   |" + NO_COLOR);
+        printer.print(2, color + "| " + symbol + " |" + NO_COLOR);
+        printer.print(3, color + "|___|" + NO_COLOR);
 
         if (number != -1) {
             int numberOfDigits = ((Integer) number).toString().length();
@@ -66,33 +68,56 @@ public class CardPrinter {
                 spaceBefore = " ";
                 spaceAfter = " ";
             }
-            out.set(4, out.get(4) + spaceBefore + Integer.toString(number) + spaceAfter);
+            printer.print(4, spaceBefore + Integer.toString(number) + spaceAfter);
         }
     }
 
-    public static void doPrintCards(List<Card> cards, boolean printNumbers) {
-        ArrayList<String> out = new ArrayList<String>();
-        for (int i = 0; i < 5; i++)
-            out.add("");
-
+    public static void doPrintCards(List<Card> cards, MultiLinePrinter printer, boolean printNumbers) {
         for (int i = 0; i < cards.size(); i++) {
             if (printNumbers)
-                printCardAsASCII(cards.get(i), out, i);
+                printCardAsASCII(cards.get(i), printer, i);
             else
-                printCardAsASCII(cards.get(i), out, -1);
+                printCardAsASCII(cards.get(i), printer, -1);
         }
-
-        for (String s : out)
-            System.out.println(s);
     }
 
-    public static void printCards(List<Card> cards) {
-        doPrintCards(cards, true);
+    public static MultiLinePrinter printCards(List<Card> cards) {
+        MultiLinePrinter result = new MultiLinePrinter();
+        doPrintCards(cards, result, true);
+        return result;
     }
 
     public static void printCard(Card card) {
+        MultiLinePrinter result = new MultiLinePrinter();
         ArrayList<Card> l = new ArrayList<Card>();
         l.add(card);
-        doPrintCards(l, false);
+        doPrintCards(l, result, false);
+        System.out.println(result.getOutput());
     }
+}
+
+class MultiLinePrinter {
+
+    ArrayList<String> out;
+    final String NEWLINE = System.getProperty("line.separator");
+
+    public MultiLinePrinter() {
+        out = new ArrayList<>();
+    }
+
+    public void print(int lineNumber, String s) {
+        while (out.size() <= lineNumber) {
+            out.add("");
+        }
+
+        out.set(lineNumber, out.get(lineNumber) + s);
+    }
+
+    public String getOutput() {
+        String result = "";
+        for (String s : out)
+            result += s + NEWLINE;
+        return result;
+    }
+
 }

@@ -11,3 +11,4 @@
 - direction of game ("c" card)
 - pending draws
 - debugging to log file (including timestamps)
+- when there are too many cards the lines wrap
