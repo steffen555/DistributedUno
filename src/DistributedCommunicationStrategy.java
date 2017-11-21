@@ -321,13 +321,18 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         MoveType moveType = null;
         while (moveType == null) {
             Scanner scanner = new Scanner(System.in);
-            System.out.print("It's your turn. Write d to draw, a number to play a card or e to end your turn: ");
-            String reply = scanner.next();
+
+            System.out.println("It's your turn!");
+            System.out.print("Write d to draw, a number to play a card, or e to end your turn: ");
+            System.out.flush();
+
+            String reply = scanner.nextLine();
+
             boolean uno;
-            Matcher matcher = Pattern.compile(".*uno", Pattern.CASE_INSENSITIVE).matcher(reply);
+            Matcher matcher = Pattern.compile("(.*)uno.*", Pattern.CASE_INSENSITIVE).matcher(reply);
             uno = matcher.matches();
             if (uno) {
-                reply = reply.substring(0, reply.length() - 3);
+                reply = matcher.group(1);
                 System.out.println("UNO!!!");
             }
             switch (reply) {
@@ -338,9 +343,9 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
                     moveType = MoveType.END_TURN;
                     break;
                 default:
-                    Matcher matcher2 = Pattern.compile("[0-9]*", Pattern.CASE_INSENSITIVE).matcher(reply);
+                    Matcher matcher2 = Pattern.compile("([0-9]+).*?", Pattern.CASE_INSENSITIVE).matcher(reply);
                     if (matcher2.matches())
-                        return new Move(playerInTurn, MoveType.PLAY, Integer.parseInt(reply), uno);
+                        return new Move(playerInTurn, MoveType.PLAY, Integer.parseInt(matcher2.group(1)), uno);
                     System.out.println("Failed to parse");
             }
         }

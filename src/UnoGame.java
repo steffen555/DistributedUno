@@ -266,7 +266,6 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
     private void renderState() {
         clearScreen();
         System.out.println("------------------------");
-        System.out.println("Awaiting move from " + comm.getPlayers().get(currentPlayerIndex).getName());
         System.out.println("Pile:");
         MultiLinePrinter pilePrinter = CardPrinter.printCard(cardHandlingStrategy.getTopCardFromPile());
         if (pendingDraws != 0)
