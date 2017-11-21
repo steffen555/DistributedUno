@@ -4,7 +4,7 @@ import java.util.List;
 
 public class CardPrinter {
 
-    private static int LINE_MAX_WIDTH = 80;
+    private static int LINE_MAX_WIDTH = 60;
 
     final public static String RED = "\033[0;31m";
     final public static String GREEN = "\033[0;32m";

@@ -282,8 +282,11 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
             List<Card> cards = cardHandlingStrategy.getCardsFromPlayer(player);
             MultiLinePrinter handPrinter = CardPrinter.printCards(cards);
 
+            String nameRepresentation = " " + CardPrinter.BOLD + player.getName() + CardPrinter.NO_COLOR;
+            handPrinter.printWithoutWrapping(2, nameRepresentation);
+
             if (player.equals(getCurrentPlayer())) {
-                String inTurnMarker = CardPrinter.BOLD + " <---[it is this player's turn]" + CardPrinter.NO_COLOR;
+                String inTurnMarker = CardPrinter.BOLD + " <---[in turn]" + CardPrinter.NO_COLOR;
                 handPrinter.printWithoutWrapping(2, inTurnMarker);
             }
 
