@@ -172,7 +172,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     public String getStringFromUser(String message) {
         Scanner scanner = new Scanner(System.in);
         System.out.println(message);
-        return scanner.next();
+        return scanner.nextLine();
     }
 
     private class LocalPlayer extends Player {
