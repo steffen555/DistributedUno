@@ -19,6 +19,8 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         comm.setMoveValidator(this);
         this.cardHandlingStrategy = cardHandlingStrategy;
         cardHandlingStrategy.setActionCardTarget(this);
+
+        Logger logger = new Logger("log.txt", Logger.INFO);
     }
 
     public Player getCurrentPlayer() {
