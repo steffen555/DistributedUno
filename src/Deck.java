@@ -34,6 +34,17 @@ public class Deck {
         return new Deck(cards, actionTarget);
     }
 
+    public static Deck generateLargePlainDeck(ActionCardTarget actionCardTarget, int multiplier){
+        Deck res = generatePlainDeck(actionCardTarget);
+        multiplier --;
+        while (multiplier > 0){
+            res.addAllCardsFromDeck(generatePlainDeck(actionCardTarget));
+            multiplier --;
+        }
+        return res;
+    }
+
+
     public Deck(List<Card> cards, ActionCardTarget act) {
         this.cards = cards;
         this.act = act;
