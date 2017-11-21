@@ -1,3 +1,5 @@
+import com.sun.org.apache.xpath.internal.operations.Mult;
+
 import java.io.IOException;
 
 import java.util.List;
@@ -266,24 +268,26 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         System.out.println("------------------------");
         System.out.println("Awaiting move from " + comm.getPlayers().get(currentPlayerIndex).getName());
         System.out.println("Pile:");
-        CardPrinter.printCard(cardHandlingStrategy.getTopCardFromPile());
-        System.out.print("Pending draws: " + pendingDraws + "; ");
+        MultiLinePrinter pilePrinter = CardPrinter.printCard(cardHandlingStrategy.getTopCardFromPile());
+        if (pendingDraws != 0)
+            pilePrinter.print(2," Pending draws: " + pendingDraws + CardPrinter.NO_COLOR);
+        System.out.println(pilePrinter.getOutput());
         if (turnDirection == 1)
-            System.out.print("Game direction: ⇓ \n"); // arrow options: ↓,⇓,⇩,∨,⌄
+            System.out.print("Game direction: ↓ \n"); // arrow options: ↓,⇓,⇩,∨,⌄
         else
-            System.out.print("Game direction: ⇑ \n"); // arrow options: ↑,⇑,⇧,∧,⌃
+            System.out.print("Game direction: ↑ \n"); // arrow options: ↑,⇑,⇧,∧,⌃
         System.out.flush();
         System.out.println("Player hands:");
         for (Player player : comm.getPlayers()) {
             List<Card> cards = cardHandlingStrategy.getCardsFromPlayer(player);
-            MultiLinePrinter printer = CardPrinter.printCards(cards);
+            MultiLinePrinter handPrinter = CardPrinter.printCards(cards);
 
             if (player.equals(getCurrentPlayer())) {
                 String inTurnMarker = CardPrinter.BOLD + " <---[it is this player's turn]" + CardPrinter.NO_COLOR;
-                printer.printWithoutWrapping(2, inTurnMarker);
+                handPrinter.printWithoutWrapping(2, inTurnMarker);
             }
 
-            System.out.print(printer.getOutput());
+            System.out.print(handPrinter.getOutput());
         }
         System.out.println("------------------------");
     }

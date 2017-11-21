@@ -89,12 +89,12 @@ public class CardPrinter {
         return result;
     }
 
-    public static void printCard(Card card) {
+    public static MultiLinePrinter printCard(Card card) {
         MultiLinePrinter result = new MultiLinePrinter(LINE_MAX_WIDTH);
         ArrayList<Card> l = new ArrayList<Card>();
         l.add(card);
         doPrintCards(l, result, false);
-        System.out.println(result.getOutput());
+        return result;
     }
 }
 

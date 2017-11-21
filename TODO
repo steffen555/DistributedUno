@@ -1,4 +1,4 @@
-- look into joining in the middle of a game again; got "cannot convert an
+S look into joining in the middle of a game again; got "cannot convert an
   encrypted value to a card" when a new player joined the original host after
   a while..
 x "in turn" is hard to see properly
@@ -8,12 +8,6 @@ x press "4" to play that card
 x print many cards better
 - tweak crypto security without recompiling
 - put it into a jar
-M direction of game ("c" card)
-M pending draws
+x direction of game ("c" card)
+x pending draws
 T debugging to log file (including timestamps)
-
-
-
-done:
-- "in turn" is hard to see properly
-- print many cards better
