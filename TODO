@@ -1,9 +1,9 @@
-S look into joining in the middle of a game again; got "cannot convert an
+A look into joining in the middle of a game again; got "cannot convert an
   encrypted value to a card" when a new player joined the original host after
   a while..
 x "in turn" is hard to see properly
 x need to be able to pick number of players without recompiling
-S name of player
+x name of player
 x press "4" to play that card
 x print many cards better
 - tweak crypto security without recompiling
