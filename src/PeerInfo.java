@@ -3,10 +3,12 @@ import java.io.Serializable;
 public class PeerInfo implements Serializable{
     private String ip;
     private int port;
+    private String name;
 
-    public PeerInfo(String ip, int port) {
+    public PeerInfo(String ip, int port, String name) {
         this.ip = ip;
         this.port = port;
+        this.name = name;
     }
 
     public int getPort() {
@@ -29,5 +31,9 @@ public class PeerInfo implements Serializable{
         } else {
             return false;
         }
+    }
+
+    public String getName() {
+        return name;
     }
 }

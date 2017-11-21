@@ -2,9 +2,11 @@ public abstract class Player {
     abstract Move receiveMove();
 
     private Hand hand;
+    private String name;
 
-    public Player() {
+    public Player(String name) {
         hand = new Hand();
+        this.name = name;
     }
 
     public void addCardToHand(Card card) {
@@ -35,4 +37,8 @@ public abstract class Player {
     }
 
     public abstract CardColor receiveColor();
+
+    public String getName(){
+        return name;
+    }
 }
