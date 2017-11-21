@@ -272,7 +272,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
 
             if (player.equals(getCurrentPlayer())) {
                 String inTurnMarker = CardPrinter.BOLD + " <---[it is this player's turn]" + CardPrinter.NO_COLOR;
-                printer.print(2, inTurnMarker);
+                printer.printWithoutWrapping(2, inTurnMarker);
             }
 
             System.out.print(printer.getOutput());
