@@ -3,14 +3,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.*;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Scanner;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.Socket;
+import java.net.SocketException;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.*;
 
 public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
@@ -44,10 +43,10 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
     public DistributedCommunicationStrategy(int port) {
         System.out.println("My IP is: " + myIP());
-        myInfo = new PeerInfo(myIP(), port);
+        myInfo = new PeerInfo(myIP(), port, getStringFromUser("What is your name?"));
         players = new ArrayList<>();
 
-        localPlayer = new LocalPlayer();
+        localPlayer = new LocalPlayer(myInfo.getName());
 
         messageReceiver = new MessageReceiver(port);
         messageReceiver.start();
@@ -170,7 +169,18 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         players.add(player);
     }
 
+    public String getStringFromUser(String message) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println(message);
+        return scanner.next();
+    }
+
     private class LocalPlayer extends Player {
+
+        public LocalPlayer(String name) {
+            super(name);
+        }
+
         @Override
         public Move receiveMove() {
             Move move;
@@ -209,6 +219,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         private PeerInfo peerInfo;
 
         public RemotePlayer(PeerInfo peerInfo) {
+            super(peerInfo.getName());
             this.peerInfo = peerInfo;
         }
 
@@ -272,7 +283,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     public GameState joinNetwork(String ip, int port) throws IOException, ClassNotFoundException {
-        PeerInfo hostInfo = new PeerInfo(ip, port);
+        PeerInfo hostInfo = new PeerInfo(ip, port, "dav");
 
         // tell the host we want to join
         JoinRequestMessage jrm = new JoinRequestMessage(myInfo);
@@ -315,7 +326,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             boolean uno;
             Matcher matcher = Pattern.compile(".*uno", Pattern.CASE_INSENSITIVE).matcher(reply);
             uno = matcher.matches();
-            if(uno) {
+            if (uno) {
                 reply = reply.substring(0, reply.length() - 3);
                 System.out.println("UNO!!!");
             }
@@ -442,7 +453,7 @@ class MoveMessage implements Serializable {
         return index;
     }
 
-    public boolean getUno(){
+    public boolean getUno() {
         return uno;
     }
 }
@@ -469,5 +480,8 @@ class JoinRequestMessage implements Serializable {
     }
 }
 
-class GameInProgressMessage implements Serializable { }
-class GameBeingCreatedMessage implements Serializable { }
+class GameInProgressMessage implements Serializable {
+}
+
+class GameBeingCreatedMessage implements Serializable {
+}

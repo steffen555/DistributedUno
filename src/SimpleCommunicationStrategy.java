@@ -12,7 +12,7 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
     public SimpleCommunicationStrategy(int numberOfPlayers) {
         players = new ArrayList<>();
         for (int i = 0; i < numberOfPlayers; i++) {
-            players.add(new Player() {
+            players.add(new Player("hej") {
                 @Override
                 Move receiveMove() {
                     throw new NotImplementedException();
