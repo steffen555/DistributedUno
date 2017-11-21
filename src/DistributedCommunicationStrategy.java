@@ -199,7 +199,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         }
 
         public String toString() {
-            return "Local player";
+            return getName() + " (local)";
         }
 
         public boolean equals(Object o) {
@@ -237,7 +237,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         }
 
         public String toString() {
-            return "Remote player: " + peerInfo.toString();
+            return getName() + " (remote)";
         }
 
         public boolean equals(Object o) {
