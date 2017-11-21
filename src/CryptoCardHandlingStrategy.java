@@ -49,6 +49,7 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
             drawCardFromDeckForPlayer(player);
             return;
         }
+
         Card decrypted = comm.decryptCardWithKeysFromOtherPlayers(player, card);
 
         // if the player is new, his hand may not be initialized yet.

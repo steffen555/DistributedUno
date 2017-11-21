@@ -428,11 +428,14 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             } else if (p instanceof LocalPlayer) {
                 for (Player p1 : players) {
                     if (p != p1) {
+                        logger.debug("Sending my card key to this player: " + p1);
                         sendObjectToPlayer(p1, card.getMyKey());
                     }
                 }
             } else if (p instanceof RemotePlayer) {
+                logger.debug("Receiving a key from: " + p);
                 CryptoKey ck = (CryptoKey) receiveObject(CryptoKey.class);
+                logger.debug("Got the key: " + ck);
                 result = ((EncryptedCard) result).decrypt(ck);
             }
         }
@@ -440,14 +443,19 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     public Card sendPlayersKeyForCardToOtherPlayers(Player player, Card card) {
+        logger.debug("Inside sendPlayersKeyForCardToOtherPlayers");
         if (player instanceof LocalPlayer) {
             for (Player p1 : players) {
-                if (p1 != player)
+                if (p1 != player) {
+                    logger.debug("Sending my key to: " + p1);
                     sendObjectToPlayer(p1, card.getMyKey());
+                }
             }
             return card;
         } else if (player instanceof RemotePlayer) {
+            logger.debug("Receiving from: " + player);
             CryptoKey key = (CryptoKey) receiveObject(CryptoKey.class);
+            logger.debug("Got key: " + key);
             return ((EncryptedCard) card).decrypt(key);
         }
         return null;
