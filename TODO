@@ -1,14 +1,19 @@
 - look into joining in the middle of a game again; got "cannot convert an
   encrypted value to a card" when a new player joined the original host after
   a while..
-- "in turn" is hard to see properly
-- need to be able to pick number of players without recompiling
-- name of player
-- press "4" to play that card
-- print many cards better
+x "in turn" is hard to see properly
+x need to be able to pick number of players without recompiling
+S name of player
+x press "4" to play that card
+x print many cards better
 - tweak crypto security without recompiling
 - put it into a jar
-- direction of game ("c" card)
-- pending draws
-- debugging to log file (including timestamps)
-- when there are too many cards the lines wrap
+M direction of game ("c" card)
+M pending draws
+T debugging to log file (including timestamps)
+
+
+
+done:
+- "in turn" is hard to see properly
+- print many cards better

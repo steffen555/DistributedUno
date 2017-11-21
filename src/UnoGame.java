@@ -265,6 +265,12 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         System.out.println("Awaiting move from player " + currentPlayerIndex);
         System.out.println("Pile:");
         CardPrinter.printCard(cardHandlingStrategy.getTopCardFromPile());
+        System.out.print("Pending draws: " + pendingDraws + "; ");
+        if (turnDirection == 1)
+            System.out.print("Game direction: ⇓ \n"); // arrow options: ↓,⇓,⇩,∨,⌄
+        else
+            System.out.print("Game direction: ⇑ \n"); // arrow options: ↑,⇑,⇧,∧,⌃
+        System.out.flush();
         System.out.println("Player hands:");
         for (Player player : comm.getPlayers()) {
             List<Card> cards = cardHandlingStrategy.getCardsFromPlayer(player);
@@ -272,7 +278,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
 
             if (player.equals(getCurrentPlayer())) {
                 String inTurnMarker = CardPrinter.BOLD + " <---[it is this player's turn]" + CardPrinter.NO_COLOR;
-                printer.print(2, inTurnMarker);
+                printer.printWithoutWrapping(2, inTurnMarker);
             }
 
             System.out.print(printer.getOutput());

@@ -4,6 +4,8 @@ import java.util.List;
 
 public class CardPrinter {
 
+    private static int LINE_MAX_WIDTH = 80;
+
     final public static String RED = "\033[0;31m";
     final public static String GREEN = "\033[0;32m";
     final public static String YELLOW = "\033[0;33m";
@@ -82,13 +84,13 @@ public class CardPrinter {
     }
 
     public static MultiLinePrinter printCards(List<Card> cards) {
-        MultiLinePrinter result = new MultiLinePrinter();
+        MultiLinePrinter result = new MultiLinePrinter(LINE_MAX_WIDTH);
         doPrintCards(cards, result, true);
         return result;
     }
 
     public static void printCard(Card card) {
-        MultiLinePrinter result = new MultiLinePrinter();
+        MultiLinePrinter result = new MultiLinePrinter(LINE_MAX_WIDTH);
         ArrayList<Card> l = new ArrayList<Card>();
         l.add(card);
         doPrintCards(l, result, false);
@@ -101,17 +103,51 @@ class MultiLinePrinter {
     ArrayList<String> out;
     final String NEWLINE = System.getProperty("line.separator");
 
-    public MultiLinePrinter() {
+    // this is only approximate
+    final int maxWidth;
+
+    int lineOffset = 0;
+    int lineAddend = 0;
+
+    public MultiLinePrinter(int maxWidth) {
         out = new ArrayList<>();
+        this.maxWidth = maxWidth;
     }
 
     public void print(int lineNumber, String s) {
+        lineNumber += lineOffset;
         while (out.size() <= lineNumber) {
             out.add("");
         }
 
-        out.set(lineNumber, out.get(lineNumber) + s);
+        String oldLine = out.get(lineNumber);
+        String newLine = oldLine + s;
+
+        if (getLength(newLine) <= maxWidth) {
+            out.set(lineNumber, newLine);
+            return;
+        }
+
+        if (lineAddend == 0)
+            lineAddend = out.size();
+
+        lineOffset += lineAddend;
+
+        print(lineNumber, s);
+
     }
+
+    // needed to filter out the characters that color/embolden the line
+    private int getLength(String s) {
+        String filtered = s.replaceAll("\033\\[\\d.*?m", "");
+        return filtered.length();
+    }
+
+    public void printWithoutWrapping(int lineNumber, String s) {
+        out.set(lineNumber, out.get(lineNumber) + s);
+
+    }
+
 
     public String getOutput() {
         String result = "";
