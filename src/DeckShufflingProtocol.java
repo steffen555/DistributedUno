@@ -11,6 +11,7 @@ public class DeckShufflingProtocol {
     private List<Player> players;
     private int firstPlayerAfterLocal;
     private boolean firstPlayerIsLocal;
+    private Logger logger;
 
     public DeckShufflingProtocol(ActionCardTarget actionTarget, CardHandlingStrategy chs,
                                  CommunicationStrategy communicator) {
@@ -25,6 +26,8 @@ public class DeckShufflingProtocol {
             }
         }
         firstPlayerIsLocal = players.get(0).getPeerInfo() == null;
+
+        logger = new Logger("DeckShufflingProtocol", "log.txt", Logger.DEBUG);
     }
 
     // first, run round 1, in which each player chooses a key K_i,
@@ -50,7 +53,9 @@ public class DeckShufflingProtocol {
         deck.shuffle();
 
         // then they pass it on to the next player.
-        communicator.sendObjectToPlayer(players.get(firstPlayerAfterLocal), deck.asRepresentationList());
+        Player target = players.get(firstPlayerAfterLocal);
+        logger.debug("Sending my deck to: " + target);
+        communicator.sendObjectToPlayer(target, deck.asRepresentationList());
     }
 
     private void doRound2() {
@@ -67,6 +72,7 @@ public class DeckShufflingProtocol {
 
         // pass the deck on
         Player nextPlayer = players.get(firstPlayerAfterLocal);
+        logger.debug("Sending newly encrypted deck to: " + nextPlayer);
         communicator.sendObjectToPlayer(nextPlayer, deck.asRepresentationList());
     }
 
@@ -80,16 +86,25 @@ public class DeckShufflingProtocol {
 
     public Deck makeShuffledDeck() {
 
+        logger.debug("running makeShuffledDeck with these players: ");
+        for (Player p : players)
+            logger.debug(p.toString());
+
         // in round 1, each player encrypts and shuffles the deck
+        logger.debug("Doing round 1");
         doRound1();
 
         // in round 2, each player decrypts the deck, then re-encrypts
         // every card under an individual key
+        logger.debug("Doing round 2");
         doRound2();
 
         // in round 3, the first player receives the final deck,
         // and distributes it to every player
+        logger.debug("Doing round 3");
         doRound3();
+
+        logger.debug("Done with round 3");
 
         deck.decryptAllCardsWithMyKey();
 
