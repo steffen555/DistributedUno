@@ -273,9 +273,9 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
             pilePrinter.print(2," Pending draws: " + pendingDraws + CardPrinter.NO_COLOR);
         System.out.println(pilePrinter.getOutput());
         if (turnDirection == 1)
-            System.out.print("Game direction: ↓ \n"); // arrow options: ↓,⇓,⇩,∨,⌄
+            System.out.print("Game direction: \uD83E\uDC51 \n"); // arrow options: ↓,⇓,⇩,∨,⌄
         else
-            System.out.print("Game direction: ↑ \n"); // arrow options: ↑,⇑,⇧,∧,⌃
+            System.out.print("Game direction: \uD83E\uDC53 \n"); // arrow options: ↑,⇑,⇧,∧,⌃
         System.out.flush();
         System.out.println("Player hands:");
         for (Player player : comm.getPlayers()) {
