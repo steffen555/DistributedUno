@@ -310,35 +310,30 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         MoveType moveType = null;
         while (moveType == null) {
             Scanner scanner = new Scanner(System.in);
-            System.out.print("It's your turn. Would you like to draw, play a card or end your turn? (d/p/e): ");
+            System.out.print("It's your turn. Write d to draw, a number to play a card or e to end your turn: ");
             String reply = scanner.next();
             boolean uno;
-            Matcher matcher = Pattern.compile(".*u", Pattern.CASE_INSENSITIVE).matcher(reply);
+            Matcher matcher = Pattern.compile(".*uno", Pattern.CASE_INSENSITIVE).matcher(reply);
             uno = matcher.matches();
             if(uno) {
-                reply = reply.substring(0, reply.length() - 1);
+                reply = reply.substring(0, reply.length() - 3);
                 System.out.println("UNO!!!");
             }
             switch (reply) {
                 case "d":
                     moveType = MoveType.DRAW;
                     break;
-                case "p":
-                    moveType = MoveType.PLAY;
-                    break;
                 case "e":
                     moveType = MoveType.END_TURN;
                     break;
                 default:
-                    Matcher matcher2 = Pattern.compile("p[0-9]*", Pattern.CASE_INSENSITIVE).matcher(reply);
+                    Matcher matcher2 = Pattern.compile("[0-9]*", Pattern.CASE_INSENSITIVE).matcher(reply);
                     if (matcher2.matches())
-                        return new Move(playerInTurn, MoveType.PLAY, Integer.parseInt(reply.substring(1)), uno);
+                        return new Move(playerInTurn, MoveType.PLAY, Integer.parseInt(reply), uno);
                     System.out.println("Failed to parse");
             }
         }
         int cardIndex = 0;
-        if (moveType.equals(MoveType.PLAY))
-            cardIndex = getCardFromUser();
         return new Move(playerInTurn, moveType, cardIndex);
     }
 
