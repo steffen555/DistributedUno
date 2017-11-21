@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Logger {
+    private final String subsystem;
     private int logLevel;
     PrintWriter out;
 
@@ -13,7 +14,8 @@ public class Logger {
     public static int INFO = 1;
     public static int DEBUG = 2;
 
-    public Logger(String logFile, int logLevel) {
+    public Logger(String subsystem, String logFile, int logLevel) {
+        this.subsystem = subsystem;
         this.logLevel = logLevel;
 
         try {
@@ -47,7 +49,7 @@ public class Logger {
     }
 
     private void log(String s) {
-        String message = "[" + getTimestamp() + "]: " + s;
+        String message = "[" + getTimestamp() + "] (" + subsystem + "): " + s;
         out.println(message);
         out.flush();
     }

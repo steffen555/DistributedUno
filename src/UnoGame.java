@@ -15,6 +15,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
     private int turnDirection = 1;
     private int pendingSkipCards = 0;
     private int pendingDraws = 0;
+    private Logger logger;
 
     public UnoGame(CommunicationStrategy comm, CardHandlingStrategy cardHandlingStrategy) {
         this.comm = comm;
@@ -22,7 +23,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         this.cardHandlingStrategy = cardHandlingStrategy;
         cardHandlingStrategy.setActionCardTarget(this);
 
-        Logger logger = new Logger("log.txt", Logger.INFO);
+        logger = new Logger("UnoGame", "log.txt", Logger.DEBUG);
     }
 
     public Player getCurrentPlayer() {
@@ -155,7 +156,8 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
      */
     private boolean doMove(Move move) {
         if (move.getType() == MoveType.PLAY) {
-            return doPlayMove(move);
+            doPlayMove(move);
+            return false;
         } else if (move.getType() == MoveType.DRAW && pendingDraws != 0) {
             doPendingDrawMove(move);
             advanceTurn();
@@ -199,12 +201,12 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
     /**
      * Performs the action of playing a card to the pile.
      */
-    private boolean doPlayMove(Move move) {
+    private void doPlayMove(Move move) {
 //        System.out.println("Revealing card number " + move.getCardIndex());
         cardHandlingStrategy.revealCardFromMove(move);
         if (!isLegal(move)) {
             System.out.println("Illegal move!");
-            return false;
+            return;
         }
 
         Card card = cardHandlingStrategy.getCardFromPlayer(move.getPlayer(), move.getCardIndex());
@@ -215,12 +217,10 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
             ((ActionCard) card).performAction();
         }
         if(cardHandlingStrategy.getCardsFromPlayer(move.getPlayer()).size() == 1 && !move.saidUno()){
-            System.out.println("OMG HE DID NOT SAY UNO!!! BURN HIM!!!");
+            System.out.println("Forgot to say UNO!");
             cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
             cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
         }
-
-        return true;
     }
 
     private Move getMoveFromPlayer(Player player) {
@@ -320,8 +320,9 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
 
         while (true) {
             Move move = getMoveFromCurrentPlayer();
+            logger.info("Got a move: " + move);
             if (doMove(move))
-                // it was valid, so the turn is over
+                // the turn is over
                 break;
         }
     }
@@ -354,10 +355,14 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         setState(state);
         comm.addSelfToPlayersList();
 
+        logger.debug("New player initializes deck");
         initializeNewDeck();
+        logger.debug("New player done initializing deck");
 
+        logger.debug("New player drawing hand cards");
         for (int i = 0; i < Hand.CARDS_PER_HAND; i++)
             cardHandlingStrategy.drawCardFromDeckForPlayer(comm.getLocalPlayer());
+        logger.debug("New player drew the cards");
 
         do {
             renderState();

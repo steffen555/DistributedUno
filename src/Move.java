@@ -38,7 +38,7 @@ public class Move implements Serializable {
         else if (type == MoveType.PLAY)
             return "Play card no. " + cardIndex;
         else
-            return "What are you doing?";
+            return "(unknown move: " + type.toString() + ")";
     }
 
     public boolean saidUno(){

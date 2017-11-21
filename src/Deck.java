@@ -31,6 +31,7 @@ public class Deck {
             cards.add(new DrawTwoCard(actionTarget, color));
             cards.add(new DrawFourAndChangeColorCard(actionTarget, CardColor.NO_COLOR));
         }
+
         return new Deck(cards, actionTarget);
     }
 

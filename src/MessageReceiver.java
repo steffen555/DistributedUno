@@ -116,7 +116,6 @@ public class MessageReceiver extends Thread {
     }
 
     public JoinRequestMessage receiveJoinRequestMessage(boolean isMyTurn) {
-        Object result;
         while (true) {
 
             // if it is my turn, we want to find any new join requests

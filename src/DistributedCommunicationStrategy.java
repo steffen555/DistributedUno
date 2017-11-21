@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
     private final MessageReceiver messageReceiver;
+    private final Logger logger;
     private LocalPlayer localPlayer;
     private PeerInfo myInfo;
     private ArrayList<Player> players;
@@ -50,6 +51,9 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
         messageReceiver = new MessageReceiver(port);
         messageReceiver.start();
+
+        logger = new Logger("DistributedCommunicationStrategy",
+                                    "log.txt", Logger.DEBUG);
     }
 
     public List<Player> getPlayers() {
@@ -102,7 +106,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
     // continuously receive a JoinRequestMessage until we see a Move, then return it.
     @Override
-    public void handleJoiningPlayers(Player currentPlayer, GameStateSupplier game) {
+    public void handleJoiningPlayers(Player currentPlayer, GameStateSupplier gameStateSupplier) {
         boolean isMyTurn = currentPlayer instanceof LocalPlayer;
 
         JoinRequestMessage m;
@@ -111,7 +115,9 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             if (m == null)
                 break;
 
-            handleJoinRequest(m, game);
+            logger.info("Handling new join request message: " + m);
+            handleJoinRequest(m, gameStateSupplier);
+            logger.info("Handled the message " + m);
         }
     }
 
@@ -141,7 +147,10 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
     private void handleJoinRequest(JoinRequestMessage m, GameStateSupplier game) {
         Player newPlayer = new RemotePlayer(m.getPeerInfo());
+        logger.debug("This player is joining: " + newPlayer);
         if (!m.isRelayed()) {
+            logger.debug("Got a non-relayed join request");
+
             // the new player joined us directly, so notify everyone else
             m.setRelayed();
             broadcastObject(m);
@@ -152,15 +161,21 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             // also send the player the game state
             sendObject(m.getPeerInfo(), game.getState());
         }
+        else {
+            logger.debug("Got a relayed join request");
+        }
 
         // add the player to the players list.
         addToPlayersList(newPlayer);
 
         // cooperate with the others to reset the deck
+        logger.debug("Initializing new deck");
         game.initializeNewDeck();
+        logger.debug("Initialized new deck");
 
         // let the new player draw a hand
         for (int i = 0; i < Hand.CARDS_PER_HAND; i++) {
+            logger.debug("Helping the player draw a card");
             game.getCardHandlingStrategy().drawCardFromDeckForPlayer(newPlayer);
         }
     }
