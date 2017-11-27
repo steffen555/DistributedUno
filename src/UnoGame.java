@@ -316,16 +316,19 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
     private void doTurn() {
         logger.debug("doTurn was called");
 
+        renderState();
+
         // first, if any players want to join, handle it
         comm.handleJoiningPlayers(getCurrentPlayer(), this);
 
         while (true) {
-            renderState();
             Move move = getMoveFromCurrentPlayer();
             logger.info("Got a move: " + move);
             if (doMove(move))
                 // the turn is over
                 break;
+
+            renderState();
         }
     }
 
