@@ -41,15 +41,15 @@ public class CardPrinter {
         } else if (card instanceof RegularCard) {
             symbol = Integer.toString(((RegularCard) card).getNumber());
         } else if (card instanceof ChangeTurnDirectionCard) {
-            symbol = "d"; //⇄
+            symbol = "⇄"; //⇄
         } else if (card instanceof SkipCard) {
-            symbol = "s"; //⊘  ☹
+            symbol = "⊘"; //⊘  ☹
         } else if (card instanceof ChangeColorCard) {
-            symbol = "c"; //⚛
+            symbol = "\u269B"; //⚛
         } else if (card instanceof DrawTwoCard) {
-            symbol = "t"; //②
+            symbol = "②"; //②
         } else if (card instanceof DrawFourAndChangeColorCard) {
-            symbol = "f"; //④
+            symbol = "④"; //④
         } else {
             System.out.println("weird card: " + card);
             symbol = "TODO";
