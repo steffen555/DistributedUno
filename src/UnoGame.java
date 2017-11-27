@@ -257,7 +257,6 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
                 ((ActionCard) topPileCard).performAction();
         }
         do {
-            renderState();
             doTurn();
         } while (!checkForWinner());
         announceWinner();
@@ -321,6 +320,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         comm.handleJoiningPlayers(getCurrentPlayer(), this);
 
         while (true) {
+            renderState();
             Move move = getMoveFromCurrentPlayer();
             logger.info("Got a move: " + move);
             if (doMove(move))
@@ -367,7 +367,6 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         logger.debug("New player drew the cards");
 
         do {
-            renderState();
             doTurn();
         } while (!checkForWinner());
         announceWinner();
