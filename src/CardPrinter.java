@@ -144,8 +144,10 @@ class MultiLinePrinter {
     }
 
     public void printWithoutWrapping(int lineNumber, String s) {
-        out.set(lineNumber, out.get(lineNumber) + s);
+        while (out.size() <= lineNumber)
+            out.add("");
 
+        out.set(lineNumber, out.get(lineNumber) + s);
     }
 
 

@@ -336,7 +336,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
      * Prints the winner of the game to the user.
      */
     private void announceWinner() {
-        System.out.println("Player " + winner + " is the winner! But did he say Uno?");
+        System.out.println("Player " + winner + " is the winner!!!");
     }
 
     @Override
