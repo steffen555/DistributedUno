@@ -191,7 +191,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
     private boolean doSimpleDrawMove(Move move) {
         cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
         currentPlayerHasDrawnThisTurn = true;
-        return true;
+        return false;
     }
 
     private boolean isWinner(Player player) {
@@ -315,6 +315,8 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
      * Otherwise, we wait for the action of another player.
      */
     private void doTurn() {
+        logger.debug("doTurn was called");
+
         // first, if any players want to join, handle it
         comm.handleJoiningPlayers(getCurrentPlayer(), this);
 
