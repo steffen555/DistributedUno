@@ -412,10 +412,13 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             Socket socket = new Socket(peerInfo.getIp(), peerInfo.getPort());
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
             outputStream.writeObject(object);
+
+            // we have to open this to avoid an exception being raised on the other side,
+            // even though we don't use it.
+
             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-            String returnMessage = (String) inputStream.readObject();
             socket.close();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException /*| ClassNotFoundException*/ e) {
             e.printStackTrace();
         }
     }

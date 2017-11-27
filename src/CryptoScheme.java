@@ -28,8 +28,10 @@ public class CryptoScheme {
         // p and q should be two large primes which the players all agree on.
         // for now we hardcode them. This isn't a security problem in itself.
         // However for production use, they should be much larger.
-        BigInteger p = BigInteger.valueOf(102079);
-        BigInteger q = BigInteger.valueOf(104383);
+        // BigInteger p = BigInteger.valueOf(102079);
+        // BigInteger q = BigInteger.valueOf(104383);
+        BigInteger p = BigInteger.valueOf(283);
+        BigInteger q = BigInteger.valueOf(293);
 
         BigInteger totient = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
         BigInteger N = p.multiply(q);
