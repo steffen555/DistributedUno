@@ -14,18 +14,10 @@ public class Main {
         CardHandlingStrategy chs = new CryptoCardHandlingStrategy(comm);
         UnoGame game = new UnoGame(comm, chs);
 
-        if (args.length == 1) {
-            System.out.println("I am hosting on port " + myPort);
-            try {
-                comm.hostNetwork(numberOfPlayers);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else if(args.length == 2) {
-            System.out.println("I am hosting on port " + myPort);
+        if (args.length == 2)
             numberOfPlayers = Integer.parseInt(args[1]);
+        if(args.length == 1 || args.length == 2) {
+            System.out.println("I am hosting on port " + myPort);
             try {
                 comm.hostNetwork(numberOfPlayers);
             } catch (IOException e) {

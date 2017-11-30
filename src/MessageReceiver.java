@@ -72,7 +72,7 @@ public class MessageReceiver extends Thread {
         }
     }
 
-    // take an object which is one of the saught-after classes from the queue
+    // take an object which is one of the sought-after classes from the queue
     private synchronized Object takeFromQueue(List<Class> classes) {
         for (Object o : receiveQueue) {
             for (Class c : classes) {
