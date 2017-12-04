@@ -1,7 +1,4 @@
-import com.sun.org.apache.xpath.internal.operations.Mult;
-
 import java.io.IOException;
-
 import java.util.List;
 
 public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSupplier {
@@ -113,9 +110,9 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
                 return true;
 
             boolean isColorValid = (
-                   playedCard.getColor() == topCard.getColor() ||
-                   playedCard.getColor() == CardColor.NO_COLOR ||
-                   topCard.getColor() == CardColor.NO_COLOR
+                    playedCard.getColor() == topCard.getColor() ||
+                            playedCard.getColor() == CardColor.NO_COLOR ||
+                            topCard.getColor() == CardColor.NO_COLOR
             );
 
             if (isColorValid && !currentPlayerHasMovedThisTurn)
@@ -216,7 +213,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         if (card instanceof ActionCard) {
             ((ActionCard) card).performAction();
         }
-        if(cardHandlingStrategy.getCardsFromPlayer(move.getPlayer()).size() == 1 && !move.saidUno()){
+        if (cardHandlingStrategy.getCardsFromPlayer(move.getPlayer()).size() == 1 && !move.saidUno()) {
             System.out.println("Forgot to say UNO!");
             cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
             cardHandlingStrategy.drawCardFromDeckForPlayer(move.getPlayer());
@@ -251,7 +248,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         if (topPileCard instanceof ActionCard) {
             if (topPileCard instanceof DrawFourAndChangeColorCard)
                 ((DrawFourAndChangeColorCard) topPileCard).performInitialAction();
-            else if (topPileCard instanceof SkipCard || (comm.getPlayers().size() == 2 && topPileCard instanceof ChangeTurnDirectionCard) )
+            else if (topPileCard instanceof SkipCard || (comm.getPlayers().size() == 2 && topPileCard instanceof ChangeTurnDirectionCard))
                 advanceTurn();
             else if (!(topPileCard instanceof ChangeColorCard))
                 ((ActionCard) topPileCard).performAction();
@@ -268,7 +265,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         System.out.println("Pile:");
         MultiLinePrinter pilePrinter = CardPrinter.printCard(cardHandlingStrategy.getTopCardFromPile());
         if (pendingDraws != 0)
-            pilePrinter.print(2," Pending draws: " + pendingDraws + CardPrinter.NO_COLOR);
+            pilePrinter.print(2, " Pending draws: " + pendingDraws + CardPrinter.NO_COLOR);
         System.out.println(pilePrinter.getOutput());
         if (turnDirection == 1)
             System.out.print("Game direction: ↓ \n"); // arrow options: ↓,⇓,⇩,∨,⌄
@@ -296,7 +293,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
     /**
      * Clears the screen
      */
-    public static void clearScreen(){
+    public static void clearScreen() {
         try {
             if (System.getProperty("os.name").contains("Windows"))
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
@@ -304,7 +301,9 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
                 System.out.print("\033[H\033[2J");
                 System.out.flush();
             }
-        } catch (IOException | InterruptedException e) {e.printStackTrace();}
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -29,6 +29,8 @@ public abstract class Player {
     }
 
     public boolean equals(Player p) {
+        if(p == null)
+            return false;
         if (getPeerInfo() == null && p.getPeerInfo() == null) {
             return true;
         }
