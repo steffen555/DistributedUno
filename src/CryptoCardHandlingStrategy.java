@@ -10,11 +10,14 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
     private Pile pile;
     private Deck deck;
     private Map<Player, List<Card>> playerHandMap;
+    private Logger logger;
 
     public CryptoCardHandlingStrategy(CommunicationStrategy comm) {
         this.comm = comm;
         pile = new Pile();
         playerHandMap = new HashMap<>();
+
+        logger = new Logger("CryptoCardHandlingStrategy", "log.txt", Logger.DEBUG);
     }
 
     @Override
@@ -41,22 +44,31 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
     }
 
     @Override
-    public void drawCardFromDeckForPlayer(Player player) {EncryptedCard card;
+    public void drawCardFromDeckForPlayer(Player player) {
+        EncryptedCard card;
         try {
+            logger.debug("inside drawCardFromDeckForPlayer: " + player);
             card = (EncryptedCard) deck.drawCard();
+            logger.debug("Finished deck.drawCard() okay.");
         } catch (IndexOutOfBoundsException e) {
+            logger.debug("Got an index oob error!");
             initializeNewDeck();
+            logger.debug("Initialized new deck..");
             drawCardFromDeckForPlayer(player);
+            logger.debug("drew a card anew");
             return;
         }
 
+        logger.debug("About to decrypt..");
         Card decrypted = comm.decryptCardWithKeysFromOtherPlayers(player, card);
+        logger.debug("Decrypted OK");
 
         // if the player is new, his hand may not be initialized yet.
         if (!playerHandMap.containsKey(player))
             playerHandMap.put(player, new ArrayList<>());
 
         playerHandMap.get(player).add(decrypted);
+        logger.debug("drawCardFromDeckForPlayer finished.");
     }
 
     @Override

@@ -116,4 +116,9 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
     public Player getLocalPlayer() {
         return null;
     }
+
+    @Override
+    public void indicateFinished() {
+
+    }
 }

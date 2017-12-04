@@ -38,7 +38,7 @@ public class DeckShufflingProtocol {
 
         if (players.get(0).getPeerInfo() == null) { // If there is no info on where to send, it must be local.
             // the first player generates the deck
-            deck = Deck.generateLargePlainDeck(actionTarget, (players.size() * 7) / 60 + 1);
+            deck = Deck.generateLargePlainDeck(actionTarget, (players.size() * Hand.CARDS_PER_HAND) / 60 + 1);
         } else {
             // other players receive the deck from a previous player
             List<CardRepresentation> reprs;
