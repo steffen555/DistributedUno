@@ -32,4 +32,6 @@ public interface CommunicationStrategy {
     PeerInfo getLocalPeerInfo();
 
     Player getLocalPlayer();
+
+    void indicateFinished();
 }

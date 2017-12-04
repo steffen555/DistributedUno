@@ -19,6 +19,8 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     private PeerInfo myInfo;
     private ArrayList<Player> players;
     private MoveValidator moveValidator;
+    private int numSent;
+    private int numBroadcast;
 
     // TODO: handle the case when this fails better, e.g. if we have two IPs
     private String myIP() {
@@ -46,6 +48,9 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         System.out.println("My IP is: " + myIP());
         myInfo = new PeerInfo(myIP(), port, getStringFromUser("What is your name?"));
         players = new ArrayList<>();
+
+        numBroadcast = 0;
+        numSent = 0;
 
         localPlayer = new LocalPlayer(myInfo.getName());
 
@@ -80,6 +85,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
 
     public void broadcastObject(Serializable object) {
+        numBroadcast++;
         for (Player player : players) {
             if (player instanceof RemotePlayer) {
                 sendObject(player.getPeerInfo(), object);
@@ -88,6 +94,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     private void broadcastMove(Move move) {
+        numBroadcast++;
         for (Player player : players) {
             if (player instanceof RemotePlayer) {
                 sendMove(player.getPeerInfo(), move);
@@ -143,6 +150,13 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     @Override
     public Player getLocalPlayer() {
         return localPlayer;
+    }
+
+    @Override
+    public void indicateFinished() {
+        // the game is finished, so log the number of communications
+        logger.info("Number of messages sent: " + numSent);
+        logger.info("Number of messages broadcast: " + numBroadcast);
     }
 
     private void handleJoinRequest(JoinRequestMessage m, GameStateSupplier game) {
@@ -408,6 +422,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     private void sendObject(PeerInfo peerInfo, Serializable object) {
+        numSent++;
         try {
             Socket socket = new Socket(peerInfo.getIp(), peerInfo.getPort());
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());

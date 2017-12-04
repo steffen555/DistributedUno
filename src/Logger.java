@@ -2,6 +2,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.management.ManagementFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,6 +16,8 @@ public class Logger {
     public static int DEBUG = 2;
 
     public Logger(String subsystem, String logFile, int logLevel) {
+        logFile += "_" + ManagementFactory.getRuntimeMXBean().getName();
+
         this.subsystem = subsystem;
         this.logLevel = logLevel;
 
