@@ -63,15 +63,6 @@ public class SimpleCardHandlingStrategy implements CardHandlingStrategy {
         return pile.get(0);
     }
 
-    @Override
-    public void turnTopCardFromDeck() {
-        pile.add(0, takeTopCardFromDeck());
-    }
-
-    @Override
-    public void revealCardFromMove(Move move) {
-    }
-
     private Card takeTopCardFromDeck() {
         return deck.remove(0);
     }
@@ -103,6 +94,11 @@ public class SimpleCardHandlingStrategy implements CardHandlingStrategy {
     @Override
     public Deck getDeck() {
         return null;
+    }
+
+    @Override
+    public void revealCardFromMove(Move move) {
+
     }
 
 }

@@ -15,10 +15,6 @@ public interface CardHandlingStrategy {
 
     Card getTopCardFromPile();
 
-    void turnTopCardFromDeck();
-
-    void revealCardFromMove(Move move);
-
     void setActionCardTarget(ActionCardTarget target);
 
     Pile getPile();
@@ -30,4 +26,6 @@ public interface CardHandlingStrategy {
     void setHands(List<List<CardRepresentation>> handCards);
 
     Deck getDeck();
+
+    void revealCardFromMove(Move move);
 }

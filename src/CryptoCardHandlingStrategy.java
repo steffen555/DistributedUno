@@ -11,6 +11,7 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
     private Deck deck;
     private Map<Player, List<Card>> playerHandMap;
     private Logger logger;
+    private Logger timeLogger;
 
     public CryptoCardHandlingStrategy(CommunicationStrategy comm) {
         this.comm = comm;
@@ -18,13 +19,18 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
         playerHandMap = new HashMap<>();
 
         logger = new Logger("CryptoCardHandlingStrategy", "log.txt", Logger.DEBUG);
+        timeLogger = new Logger("CryptoCardHandlingStrategy", "timelog.txt", Logger.INFO);
     }
 
     @Override
     public void initializeNewDeck() {
         // Run deck shuffling/distributing protocol here.
         DeckShufflingProtocol deckCreator = new DeckShufflingProtocol(actionTarget, this, comm);
+
+        long startTime = System.nanoTime();
         deck = deckCreator.makeShuffledDeck();
+        long endTime = System.nanoTime();
+        timeLogger.info((endTime - startTime) + " ns to make shuffled deck");
     }
 
     public void distributeHands() {
@@ -48,7 +54,10 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
         EncryptedCard card;
         try {
             logger.debug("inside drawCardFromDeckForPlayer: " + player);
+            long startTime = System.nanoTime();
             card = (EncryptedCard) deck.drawCard();
+            long endTime = System.nanoTime();
+            timeLogger.info((endTime - startTime) + " ns to draw a card");
             logger.debug("Finished deck.drawCard() okay.");
         } catch (IndexOutOfBoundsException e) {
             logger.debug("Got an index oob error!");
@@ -96,17 +105,17 @@ public class CryptoCardHandlingStrategy implements CardHandlingStrategy {
         return pile.getTopCard();
     }
 
-    @Override
-    public void turnTopCardFromDeck() {
-        pile.addCard(deck.drawCard());
-    }
-
-    @Override
     public void revealCardFromMove(Move move) {
         int cardIndex = move.getCardIndex();
         Player player = move.getPlayer();
         Card card = playerHandMap.get(player).get(cardIndex);
+
+        long startTime = System.nanoTime();
         Card revealedCard = comm.sendPlayersKeyForCardToOtherPlayers(move.getPlayer(), card);
+        long endTime = System.nanoTime();
+
+        timeLogger.info((endTime - startTime) + " ns to reveal a card");
+
         playerHandMap.get(player).set(cardIndex, revealedCard);
     }
 

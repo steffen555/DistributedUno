@@ -19,6 +19,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     private PeerInfo myInfo;
     private ArrayList<Player> players;
     private MoveValidator moveValidator;
+    private boolean autoplay = false;
     private int numSent;
     private int numBroadcast;
 

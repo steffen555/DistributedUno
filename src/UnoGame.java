@@ -86,10 +86,6 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         cardHandlingStrategy.distributeHands();
     }
 
-    private void turnTopCardFromDeck() {
-        cardHandlingStrategy.turnTopCardFromDeck();
-    }
-
     private Move getMoveFromCurrentPlayer() {
         return getMoveFromPlayer(getCurrentPlayer());
     }
