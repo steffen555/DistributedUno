@@ -461,12 +461,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             if (p.equals(player)) {
                 continue;
             } else if (p instanceof LocalPlayer) {
-                for (Player p1 : players) {
-                    if (p != p1) {
-                        logger.debug("Sending my card key to this player: " + p1);
-                        sendObjectToPlayer(p1, card.getMyKey());
-                    }
-                }
+                broadcastObject(card.getMyKey());
             } else if (p instanceof RemotePlayer) {
                 logger.debug("Receiving a key from: " + p);
                 CryptoKey ck = (CryptoKey) receiveObject(CryptoKey.class);
