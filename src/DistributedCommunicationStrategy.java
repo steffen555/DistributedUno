@@ -349,8 +349,11 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     private int lastAttemptedMove = 0;
 
     private Move receiveMoveFromLocalUser(Player playerInTurn) {
-        if (!moveValidator.legalMoveExists())
+        logger.debug("inside receiveMoveFromLocalUser");
+        if (!moveValidator.legalMoveExists()) {
+            logger.debug("No legal move exists");
             return new Move(playerInTurn, MoveType.END_TURN, 0);
+        }
         MoveType moveType = null;
         while (moveType == null) {
             Scanner scanner = new Scanner(System.in);
@@ -361,11 +364,16 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
             String reply;
             if (autoplay) {
+                logger.debug("autopicking reply");
                 reply = "" + (lastAttemptedMove++) + "uno";
                 if (lastAttemptedMove > 50) //TODO: remove magic constant
                     reply = "d";
-            } else
+            } else {
+                logger.debug("Getting the reply from the user.");
                 reply = scanner.nextLine();
+            }
+
+            logger.debug("the reply is: " + reply);
 
             boolean uno;
             Matcher matcher = Pattern.compile("(.*)uno.*", Pattern.CASE_INSENSITIVE).matcher(reply);
@@ -377,6 +385,8 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             switch (reply) {
                 case "a":
                     autoplay = true;
+                    logger.debug("enabling autoplay");
+                    System.out.println("Playing automatically");
                     return receiveMoveFromLocalUser(playerInTurn);
                 case "d":
                     moveType = MoveType.DRAW;
@@ -386,11 +396,16 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
                     break;
                 default:
                     Matcher matcher2 = Pattern.compile("([0-9]+).*?", Pattern.CASE_INSENSITIVE).matcher(reply);
-                    if (matcher2.matches())
-                        return new Move(playerInTurn, MoveType.PLAY, Integer.parseInt(matcher2.group(1)), uno);
+                    if (matcher2.matches()) {
+                        int num = Integer.parseInt(matcher2.group(1));
+                        logger.debug("playing a number: " + num);
+                        return new Move(playerInTurn, MoveType.PLAY, num, uno);
+                    }
+                    logger.debug("failed to parse: " + reply);
                     System.out.println("Failed to parse");
             }
         }
+        logger.debug("move: " + moveType);
         int cardIndex = 0;
         return new Move(playerInTurn, moveType, cardIndex);
     }

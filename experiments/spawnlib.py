@@ -37,7 +37,7 @@ class Process:
 		else:
 			self.read_until("joining")
 
-		time.sleep(1)
+		time.sleep(0.2)
 
 	def read(self):
 		time.sleep(0.2)
@@ -70,14 +70,15 @@ class Process:
 
 def run_with_n_players(num_players):
 	os.system("pkill -f 'java Main' 2>/dev/null") # clean up old experiments..
+	time.sleep(1)
 
 	players = [Process(i, num_players=num_players) for i in range(num_players)]
 
 	# let them all autoplay
 	for p in players:
-		p.read_until("Pile")
+		p.read_until("or e to end your turn: ")
 		p.write("a\n")
-		p.read_until("Pile")
+		p.read_until("Playing automatically")
 
 	# let them finish
 	done = False
