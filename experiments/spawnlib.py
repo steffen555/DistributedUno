@@ -69,7 +69,7 @@ class Process:
 
 
 def run_with_n_players(num_players):
-	os.system("killall -KILL java 2>/dev/null") # clean up old experiments..
+	os.system("pkill -f 'java Main' 2>/dev/null") # clean up old experiments..
 
 	players = [Process(i, num_players=num_players) for i in range(num_players)]
 

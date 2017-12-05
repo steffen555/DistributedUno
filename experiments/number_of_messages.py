@@ -3,7 +3,7 @@ import os
 
 os.system("rm *log.txt* 2>/dev/null")
 
-spawnlib.run_with_n_players(20)
+spawnlib.run_with_n_players(2)
 
 num_broadcast = []
 num_sent = []
