@@ -59,7 +59,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         messageReceiver.start();
 
         logger = new Logger("DistributedCommunicationStrategy",
-                "log.txt", Logger.DEBUG);
+                                    "log.txt", Logger.DEBUG);
     }
 
     public List<Player> getPlayers() {
@@ -175,7 +175,8 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
             // also send the player the game state
             sendObject(m.getPeerInfo(), game.getState());
-        } else {
+        }
+        else {
             logger.debug("Got a relayed join request");
         }
 
@@ -213,7 +214,6 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         @Override
         public Move receiveMove() {
             Move move;
-            lastAttemptedMove = 0;
             do {
                 move = receiveMoveFromLocalUser(this);
             } while (!moveValidator.isLegal(move));
@@ -345,8 +345,6 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         setPlayers(peerInfos);
     }
 
-    private int lastAttemptedMove = 0;
-
     private Move receiveMoveFromLocalUser(Player playerInTurn) {
         if (!moveValidator.legalMoveExists())
             return new Move(playerInTurn, MoveType.END_TURN, 0);
@@ -358,13 +356,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             System.out.print("Write d to draw, a number to play a card, or e to end your turn: ");
             System.out.flush();
 
-            String reply;
-            if (autoplay) {
-                reply = "" + (lastAttemptedMove++) + "uno";
-                if (lastAttemptedMove > 50) //TODO: remove magic constant
-                    reply = "d";
-            } else
-                reply = scanner.nextLine();
+            String reply = scanner.nextLine();
 
             boolean uno;
             Matcher matcher = Pattern.compile("(.*)uno.*", Pattern.CASE_INSENSITIVE).matcher(reply);
@@ -374,9 +366,6 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
                 System.out.println("UNO!!!");
             }
             switch (reply) {
-                case "a":
-                    autoplay = true;
-                    return receiveMoveFromLocalUser(playerInTurn);
                 case "d":
                     moveType = MoveType.DRAW;
                     break;
@@ -397,11 +386,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     private CardColor getColorFromLocalUser() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Which color should the card be? (red, green, blue, yellow)");
-        String reply;
-        if (autoplay)
-            reply = new String[]{"r", "g", "b", "y"}[(int) Math.random() * 4];
-        else
-            reply = scanner.next();
+        String reply = scanner.next();
         switch (reply) {
             case "red":
             case "r":
