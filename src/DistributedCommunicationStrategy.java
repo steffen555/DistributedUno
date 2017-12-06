@@ -78,6 +78,10 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         return messageReceiver.receiveObject(c);
     }
 
+    public Object receiveObjectFrom(Class c, PeerInfo peerInfo) {
+        return messageReceiver.receiveObjectFrom(c, peerInfo);
+    }
+
     private Move doReceiveMove(Player player) {
         MoveMessage moveMessage = (MoveMessage) receiveObject(MoveMessage.class);
         return new Move(player, moveMessage.getMoveType(), moveMessage.getIndex(), moveMessage.getUno());
@@ -88,7 +92,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         numBroadcast++;
         for (Player player : players) {
             if (player instanceof RemotePlayer) {
-                logger.debug("Sending object to " + player + "as part of broadcast.");
+                logger.debug("Sending object to " + player + " as part of broadcast.");
                 sendObject(player.getPeerInfo(), object);
             }
         }
@@ -98,7 +102,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         numBroadcast++;
         for (Player player : players) {
             if (player instanceof RemotePlayer) {
-                logger.debug("Sending move " + move + " to " + player + "as part of broadcastMove");
+                logger.debug("Sending move " + move + " to " + player + " as part of broadcastMove");
                 sendMove(player.getPeerInfo(), move);
             }
             else {
@@ -462,7 +466,8 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         try {
             Socket socket = new Socket(peerInfo.getIp(), peerInfo.getPort());
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-            outputStream.writeObject(object);
+            Transmission t = new Transmission(object, myInfo);
+            outputStream.writeObject(t);
 
             // we have to open this to avoid an exception being raised on the other side,
             // even though we don't use it.
@@ -569,4 +574,22 @@ class GameInProgressMessage implements Serializable {
 }
 
 class GameBeingCreatedMessage implements Serializable {
+}
+
+class Transmission implements Serializable {
+    private final Serializable object;
+    private final PeerInfo peerInfo;
+
+    public Transmission(Serializable object, PeerInfo peerInfo) {
+        this.object = object;
+        this.peerInfo = peerInfo;
+    }
+
+    public Serializable getObject() {
+        return object;
+    }
+
+    public PeerInfo getPeerInfo() {
+        return peerInfo;
+    }
 }

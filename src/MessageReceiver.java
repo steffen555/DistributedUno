@@ -15,7 +15,7 @@ import java.util.List;
 */
 public class MessageReceiver extends Thread {
     private final int port;
-    private List<Object> receiveQueue;
+    private List<Transmission> receiveQueue;
     private ServerSocket serverSocket;
 
     public MessageReceiver(int port) {
@@ -26,14 +26,14 @@ public class MessageReceiver extends Thread {
 
     public void run() {
         while (true) {
-            Object o = doReceiveObject();
-            if (o != null)
-                addToQueue(o);
+            Transmission t = doReceiveObject();
+            if (t != null)
+                addToQueue(t);
         }
     }
 
-    private synchronized void addToQueue(Object o) {
-        receiveQueue.add(o);
+    private synchronized void addToQueue(Transmission t) {
+        receiveQueue.add(t);
     }
 
     private void initServerSocket() {
@@ -44,7 +44,7 @@ public class MessageReceiver extends Thread {
         }
     }
 
-    private Object doReceiveObject() {
+    private Transmission doReceiveObject() {
         Socket socket;
         try {
             socket = serverSocket.accept();
@@ -59,7 +59,14 @@ public class MessageReceiver extends Thread {
             object = inputStream.readObject();
             outputStream.writeObject("Object received"); // otherwise we get an EOFError
             socket.close();
-            return object;
+
+            // only ever allow Transmission objects, so we know who the sender is
+            if (!(object instanceof Transmission))
+                return null;
+
+            // TODO: validate IP address of sender with that in 't'
+            Transmission t = (Transmission) object;
+            return t;
         } catch (StreamCorruptedException e) {
             e.printStackTrace();
             return null;
@@ -73,12 +80,16 @@ public class MessageReceiver extends Thread {
     }
 
     // take an object which is one of the sought-after classes from the queue
-    private synchronized Object takeFromQueue(List<Class> classes) {
-        for (Object o : receiveQueue) {
+    private synchronized Object takeFromQueue(List<Class> classes, PeerInfo peerInfo) {
+        for (Transmission t : receiveQueue) {
+            if (peerInfo != null && !(t.getPeerInfo().equals(peerInfo))) {
+                continue; // came from wrong sender
+            }
+
             for (Class c : classes) {
-                if (c.isInstance(o)) {
-                    receiveQueue.remove(o);
-                    return o;
+                if (c.isInstance(t.getObject())) {
+                    receiveQueue.remove(t);
+                    return t.getObject();
                 }
             }
         }
@@ -95,7 +106,7 @@ public class MessageReceiver extends Thread {
 
     public Object receiveObject(List<Class> classes, boolean mayBlock) {
         while (true) {
-            Object o = takeFromQueue(classes);
+            Object o = takeFromQueue(classes, null);
             if (o != null)
                 return o;
 
@@ -115,6 +126,8 @@ public class MessageReceiver extends Thread {
         return receiveObject(classes, true);
     }
 
+    // TODO: this should be specific to the player in turn, we should not accept joins from
+    // anyone else until it's their turn.
     public JoinRequestMessage receiveJoinRequestMessage(boolean isMyTurn) {
         while (true) {
 
@@ -126,11 +139,11 @@ public class MessageReceiver extends Thread {
 
             // otherwise, if it's someone else's turn, only take out forwarded join requests.
             else {
-                for (Object o : receiveQueue) {
-                    if (o instanceof JoinRequestMessage) {
-                        JoinRequestMessage m = (JoinRequestMessage) o;
+                for (Transmission t : receiveQueue) {
+                    if (t.getObject() instanceof JoinRequestMessage) {
+                        JoinRequestMessage m = (JoinRequestMessage) t.getObject();
                         if (m.isRelayed()) {
-                            receiveQueue.remove(o);
+                            receiveQueue.remove(t);
                             return m;
                         }
                     }
@@ -151,11 +164,15 @@ public class MessageReceiver extends Thread {
     }
 
     private boolean queueContains(Class c) {
-        for (Object o : receiveQueue) {
-            if (c.isInstance(o)) {
+        for (Transmission t : receiveQueue) {
+            if (c.isInstance(t.getObject())) {
                 return true;
             }
         }
         return false;
+    }
+
+    public Object receiveObjectFrom(Class c, PeerInfo peerInfo) {
+        return null;
     }
 }
