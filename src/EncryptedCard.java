@@ -33,14 +33,21 @@ public class EncryptedCard extends Card {
     }
 
     public Card decrypt(CryptoKey key) {
+        Logger timeLogger = new Logger("EncryptedCard", "timelog.txt", Logger.INFO);
+        long startTime = System.nanoTime();
+
         if (encryptionCounter == 1) {
             BigInteger plainValue = CryptoScheme.decrypt(key, encryptedValue);
+            long endTime = System.nanoTime();
+            timeLogger.info("Decrypted once in " + (endTime - startTime) + " ns");
             Card result = CardTranslator.valueToCard(plainValue, getActionTarget());
             result.setMyKey(getMyKey());
             return result;
         }
         else {
             encryptedValue = CryptoScheme.decrypt(key, encryptedValue);
+            long endTime = System.nanoTime();
+            timeLogger.info("Decrypted once in " + (endTime - startTime) + " ns");
             encryptionCounter--;
             return this;
         }

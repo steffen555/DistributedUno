@@ -10,8 +10,6 @@ of any info that could let an attacker distinguish between plaintexts.
 
 NOTE: we will use SRA for now, but it's not actually CPA secure.
 
-TODO: one problem here is that encrypting 0 is quite obvious...
-
  */
 public class CryptoScheme {
 
@@ -30,8 +28,10 @@ public class CryptoScheme {
         // However for production use, they should be much larger.
         // BigInteger p = BigInteger.valueOf(102079);
         // BigInteger q = BigInteger.valueOf(104383);
-        BigInteger p = BigInteger.valueOf(283);
-        BigInteger q = BigInteger.valueOf(293);
+        // BigInteger p = BigInteger.valueOf(283);
+        // BigInteger q = BigInteger.valueOf(293);
+        BigInteger p = new BigInteger("94283884166278099039827565009889052966771805725755793943931273274867605828531324499355605151594203717517529143625166692162928981031097594293798477958713526123600003229334506611919972576326970948702875984395735248890793764073521754359225373958014640130512754556561099358878844129016284525100432797747865162629");
+        BigInteger q = new BigInteger("97694032211643084226462844455093135919321673564611664962538343223166256734050545440107761641740464115163401570348379557675657335812817993937660148642952530641130483081689345688998058585777352004589013069482836169418413886480756878538668264403911410054887777497375494789297625394189389926386113344723070207203");
 
         BigInteger totient = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
         BigInteger N = p.multiply(q);

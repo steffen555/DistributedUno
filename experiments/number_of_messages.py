@@ -17,7 +17,7 @@ def process_logfile(filename):
 			num = int(line.split(": ")[2])
 			num_broadcast.append(num)
 
-filename = "experiment_%d.txt" % int(time.time())
+filename = "number_of_messages_experiment_%d.txt" % int(time.time())
 f = open(filename, "w")
 
 for num_players in range(2, MAX_PLAYERS+1):

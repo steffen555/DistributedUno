@@ -23,7 +23,6 @@ public class Logger {
 
         try {
             out = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
-            info("Logging started");
         } catch (IOException e) {
             System.out.println("Could not initialize logging!");
         }
