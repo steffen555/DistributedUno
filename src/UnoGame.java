@@ -16,6 +16,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
     private int pendingSkipCards = 0;
     private int pendingDraws = 0;
     private Logger logger;
+    private Logger timeLogger;
 
     public UnoGame(CommunicationStrategy comm, CardHandlingStrategy cardHandlingStrategy) {
         this.comm = comm;
@@ -24,6 +25,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         cardHandlingStrategy.setActionCardTarget(this);
 
         logger = new Logger("UnoGame", "log.txt", Logger.DEBUG);
+        timeLogger = new Logger("UnoGame", "timelog.txt", Logger.INFO);
     }
 
     public Player getCurrentPlayer() {
@@ -151,15 +153,21 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
      * If a card is drawn, the user should have the option to play any card.
      */
     private boolean doMove(Move move) {
+        long startTime = System.nanoTime();
         if (move.getType() == MoveType.PLAY) {
             doPlayMove(move);
+            long endTime = System.nanoTime();
+            timeLogger.info("Time to perform a play move: " + (endTime - startTime) + " ns");
             return false;
         } else if (move.getType() == MoveType.DRAW && pendingDraws != 0) {
             doPendingDrawMove(move);
             advanceTurn();
             return true;
         } else if (move.getType() == MoveType.DRAW) {
-            return doSimpleDrawMove(move);
+            boolean result = doSimpleDrawMove(move);
+            long endTime = System.nanoTime();
+            timeLogger.info("Time to perform a draw move: " + (endTime - startTime) + " ns");
+            return result;
         } else if (move.getType() == MoveType.END_TURN) {
             advanceTurn();
             consumeSkips();
