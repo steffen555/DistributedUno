@@ -97,16 +97,16 @@ public class MessageReceiver extends Thread {
     }
 
     public Object receiveObject(Class c, boolean mayBlock) {
-        return receiveObject(Arrays.asList(c), mayBlock);
+        return receiveObject(Arrays.asList(c), mayBlock, null);
     }
 
     public Object receiveObject(Class c) {
         return receiveObject(Arrays.asList(c));
     }
 
-    public Object receiveObject(List<Class> classes, boolean mayBlock) {
+    public Object receiveObject(List<Class> classes, boolean mayBlock, PeerInfo peerInfo) {
         while (true) {
-            Object o = takeFromQueue(classes, null);
+            Object o = takeFromQueue(classes, peerInfo);
             if (o != null)
                 return o;
 
@@ -123,7 +123,7 @@ public class MessageReceiver extends Thread {
     }
 
     public Object receiveObject(List<Class> classes) {
-        return receiveObject(classes, true);
+        return receiveObject(classes, true, null);
     }
 
     // TODO: this should be specific to the player in turn, we should not accept joins from
@@ -173,6 +173,6 @@ public class MessageReceiver extends Thread {
     }
 
     public Object receiveObjectFrom(Class c, PeerInfo peerInfo) {
-        return null;
+        return receiveObject(Arrays.asList(c), true, peerInfo);
     }
 }

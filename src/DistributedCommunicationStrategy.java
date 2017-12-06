@@ -83,7 +83,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     }
 
     private Move doReceiveMove(Player player) {
-        MoveMessage moveMessage = (MoveMessage) receiveObject(MoveMessage.class);
+        MoveMessage moveMessage = (MoveMessage) receiveObjectFrom(MoveMessage.class, player.getPeerInfo());
         return new Move(player, moveMessage.getMoveType(), moveMessage.getIndex(), moveMessage.getUno());
     }
 
