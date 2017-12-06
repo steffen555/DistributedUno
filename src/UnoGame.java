@@ -334,6 +334,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
     private void announceWinner() {
         System.out.println("Player " + winner + " is the winner!!!");
         comm.indicateFinished();
+        System.exit(0);
     }
 
     @Override

@@ -23,7 +23,7 @@ def spawn(i, num_players=2):
 	return Popen(cmd, shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE, bufsize = 1)
 
 class Process:
-	def __init__(self, i, num_players=2):
+	def __init__(self, i, num_players):
 		self.p = spawn(i, num_players)
 
 		set_nonblocking(self.p.stdout)
@@ -37,14 +37,15 @@ class Process:
 		else:
 			self.read_until("joining")
 
-		time.sleep(0.2)
-
 	def read(self):
 		time.sleep(0.2)
 		result = ""
 		while True:
 			try:
-				result += self.p.stdout.read(1)
+				r = self.p.stdout.read(1)
+				result += r
+				if r == "":
+					break
 			except IOError:
 				break
 		
@@ -55,10 +56,13 @@ class Process:
 		while True:
 			if text in result:
 				break
+
 			try:
-				result += self.p.stdout.read(1)
+				r = self.p.stdout.read(1)
+				result += r
+				if r == "":
+					break
 			except IOError:
-				print result
 				time.sleep(0.1)
 
 		return result
@@ -69,23 +73,26 @@ class Process:
 
 
 def run_with_n_players(num_players):
-	os.system("pkill -f 'java Main' 2>/dev/null") # clean up old experiments..
-	time.sleep(1)
+	os.system("pkill --signal SIGKILL -f 'java Main' 2>/dev/null ") # clean up old experiments..
+	time.sleep(1) # wait for them to terminate
 
-	players = [Process(i, num_players=num_players) for i in range(num_players)]
+	players = []
+	for i in range(num_players):
+		p = Process(i, num_players=num_players)
+		players.append(p)
 
 	# let them all autoplay
 	for p in players:
-		p.read_until("or e to end your turn: ")
+		# note, we cannot read_until "press e to bla" because sometimes
+		# players are skipped due to skip cards!
 		p.write("a\n")
-		p.read_until("Playing automatically")
 
 	# let them finish
 	done = False
 	while not done:
 		for p in players:
 			result = p.read()
-			print result
+			print len(result)
 			if "is the winner" in result:
 				done = True
 

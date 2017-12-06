@@ -5,8 +5,6 @@ import time
 def average(nums):
 	return float(sum(nums)) / len(nums)
 
-NUM_EXPERIMENTS = 1
-
 def process_logfile(filename):
 	for line in open(filename):
 		if "Number of messages sent:" in line:
