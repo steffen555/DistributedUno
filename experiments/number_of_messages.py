@@ -35,10 +35,10 @@ for num_players in range(2, MAX_PLAYERS+1):
 			process_logfile(filename)
 	
 
-	sent = average(num_sent)
-	print num_players, sent, num_sent
+	print num_players, num_sent
 	assert len(num_sent) == num_players
-	f.write("%d players, %f messages sent\n" % (num_players, sent))
+	f.write("%d players: sent: %s\n" % (num_players, repr(num_sent)))
+	f.write("%d players: broadcast: %s\n" % (num_players, repr(num_broadcast)))
 	f.flush()
 
 	# print "broadcast:", num_broadcast

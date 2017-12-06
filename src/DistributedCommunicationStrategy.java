@@ -88,6 +88,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         numBroadcast++;
         for (Player player : players) {
             if (player instanceof RemotePlayer) {
+                logger.debug("Sending object to " + player + "as part of broadcast.");
                 sendObject(player.getPeerInfo(), object);
             }
         }
@@ -97,7 +98,11 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         numBroadcast++;
         for (Player player : players) {
             if (player instanceof RemotePlayer) {
+                logger.debug("Sending move " + move + " to " + player + "as part of broadcastMove");
                 sendMove(player.getPeerInfo(), move);
+            }
+            else {
+                logger.debug("Will not send move to this player: " + player);
             }
         }
     }
@@ -365,6 +370,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             if (shouldAutoPlay()) {
                 logger.debug("autopicking reply");
                 reply = "" + (lastAttemptedMove++) + "uno";
+
                 if (lastAttemptedMove > 50) //TODO: remove magic constant
                     reply = "d";
             } else {
@@ -474,7 +480,15 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             if (p.equals(player)) {
                 continue;
             } else if (p instanceof LocalPlayer) {
-                broadcastObject(card.getMyKey());
+                logger.debug("Broadcasting key");
+                numBroadcast++;
+                for (Player p1 : players) {
+                    if (p != p1) {
+                        logger.debug("Sending my card key to this player: " + p1);
+                        sendObjectToPlayer(p1, card.getMyKey());
+                    }
+                }
+                logger.debug("Done broadcasting key");
             } else if (p instanceof RemotePlayer) {
                 logger.debug("Receiving a key from: " + p);
                 CryptoKey ck = (CryptoKey) receiveObject(CryptoKey.class);

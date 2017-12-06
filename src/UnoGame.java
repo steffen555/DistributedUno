@@ -206,10 +206,10 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
      * Performs the action of playing a card to the pile.
      */
     private void doPlayMove(Move move) {
-//        System.out.println("Revealing card number " + move.getCardIndex());
         cardHandlingStrategy.revealCardFromMove(move);
         if (!isLegal(move)) {
             System.out.println("Illegal move!");
+            logger.critical("Got an illegal move!! " + move);
             return;
         }
 
@@ -324,6 +324,8 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
 
         // first, if any players want to join, handle it
         comm.handleJoiningPlayers(getCurrentPlayer(), this);
+
+        logger.debug("It is now the turn of this player: " + getCurrentPlayer());
 
         while (true) {
             Move move = getMoveFromCurrentPlayer();

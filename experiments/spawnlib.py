@@ -83,14 +83,20 @@ def run_with_n_players(num_players):
 
 	done = False
 	outputs = [""]*num_players
-	while not done:
-		time.sleep(0.1)
-		for i, p in enumerate(players):
-			r = p.read()
-			if len(r) != 0:
-				print len(r)
-			outputs[i] += r
-			if all("is the winner" in output for output in outputs):
-				done = True
+	try:
+		while not done:
+			time.sleep(0.1)
+			for i, p in enumerate(players):
+				r = p.read()
+				if len(r) != 0:
+					print len(r)
+				outputs[i] += r
+				if all("is the winner" in output for output in outputs):
+					done = True
+	except KeyboardInterrupt:
+		for i, output in enumerate(outputs):
+			open("/tmp/log_%d" % i, "w").write(output)
+
+		print "wrote to logs"
 
 
