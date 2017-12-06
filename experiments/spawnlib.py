@@ -14,11 +14,11 @@ def spawn(i, num_players=2):
 
 	if i == 0:
 		# this is the host
-		cmd = "java Main %d %d" % (my_port, num_players)
+		cmd = "UNO_AUTOPLAY=1 java Main %d %d" % (my_port, num_players)
 	else:
 		# join the host
 		host_port = PORT_BASE
-		cmd = "java Main %d 127.0.0.1 %d" % (my_port, host_port)
+		cmd = "UNO_AUTOPLAY=1 java Main %d 127.0.0.1 %d" % (my_port, host_port)
 	
 	return Popen(cmd, shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE, bufsize = 1)
 
@@ -38,7 +38,6 @@ class Process:
 			self.read_until("joining")
 
 	def read(self):
-		time.sleep(0.2)
 		result = ""
 		while True:
 			try:
@@ -63,7 +62,7 @@ class Process:
 				if r == "":
 					break
 			except IOError:
-				time.sleep(0.1)
+				time.sleep(0.01)
 
 		return result
 
@@ -81,18 +80,17 @@ def run_with_n_players(num_players):
 		p = Process(i, num_players=num_players)
 		players.append(p)
 
-	# let them all autoplay
-	for p in players:
-		# note, we cannot read_until "press e to bla" because sometimes
-		# players are skipped due to skip cards!
-		p.write("a\n")
 
-	# let them finish
 	done = False
+	outputs = [""]*num_players
 	while not done:
-		for p in players:
-			result = p.read()
-			print len(result)
-			if "is the winner" in result:
+		time.sleep(0.1)
+		for i, p in enumerate(players):
+			r = p.read()
+			if len(r) != 0:
+				print len(r)
+			outputs[i] += r
+			if all("is the winner" in output for output in outputs):
 				done = True
+
 

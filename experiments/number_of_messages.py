@@ -2,6 +2,8 @@ import spawnlib
 import os
 import time
 
+MAX_PLAYERS = 30
+
 def average(nums):
 	return float(sum(nums)) / len(nums)
 
@@ -18,7 +20,7 @@ def process_logfile(filename):
 filename = "experiment_%d.txt" % int(time.time())
 f = open(filename, "w")
 
-for num_players in range(2, 30+1):
+for num_players in range(2, MAX_PLAYERS+1):
 
 	os.system("rm *log.txt* 2>/dev/null")
 
@@ -34,7 +36,8 @@ for num_players in range(2, 30+1):
 	
 
 	sent = average(num_sent)
-	print num_sent
+	print num_players, sent, num_sent
+	assert len(num_sent) == num_players
 	f.write("%d players, %f messages sent\n" % (num_players, sent))
 	f.flush()
 

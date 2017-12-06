@@ -19,7 +19,6 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     private PeerInfo myInfo;
     private ArrayList<Player> players;
     private MoveValidator moveValidator;
-    private boolean autoplay = false;
     private int numSent;
     private int numBroadcast;
 
@@ -363,7 +362,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
             System.out.flush();
 
             String reply;
-            if (autoplay) {
+            if (shouldAutoPlay()) {
                 logger.debug("autopicking reply");
                 reply = "" + (lastAttemptedMove++) + "uno";
                 if (lastAttemptedMove > 50) //TODO: remove magic constant
@@ -383,11 +382,6 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
                 System.out.println("UNO!!!");
             }
             switch (reply) {
-                case "a":
-                    autoplay = true;
-                    logger.debug("enabling autoplay");
-                    System.out.println("Playing automatically");
-                    return receiveMoveFromLocalUser(playerInTurn);
                 case "d":
                     moveType = MoveType.DRAW;
                     break;
@@ -410,11 +404,15 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
         return new Move(playerInTurn, moveType, cardIndex);
     }
 
+    private boolean shouldAutoPlay() {
+        return System.getenv("UNO_AUTOPLAY") != null;
+    }
+
     private CardColor getColorFromLocalUser() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Which color should the card be? (red, green, blue, yellow)");
         String reply;
-        if (autoplay)
+        if (shouldAutoPlay())
             reply = new String[]{"r", "g", "b", "y"}[(int) Math.random() * 4];
         else
             reply = scanner.next();
