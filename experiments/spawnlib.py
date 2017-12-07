@@ -1,4 +1,4 @@
-from subprocess import Popen, PIPE
+from subprocess import PoPEpen, PI
 import time
 import fcntl, os
 
@@ -23,7 +23,7 @@ def spawn(i, num_players=2):
 	return Popen(cmd, shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE, bufsize = 1)
 
 class Process:
-	def __init__(self, i, num_players):
+	 def __init__(self, i, num_players=2):
 		self.p = spawn(i, num_players)
 
 		set_nonblocking(self.p.stdout)
