@@ -71,7 +71,7 @@ class Process:
 		return self.p.stdin.write(text)
 
 
-def run_with_n_players(num_players):
+def do_run_with_n_players(num_players):
 	os.system("pkill --signal SIGKILL -f 'java Main' 2>/dev/null ") # clean up old experiments..
 	time.sleep(1) # wait for them to terminate
 
@@ -80,23 +80,23 @@ def run_with_n_players(num_players):
 		p = Process(i, num_players=num_players)
 		players.append(p)
 
-
 	done = False
 	outputs = [""]*num_players
-	try:
-		while not done:
-			time.sleep(0.1)
-			for i, p in enumerate(players):
-				r = p.read()
-				if len(r) != 0:
-					print len(r)
-				outputs[i] += r
-				if all("is the winner" in output for output in outputs):
-					done = True
-	except KeyboardInterrupt:
-		for i, output in enumerate(outputs):
-			open("/tmp/log_%d" % i, "w").write(output)
-
-		print "wrote to logs"
+	while not done:
+		time.sleep(0.1)
+		for i, p in enumerate(players):
+			r = p.read()
+			if len(r) != 0:
+				print len(r)
+			outputs[i] += r
+			if all("is the winner" in output for output in outputs):
+				done = True
 
 
+def run_with_n_players(num_players):
+	while True:
+		try:
+			do_run_with_n_players(num_players)
+			break
+		except KeyboardInterrupt:
+			print "Retrying with", num_players, "players"

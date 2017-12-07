@@ -323,7 +323,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
         renderState();
 
         // first, if any players want to join, handle it
-        comm.handleJoiningPlayers(getCurrentPlayer(), this);
+        // comm.handleJoiningPlayers(getCurrentPlayer(), this);
 
         logger.debug("It is now the turn of this player: " + getCurrentPlayer());
 

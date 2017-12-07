@@ -127,7 +127,9 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
 
         JoinRequestMessage m;
         while (true) {
+            logger.debug("Looking for a new JoinRequestMessage");
             m = messageReceiver.receiveJoinRequestMessage(isMyTurn);
+            logger.debug("Got this: " + m);
             if (m == null)
                 break;
 
