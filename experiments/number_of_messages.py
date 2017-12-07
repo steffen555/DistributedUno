@@ -2,7 +2,7 @@ import spawnlib
 import os
 import time
 
-MAX_PLAYERS = 30
+MAX_PLAYERS = 20
 
 def average(nums):
 	return float(sum(nums)) / len(nums)
