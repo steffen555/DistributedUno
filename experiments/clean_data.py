@@ -3,18 +3,19 @@ import os
 outdir = "cleaned_data/"
 
 def write_headers():
-	open(outdir + "tpa_shuffle_times.txt", "w").write("filename,num_players,time_in_ns\n")
-	open(outdir + "tpa_draw_times.txt", "w").write("filename,num_players,time_in_ns\n")
-	open(outdir + "tpa_play_times.txt", "w").write("filename,num_players,time_in_ns\n")
+	open(outdir + "tpa_shuffle_times.csv", "w").write("filename,num_players,time_in_ns\n")
+	open(outdir + "tpa_draw_times.csv", "w").write("filename,num_players,time_in_ns\n")
+	open(outdir + "tpa_play_times.csv", "w").write("filename,num_players,time_in_ns\n")
+	open(outdir + "num_messages_sent.csv", "w").write("filename,num_players,num_messages_sent\n")
 
 def average(ns):
 	return float(sum(ns))/len(ns)
 
 
 def handle_tpa(filename):
-	f1 = open(outdir + "tpa_shuffle_times.txt", "a")
-	f2 = open(outdir + "tpa_draw_times.txt", "a")
-	f3 = open(outdir + "tpa_play_times.txt", "a")
+	f1 = open(outdir + "tpa_shuffle_times.csv", "a")
+	f2 = open(outdir + "tpa_draw_times.csv", "a")
+	f3 = open(outdir + "tpa_play_times.csv", "a")
 
 	for line in open(filename):
 
@@ -46,7 +47,15 @@ def handle_bandwidth(filename):
 	pass
 
 def handle_num_messages(filename):
-	pass
+	f1 = open(outdir + "num_messages_sent.csv", "a")
+	for line in open(filename):
+		num_players = int(line.split(" ")[0])
+		times = eval("[" + line[line.find(" [")+2:])
+		if len(times) == 0:
+			continue # no data..
+		for t in times:
+			if "sent:" in line:
+				f1.write("%s,%s,%s\n" % (filename, num_players, t))
 
 def handle_crypto(filename):
 	pass
