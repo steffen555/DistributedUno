@@ -6,7 +6,7 @@ def write_headers():
 	open(outdir + "tpa_shuffle_times.csv", "w").write("filename,num_players,time_in_ns\n")
 	open(outdir + "tpa_draw_times.csv", "w").write("filename,num_players,time_in_ns\n")
 	open(outdir + "tpa_play_times.csv", "w").write("filename,num_players,time_in_ns\n")
-	open(outdir + "num_messages_sent.csv", "w").write("filename,num_players,num_messages_sent\n")
+	open(outdir + "num_messages_sent.csv", "w").write("filename,num_players,num_messages_sent,turns\n")
 	open(outdir + "bandwidth_used.csv", "w").write("filename,num_players,total_bandwidth_used_by_all_players_in_bytes\n")
 	open(outdir + "crypto_shuffle_times.csv", "w").write("filename,bits_used_for_primes,time_spent_to_shuffle_in_ns\n")
 	open(outdir + "crypto_decrypt_times.csv", "w").write("filename,bits_used_for_primes,time_spent_per_decryption_in_ns\n")
@@ -57,11 +57,18 @@ def handle_num_messages(filename):
 	for line in open(filename):
 		num_players = int(line.split(" ")[0])
 		times = eval("[" + line[line.find(" [")+2:])
-		if len(times) == 0:
-			continue # no data..
-		for t in times:
-			if "sent:" in line:
-				f1.write("%s,%s,%s\n" % (filename, num_players, t))
+
+		if "sent:" in line:
+			old_times = times
+			old_num_players = num_players
+
+		elif "turns" in line:
+			turns = times[0]
+			assert num_players == old_num_players
+			assert all(t == turns for t in times)
+			for t in old_times:
+				f1.write("%s,%s,%s,%s\n" % (filename, num_players, t, turns))
+
 
 def handle_crypto(filename):
 	f1 = open(outdir + "crypto_shuffle_times.csv", "a")
