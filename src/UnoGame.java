@@ -17,6 +17,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
     private int pendingDraws = 0;
     private Logger logger;
     private Logger timeLogger;
+    private int turns;
 
     public UnoGame(CommunicationStrategy comm, CardHandlingStrategy cardHandlingStrategy) {
         this.comm = comm;
@@ -26,6 +27,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
 
         logger = new Logger("UnoGame", "log.txt", Logger.DEBUG);
         timeLogger = new Logger("UnoGame", "timelog.txt", Logger.INFO);
+        turns = 0;
     }
 
     public Player getCurrentPlayer() {
@@ -319,7 +321,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
      */
     private void doTurn() {
         logger.debug("doTurn was called");
-
+        turns++;
         renderState();
 
         // first, if any players want to join, handle it
@@ -344,6 +346,7 @@ public class UnoGame implements MoveValidator, ActionCardTarget, GameStateSuppli
     private void announceWinner() {
         System.out.println("Player " + winner + " is the winner!!!");
         comm.indicateFinished();
+        logger.info("Number of turns: " + turns);
         System.exit(0);
     }
 

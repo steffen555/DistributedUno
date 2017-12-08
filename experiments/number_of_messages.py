@@ -16,6 +16,10 @@ def process_logfile(filename):
 		if "Number of messages broadcast:" in line:
 			num = int(line.split(": ")[2])
 			num_broadcast.append(num)
+			
+		if "Number of turns:" in line:
+			num = int(line.split(": ")[2])
+			num_turns.append(num)
 
 filename = "number_of_messages_experiment_%d.txt" % int(time.time())
 f = open(filename, "w")
@@ -33,6 +37,7 @@ for num_players in range(2, MAX_PLAYERS+1):
 
 	num_broadcast = []
 	num_sent = []
+	num_turns = []
 
 	for filename in os.listdir("."):
 		if filename.startswith("log.txt"):
@@ -43,6 +48,7 @@ for num_players in range(2, MAX_PLAYERS+1):
 	assert len(num_sent) == num_players
 	f.write("%d players: sent: %s\n" % (num_players, repr(num_sent)))
 	f.write("%d players: broadcast: %s\n" % (num_players, repr(num_broadcast)))
+	f.write("%d players: turns: %s\n" % (num_players, repr(num_turns)))
 	f.flush()
 
 	# print "broadcast:", num_broadcast

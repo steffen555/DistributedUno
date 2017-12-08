@@ -184,3 +184,4 @@ hs_err_pid*
 log.txt
 
 # End of https://www.gitignore.io/api/java
+experiments/spawnlib.pyc
