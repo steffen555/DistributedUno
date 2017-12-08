@@ -2,6 +2,11 @@ import os
 
 outdir = "cleaned_data/"
 
+def write_headers():
+	open(outdir + "tpa_shuffle_times.txt", "w").write("filename,num_players,time_in_ns\n")
+	open(outdir + "tpa_draw_times.txt", "w").write("filename,num_players,time_in_ns\n")
+	open(outdir + "tpa_play_times.txt", "w").write("filename,num_players,time_in_ns\n")
+
 def average(ns):
 	return float(sum(ns))/len(ns)
 
@@ -20,20 +25,21 @@ def handle_tpa(filename):
 		if len(times) == 0:
 			continue # no data..
 
-		point = average(times)
+		for t in times:
 
-		if "Shuffle times:" in line:
-			f1.write("%s,%s\n" % (num_players, point))
 
-		elif "Draw move times:" in line:
-			f2.write("%s,%s\n" % (num_players, point))
+			if "Shuffle times:" in line:
+				f1.write("%s,%s,%s\n" % (filename, num_players, t))
 
-		elif "Play move times:" in line:
-			f3.write("%s,%s\n" % (num_players, point))
+			elif "Draw move times:" in line:
+				f2.write("%s,%s,%s\n" % (filename, num_players, t))
 
-		else:
-			print "weird line:", line
-			
+			elif "Play move times:" in line:
+				f3.write("%s,%s,%s\n" % (filename, num_players, t))
+
+			else:
+				print "weird line:", line
+
 
 
 def handle_bandwidth(filename):
@@ -46,7 +52,7 @@ def handle_crypto(filename):
 	pass
 
 
-os.system("rm cleaned_data/*")
+write_headers()
 
 for filename in os.listdir("real_data"):
 	filename = "real_data/" + filename
