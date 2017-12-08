@@ -8,8 +8,8 @@ def write_headers():
 	open(outdir + "tpa_play_times.csv", "w").write("filename,num_players,time_in_ns\n")
 	open(outdir + "num_messages_sent.csv", "w").write("filename,num_players,num_messages_sent\n")
 	open(outdir + "bandwidth_used.csv", "w").write("filename,num_players,total_bandwidth_used_by_all_players_in_bytes\n")
-	open(outdir + "crypto_shuffle_times.csv", "a").write("filename,bits_used_for_primes,time_spent_to_shuffle_in_ns\n")
-	open(outdir + "crypto_decrypt_times.csv", "a").write("filename,bits_used_for_primes,time_spent_per_decryption_in_ns\n")
+	open(outdir + "crypto_shuffle_times.csv", "w").write("filename,bits_used_for_primes,time_spent_to_shuffle_in_ns\n")
+	open(outdir + "crypto_decrypt_times.csv", "w").write("filename,bits_used_for_primes,time_spent_per_decryption_in_ns\n")
 
 def average(ns):
 	return float(sum(ns))/len(ns)
