@@ -2,7 +2,7 @@ import spawnlib
 import os
 import time
 
-MAX_PLAYERS = 30
+MAX_PLAYERS = 20
 
 def average(nums):
 	return float(sum(nums)) / len(nums)
@@ -22,9 +22,13 @@ f = open(filename, "w")
 
 for num_players in range(2, MAX_PLAYERS+1):
 
-	os.system("rm *log.txt* 2>/dev/null")
+	while True:
 
-	spawnlib.run_with_n_players(num_players)
+		os.system("rm *log.txt* 2>/dev/null")
+
+		if spawnlib.run_with_n_players(num_players):
+			break
+
 	time.sleep(1)
 
 	num_broadcast = []

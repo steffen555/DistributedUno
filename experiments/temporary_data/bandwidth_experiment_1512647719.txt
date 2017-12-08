@@ -1,0 +1,12 @@
+2 players, 250625 bytes used
+3 players, 173237 bytes used
+4 players, 840460 bytes used
+5 players, 1529280 bytes used
+6 players, 3319911 bytes used
+7 players, 3677155 bytes used
+8 players, 5004809 bytes used
+9 players, 7313041 bytes used
+10 players, 12972875 bytes used
+11 players, 20165884 bytes used
+12 players, 33328639 bytes used
+13 players, 44035345 bytes used

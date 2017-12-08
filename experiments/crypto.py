@@ -1,18 +1,23 @@
 import spawnlib
 import os
 import time
+import sys
 
-os.system("rm *log.txt* 2>/dev/null")
 
-bits = raw_input("How many bits are used for the primes? ")
-
-filename = "crypto_experiment_%s_bits_%d.txt" % (bits, int(time.time()))
-f = open(filename, "w")
+bits = sys.argv[1]
+print "assuming %s bits" % bits
+# bits = raw_input("How many bits are used for the primes? ")
 
 
 num_players = 6
-spawnlib.run_with_n_players(num_players)
 
+while True:
+	os.system("rm *log.txt* 2>/dev/null")
+	if spawnlib.run_with_n_players(num_players):
+		break
+
+filename = "crypto_experiment_%s_bits_%d.txt" % (bits, int(time.time()))
+f = open(filename, "w")
 
 def process_logfile(filename):
 	for line in open(filename):
