@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ public class MessageReceiver extends Thread {
 
     private Transmission doReceiveObject() {
         Socket socket;
+
         try {
             socket = serverSocket.accept();
         } catch (IOException e) {
@@ -64,8 +66,20 @@ public class MessageReceiver extends Thread {
             if (!(object instanceof Transmission))
                 return null;
 
-            // TODO: validate IP address of sender with that in 't'
             Transmission t = (Transmission) object;
+
+            // validate IP address of sender with that in 't'
+            InetAddress senderIP = socket.getInetAddress();
+            InetAddress peerInfoIP = InetAddress.getByName(t.getPeerInfo().getIp());
+            if (senderIP.equals(InetAddress.getLocalHost())) {
+                // if it's sent from this machine, trust it; this lets us run
+                // multiple clients on one machine without problems.
+            }
+            else if (!senderIP.equals(peerInfoIP)) {
+                System.out.println("Got an impersonated object!");
+                return null;
+            }
+
             return t;
         } catch (StreamCorruptedException e) {
             e.printStackTrace();
