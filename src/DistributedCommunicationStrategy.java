@@ -22,7 +22,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
     private int numSent;
     private int numBroadcast;
 
-    // TODO: handle the case when this fails better, e.g. if we have two IPs
+
     private String myIP() {
         Enumeration e;
         try {
@@ -377,7 +377,7 @@ public class DistributedCommunicationStrategy implements CommunicationStrategy {
                 logger.debug("autopicking reply");
                 reply = "" + (lastAttemptedMove++) + "uno";
 
-                if (lastAttemptedMove > 50) //TODO: remove magic constant
+                if (lastAttemptedMove > 50)
                     reply = "d";
             } else {
                 logger.debug("Getting the reply from the user.");

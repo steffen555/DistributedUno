@@ -94,17 +94,17 @@ public class SimpleCommunicationStrategy implements CommunicationStrategy {
 
     @Override
     public void handleJoiningPlayers(Player currentPlayer, GameStateSupplier game) {
-        // TODO
+
     }
 
     @Override
     public void setPlayers(List<PeerInfo> peerInfos) {
-        // TODO
+
     }
 
     @Override
     public void addSelfToPlayersList() {
-        // TODO
+
     }
 
     @Override

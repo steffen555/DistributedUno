@@ -140,8 +140,7 @@ public class MessageReceiver extends Thread {
         return receiveObject(classes, true, null);
     }
 
-    // TODO: this should be specific to the player in turn, we should not accept joins from
-    // anyone else until it's their turn.
+
     public JoinRequestMessage receiveJoinRequestMessage(boolean isMyTurn) {
         while (true) {
 

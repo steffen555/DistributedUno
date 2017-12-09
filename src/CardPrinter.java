@@ -34,7 +34,6 @@ public class CardPrinter {
             color = stringify(card.getColor());
         }
 
-        // TODO: find better symbols...
         String symbol;
         if (card instanceof EncryptedCard) {
             symbol = "?";
@@ -52,7 +51,7 @@ public class CardPrinter {
             symbol = "④"; //④
         } else {
             System.out.println("weird card: " + card);
-            symbol = "TODO";
+            symbol = "?";
         }
 
         printer.print(0, color + " ___ " + NO_COLOR);
