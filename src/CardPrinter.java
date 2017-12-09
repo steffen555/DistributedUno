@@ -34,21 +34,37 @@ public class CardPrinter {
             color = stringify(card.getColor());
         }
 
+
         String symbol;
         if (card instanceof EncryptedCard) {
             symbol = "?";
         } else if (card instanceof RegularCard) {
             symbol = Integer.toString(((RegularCard) card).getNumber());
         } else if (card instanceof ChangeTurnDirectionCard) {
-            symbol = "⇄"; //⇄
+            if (System.getProperty("os.name").startsWith("Windows"))
+                symbol = "d";
+            else
+                symbol = "⇄";
         } else if (card instanceof SkipCard) {
-            symbol = "⊘"; //⊘  ☹
+            if (System.getProperty("os.name").startsWith("Windows"))
+                symbol = "s";
+            else
+                symbol = "⊘";
         } else if (card instanceof ChangeColorCard) {
-            symbol = "\u269B"; //⚛
+            if (System.getProperty("os.name").startsWith("Windows"))
+                symbol = "c";
+            else
+                symbol = "\u269B";
         } else if (card instanceof DrawTwoCard) {
-            symbol = "②"; //②
+            if (System.getProperty("os.name").startsWith("Windows"))
+                symbol = "t";
+            else
+                symbol = "②";
         } else if (card instanceof DrawFourAndChangeColorCard) {
-            symbol = "④"; //④
+            if (System.getProperty("os.name").startsWith("Windows"))
+                symbol = "f";
+            else
+                symbol = "④";
         } else {
             System.out.println("weird card: " + card);
             symbol = "?";
