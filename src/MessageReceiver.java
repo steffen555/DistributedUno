@@ -71,7 +71,7 @@ public class MessageReceiver extends Thread {
             // validate IP address of sender with that in 't'
             InetAddress senderIP = socket.getInetAddress();
             InetAddress peerInfoIP = InetAddress.getByName(t.getPeerInfo().getIp());
-            if (senderIP.equals(InetAddress.getLocalHost())) {
+            if (senderIP.equals(InetAddress.getLocalHost()) || senderIP.equals(InetAddress.getByName("127.0.0.1"))) {
                 // if it's sent from this machine, trust it; this lets us run
                 // multiple clients on one machine without problems.
             }
